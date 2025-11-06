@@ -1,0 +1,477 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.patient-history {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  display: flex;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Helvetica Neue', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 224px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-container {
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  color: #0d9488;
+  stroke-width: 2.5;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Navigation */
+.navigation {
+  flex: 1;
+  padding: 16px;
+}
+
+.nav-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #4b5563;
+  font-weight: 500;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.nav-button:hover {
+  background-color: #f9fafb;
+}
+
+.nav-button.active {
+  background-color: #0d9488;
+  color: white;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 24px 32px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.header-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 400;
+}
+
+/* Stats Section */
+.stats-section {
+  padding: 24px 32px;
+}
+
+.stats-grid-history {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stat-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.stat-icon {
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+}
+
+.stat-icon.week {
+  color: #0d9488;
+}
+
+.stat-icon.patients {
+  color: #3b82f6;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* History Container */
+.history-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.history-header {
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.history-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.history-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 400;
+}
+
+/* History Filters - Fixed Search Icon */
+.history-filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-wrapper-header {
+  position: relative;
+  width: 240px;
+}
+
+.search-icon-header {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.search-input-header {
+  width: 100%;
+  padding: 10px 16px 10px 44px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  color: #374151;
+  outline: none;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.search-input-header::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.search-input-header:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+}
+
+.date-filter,
+.doctor-filter {
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  color: #374151;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.date-filter {
+  width: 180px;
+}
+
+.doctor-filter {
+  min-width: 140px;
+}
+
+.date-filter:focus,
+.doctor-filter:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+}
+
+/* Consultation List */
+.consultation-list {
+  padding: 0;
+}
+
+.consultation-card {
+  padding: 24px;
+  margin: 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+  box-shadow: none;
+  transition: all 0.2s ease;
+}
+
+.consultation-card:first-child {
+  border-top: none;
+}
+
+.consultation-card:hover {
+  background: #f9fafb;
+}
+
+.consultation-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Patient Header */
+.patient-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.consultation-patient-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.patient-gender-badge {
+  padding: 3px 10px;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  border-radius: 4px;
+}
+
+.patient-age {
+  font-size: 13px;
+  color: #6b7280;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Consultation Info */
+.consultation-info-main {
+  flex: 1;
+}
+
+.consultation-details-grid {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.detail-icon {
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.detail-text {
+  font-size: 13px;
+  color: #6b7280;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.diagnosis-row {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.diagnosis-label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.diagnosis-value {
+  font-size: 13px;
+  color: #6b7280; /* Changed from #111827 to #6b7280 */
+  font-weight: 500; /* Changed from 600 to 500 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* View Details Button */
+.view-details-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.view-details-button:hover {
+  background-color: #f9fafb;
+  border-color: #0d9488;
+  color: #0d9488;
+}
+
+.eye-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .stats-grid-history {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .search-wrapper-header {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .patient-history {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .stats-grid-history {
+    grid-template-columns: 1fr;
+  }
+
+  .consultation-content {
+    flex-direction: column;
+  }
+
+  .view-details-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
