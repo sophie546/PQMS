@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './css/PatientQueue.css';
+import '../css/PatientQueue.css';
 
-const ClinicFlow = ({ onNavigate }) => {
+const PatientQueue = ({ onNavigate }) => {
   const [patients] = useState([
     {
       id: 1,
@@ -218,4 +218,4 @@ const ClinicFlow = ({ onNavigate }) => {
   );
 };
 
-export default ClinicFlow;
+export default PatientQueue;

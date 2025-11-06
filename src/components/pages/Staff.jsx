@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './css/Staff.css';
+import '../css/Staff.css';
 
 const Staff = ({ onNavigate }) => {
   const [staffMembers] = useState([

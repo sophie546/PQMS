@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './css/PatientHistory.css';
+import '../css/PatientHistory.css';
 
 const PatientHistory = ({ onNavigate }) => {
   const [consultations] = useState([
