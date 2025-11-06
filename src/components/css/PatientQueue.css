@@ -41,7 +41,7 @@
 .logo-icon {
   width: 24px;
   height: 24px;
-  color: #0d9488;
+  color: #5416B5;
   stroke-width: 2.5;
 }
 
@@ -82,7 +82,7 @@
 }
 
 .nav-button.active {
-  background-color: #0d9488;
+  background-color: #5416B5;
   color: white;
 }
 
@@ -132,7 +132,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #0d9488;
+  background-color: #5416B5;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -145,7 +145,7 @@
 }
 
 .add-button:hover {
-  background-color: #0f766e;
+  background-color: #451294;
 }
 
 .add-icon {
@@ -197,7 +197,7 @@
 }
 
 .stat-icon.consulting {
-  color: #0d9488;
+  color: #5416B5;
 }
 
 .stat-icon.completed {
@@ -287,8 +287,8 @@
 }
 
 .search-input:focus {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+  border-color: #5416B5;
+  box-shadow: 0 0 0 3px rgba(84, 22, 181, 0.1);
 }
 
 .status-filter {
@@ -306,8 +306,8 @@
 }
 
 .status-filter:focus {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+  border-color: #5416B5;
+  box-shadow: 0 0 0 3px rgba(84, 22, 181, 0.1);
 }
 
 /* Patient List */
@@ -330,7 +330,7 @@
 }
 
 .patient-card:hover {
-  background: #f0fdfa;
+  background: #d4cce7;
 }
 
 .patient-content {
@@ -339,11 +339,11 @@
   gap: 20px;
 }
 
-/* Queue Number */
+
 .queue-number {
   width: 48px;
   height: 48px;
-  background-color: #dbeafe;
+  background-color: #a08df7; 
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -357,7 +357,7 @@
 }
 
 .queue-number span {
-  color: #3B82F6;
+  color: #5416B5;
   font-weight: 700;
   font-size: 16px;
 }
@@ -413,8 +413,8 @@
 }
 
 .status-badge.consulting {
-  background-color: #ccfbf1;
-  color: #0d9488;
+  background-color: #ede9fe;
+  color: #5416B5;
 }
 
 .status-badge.waiting {

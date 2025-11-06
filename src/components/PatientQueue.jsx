@@ -46,7 +46,7 @@ const ClinicFlow = ({ onNavigate }) => {
         {/* Logo */}
         <div className="logo-container">
           <div className="logo" onClick={() => onNavigate && onNavigate('queue')} style={{ cursor: 'pointer' }}>
-            <svg className="logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#5416B5' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             <span className="logo-text">ClinicaFlow</span>
@@ -55,7 +55,7 @@ const ClinicFlow = ({ onNavigate }) => {
 
         {/* Navigation */}
         <nav className="navigation">
-          <button className="nav-button active">
+          <button className="nav-button active" style={{ backgroundColor: '#5416B5', color: 'white' }}>
             <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -97,7 +97,7 @@ const ClinicFlow = ({ onNavigate }) => {
               <h1 className="header-title">Patient Queue</h1>
               <p className="header-subtitle">Real-time patient queue management</p>
             </div>
-            <button className="add-button">
+            <button className="add-button" style={{ backgroundColor: '#5416B5' }}>
               <span className="add-icon">+</span>
               <span>Add to Queue</span>
             </button>
@@ -130,7 +130,7 @@ const ClinicFlow = ({ onNavigate }) => {
             <div className="stat-card">
               <div className="stat-header">
                 <span className="stat-label">Consulting</span>
-                <svg className="stat-icon consulting" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="stat-icon consulting" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#5416B5' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -178,15 +178,14 @@ const ClinicFlow = ({ onNavigate }) => {
                 <div key={patient.id} className="patient-card">
                   <div className="patient-content">
                     {/* Queue Number */}
-                    <div className="queue-number">
-                      <span>#{patient.id}</span>
+                    <div className="queue-number" style={{ backgroundColor: '#ede9fe' }}>
+                      <span style={{ color: '#5416B5' }}>#{patient.id}</span>
                     </div>
 
                     {/* Patient Info */}
                     <div className="patient-info">
                       <div className="patient-name-row">
                         <h3 className="patient-name">{patient.name}</h3>
-                        
                       </div>
                       <div className="patient-details">
                         <span>{patient.age} years • {patient.gender}</span>
