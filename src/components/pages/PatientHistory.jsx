@@ -30,6 +30,9 @@ import {
   History
 } from '@mui/icons-material';
 import { FaClipboardList } from 'react-icons/fa';
+import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../StatComponents.jsx";
+import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../HeaderComponents.jsx";
+
 
 const PatientHistory = () => {
   const [consultations] = useState([
@@ -101,6 +104,42 @@ const PatientHistory = () => {
     uniquePatients: 5
   };
 
+  const visitStats = [
+  {
+    id: 1,
+    title: 'Total Visits',
+    value: stats.totalVisits,
+    subText: 'All consultations',
+    color: '#667eea',
+    icon: <History sx={{ fontSize: 28, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    borderColor: 'rgba(102, 126, 234, 0.1)',
+    hoverShadow: 'rgba(102, 126, 234, 0.15)'
+  },
+  {
+    id: 2,
+    title: 'This Week',
+    value: stats.thisWeek,
+    subText: 'Recent consultations',
+    color: '#ed6c02',
+    icon: <Schedule sx={{ fontSize: 28, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)',
+    borderColor: 'rgba(237, 108, 2, 0.1)',
+    hoverShadow: 'rgba(237, 108, 2, 0.15)'
+  },
+  {
+    id: 3,
+    title: 'Unique Patients',
+    value: stats.uniquePatients,
+    subText: 'Individual patients',
+    color: '#2e7d32',
+    icon: <People sx={{ fontSize: 28, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
+    borderColor: 'rgba(46, 125, 50, 0.1)',
+    hoverShadow: 'rgba(46, 125, 50, 0.15)'
+  }
+];
+
   return (
     <Box sx={{ 
       minHeight: '100vh', 
@@ -108,105 +147,56 @@ const PatientHistory = () => {
       fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif'
     }}>
       {/* Professional Header */}
-      <Paper 
-        elevation={0}
-        sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          px: 4,
-          py: 3,
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: 0,
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '100%',
-            background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
-            pointerEvents: 'none',
-          }
-        }}
-      >
+      <HeaderPaper >
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" position="relative" zIndex={1}>
           <Box display="flex" alignItems="center" gap={2}>
-            <Box sx={{
-              width: 44,
-              height: 44,
-              borderRadius: 3,
-              background: 'rgba(255, 255, 255, 0.2)',
-              backdropFilter: 'blur(10px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-            }}>
+            <HeaderIcon>
               <FaClipboardList size={24} color="white" />
-            </Box>
+            </HeaderIcon>
             <Box>
-              <Typography 
-                variant="h4" 
-                sx={{ 
-                  fontWeight: 700,
-                  color: 'white',
-                  mb: 0.5,
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                  fontSize: '1.75rem',
-                  letterSpacing: '-0.25px',
-                }}
-              >
-                Medical History
-              </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontWeight: 500,
-                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                  fontSize: '0.875rem'
-                }}
-              >
+              <HeaderTitle>Medical History</HeaderTitle> 
+              <HeaderSubText>
                 View past consultations and patient records • {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-              </Typography>
+              </HeaderSubText>
             </Box>
           </Box>
 
           <Stack direction="row" spacing={2}>
-            <Button 
-              variant="outlined"
-              startIcon={<Refresh />}
-              sx={{
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-                color: 'white',
-                textTransform: 'none',
-                fontWeight: 600,
-                borderRadius: 3,
-                px: 3,
-                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                fontSize: '0.875rem',
-                '&:hover': {
-                  borderColor: 'white',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
+            <HeaderButton>
               Refresh
-            </Button>
+            </HeaderButton>
           </Stack>
         </Box>
-      </Paper>
+      </HeaderPaper>
 
       {/* Main Content */}
       <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
         {/* Professional Stats Cards */}
-        <Grid container spacing={4} sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+          {visitStats.map((stat) => (
+            <Box key={stat.id} sx={{ flex: 1 }}>
+              <StatCard 
+                color={stat.color}
+                borderColor={stat.borderColor}
+                hoverShadow={stat.hoverShadow}
+              >
+                <CardContent sx={{ p: 3, height: '100%' }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
+                    <Box sx={{ flex: 1, mr: 2 }}>
+                      <StatTitle>{stat.title}</StatTitle>
+                      <StatNumber color={stat.color}>{stat.value}</StatNumber>
+                      <SubText>{stat.subText}</SubText>
+                    </Box>
+                    <StatIcon background={stat.gradient}>
+                      {stat.icon}
+                    </StatIcon>
+                  </Box>
+                </CardContent>
+              </StatCard>
+            </Box>
+          ))}
+        </Box>
+        {/* <Grid container spacing={4} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} lg={4}>
             <Card 
               sx={{ 
@@ -440,7 +430,7 @@ const PatientHistory = () => {
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
+        </Grid> */}
 
         {/* Professional Consultation List */}
         <Card 
@@ -515,12 +505,8 @@ const PatientHistory = () => {
                   sx={{ 
                     minWidth: 140,
                     borderRadius: 3,
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'rgba(102, 126, 234, 0.3)',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#667eea',
-                    },
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(102, 126, 234, 0.3)', },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#667eea', },
                   }}
                 >
                   <MenuItem value="All Doctors">All Doctors</MenuItem>
@@ -535,12 +521,8 @@ const PatientHistory = () => {
                     width: '180px',
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 3,
-                      '& fieldset': {
-                        borderColor: 'rgba(102, 126, 234, 0.3)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#667eea',
-                      },
+                      '& fieldset': { borderColor: 'rgba(102, 126, 234, 0.3)', },
+                      '&:hover fieldset': { borderColor: '#667eea', },
                     },
                   }}
                 />
@@ -562,15 +544,9 @@ const PatientHistory = () => {
                       borderRadius: 3,
                       fontWeight: 500,
                       fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                      '& fieldset': {
-                        borderColor: 'rgba(102, 126, 234, 0.3)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#667eea',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#667eea',
-                      },
+                      '& fieldset': {borderColor: 'rgba(102, 126, 234, 0.3)',},
+                      '&:hover fieldset': {borderColor: '#667eea',},
+                      '&.Mui-focused fieldset': {borderColor: '#667eea', },
                     },
                   }}
                 />
