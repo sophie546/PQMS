@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
-import '../css/Staff.css';
+import {
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  IconButton,
+  InputAdornment,
+  Chip,
+  Grid,
+  Typography,
+  Container
+} from '@mui/material';
+import {
+  Search,
+  Add,
+  MoreVert
+} from '@mui/icons-material';
 
-const Staff = ({ onNavigate }) => {
+const Staff = () => {
   const [staffMembers] = useState([
     {
       id: 1,
@@ -60,225 +77,224 @@ const Staff = ({ onNavigate }) => {
     }
   ]);
 
-  const stats = {
-    total: 5,
-    doctors: 3,
-    nurses: 2,
-    availableNow: 3
-  };
-
   const doctorCount = staffMembers.filter(s => s.role === "Doctor").length;
   const nurseCount = staffMembers.filter(s => s.role === "Nurse").length;
   const availableCount = staffMembers.filter(s => s.status === "Available").length;
 
-  // Navigation handlers
-  const handleNavigateToQueue = () => {
-    onNavigate && onNavigate('queue');
-  };
-
-  const handleNavigateToPatients = () => {
-    onNavigate && onNavigate('patients');
-  };
-
-  const handleNavigateToStaff = () => {
-    onNavigate && onNavigate('staff');
-  };
-
-  const handleNavigateToConsultations = () => {
-    onNavigate && onNavigate('consultations');
-  };
-
-  const handleNavigateToHistory = () => {
-    onNavigate && onNavigate('history');
-  };
-
   const handleAddStaff = () => {
-    // Add your logic for adding new staff here
     console.log('Add Staff clicked');
-    // You can open a modal, show a form, etc.
   };
 
   return (
-    <div className="staff-management">
-      {/* Sidebar */}
-      <div className="sidebar">
-        {/* Logo */}
-        <div className="logo-container">
-          <div className="logo" onClick={handleNavigateToQueue} style={{ cursor: 'pointer' }}>
-            <svg className="logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <span className="logo-text">ClinicaFlow</span>
-          </div>
-        </div>
+    <Box sx={{ flexGrow: 1, maxWidth: '100%' }}>
+      {/* Header */}
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        alignItems="center" 
+        sx={{
+          backgroundColor: 'white',
+          borderBottom: '3px solid #f0f0f0',
+          p: 3,
+        }}
+      >    
+        <Box>
+          <Typography variant="h5" fontWeight="bold">Staff Management</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Manage doctors and nurses
+          </Typography>
+        </Box>
 
-        {/* Navigation */}
-        <nav className="navigation">
-          <button className="nav-button" onClick={handleNavigateToQueue}>
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <span>Queue</span>
-          </button>
-          <button className="nav-button" onClick={handleNavigateToPatients}>
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <span>Patients</span>
-          </button>
-          <button className="nav-button active" onClick={handleNavigateToStaff}>
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span>Staff</span>
-          </button>
-          <button className="nav-button" onClick={handleNavigateToConsultations}>
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span>Consultations</span>
-          </button>
-          <button className="nav-button" onClick={handleNavigateToHistory}>
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>History</span>
-          </button>
-        </nav>
-      </div>
+        <Button 
+          variant="contained" 
+          startIcon={<Add />}
+          onClick={handleAddStaff}
+          sx={{
+            backgroundColor: '#5416B5',
+            boxShadow: 'none',
+            textTransform: 'none',
+            fontSize: 14,
+            borderRadius: 2,
+            px: 3,
+            '&:hover': {
+              backgroundColor: '#451495',
+              boxShadow: 'none',
+            },
+          }}
+        >
+          Add Staff
+        </Button>
+      </Box>
 
       {/* Main Content */}
-      <div className="main-content">
-        {/* Header */}
-        <div className="header">
-          <div className="header-content">
-            <div>
-              <h1 className="header-title">Staff Management</h1>
-              <p className="header-subtitle">Manage doctors and nurses</p>
-            </div>
-            <button className="add-button" onClick={handleAddStaff}>
-              <span className="add-icon">+</span>
-              <span>Add Staff</span>
-            </button>
-          </div>
-        </div>
+      <Box p={3}>
+        {/* Stats Section */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ border: "1px solid #e0e0e0", borderRadius: 2 }}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Total Staff
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {staffMembers.length}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-        {/* Stats Cards */}
-        <div className="stats-section">
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-header">
-                <span className="stat-label">Total Staff</span>
-                <svg className="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <div className="stat-value">{stats.total}</div>
-            </div>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ border: "1px solid #e0e0e0", borderRadius: 2 }}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Doctors
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {doctorCount}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-            <div className="stat-card">
-              <div className="stat-header">
-                <span className="stat-label">Doctors</span>
-                <svg className="stat-icon doctors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div className="stat-value">{doctorCount}</div>
-            </div>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ border: "1px solid #e0e0e0", borderRadius: 2 }}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Nurses
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {nurseCount}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-            <div className="stat-card">
-              <div className="stat-header">
-                <span className="stat-label">Nurses</span>
-                <svg className="stat-icon nurses" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </div>
-              <div className="stat-value">{nurseCount}</div>
-            </div>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ border: "1px solid #e0e0e0", borderRadius: 2 }}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Available Now
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {availableCount}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
-            <div className="stat-card">
-              <div className="stat-header">
-                <span className="stat-label">Available Now</span>
-                <svg className="stat-icon available" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="stat-value">{availableCount}</div>
-            </div>
-          </div>
+        {/* Staff Directory */}
+        <Card elevation={0} sx={{ border: "1px solid #e0e0e0", borderRadius: 3 }}>
+          <Box sx={{ p: 4, borderBottom: "1px solid #e0e0e0" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography variant="h5" fontWeight="bold">
+                  Staff Directory
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  View and manage all staff members
+                </Typography>
+              </Box>
 
-          {/* Staff Directory */}
-          <div className="staff-container">
-            <div className="staff-header">
-              <div>
-                <h2 className="staff-title">Staff Directory</h2>
-                <p className="staff-subtitle">View and manage all staff members</p>
-              </div>
-              <div className="search-wrapper-header">
-                <svg className="search-icon-header" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search by name..."
-                  className="search-input-header"
-                />
-              </div>
-            </div>
+              <TextField 
+                placeholder="Search by name..."
+                variant="outlined"
+                size="small"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  width: '250px', 
+                  '& .MuiInputBase-input': {
+                    fontSize: '14px', 
+                  },
+                }}
+              />
+            </Box>
+          </Box>
 
-            {/* Staff List */}
-            <div className="staff-list">
-              {staffMembers.map((staff) => (
-                <div key={staff.id} className="staff-card">
-                  <div className="staff-card-content">
-                    <div className="staff-info-left">
-                      <div className="staff-name-row">
-                        <h3 className="staff-name">{staff.name}</h3>
-                        <span className="staff-role">{staff.role}</span>
-                        <span className={`status-badge ${staff.status.toLowerCase().replace(' ', '-')}`}>
-                          {staff.status}
-                        </span>
-                      </div>
-                      <div className="staff-details">
-                        <div className="detail-item">
-                          <span className="detail-label">Specialization:</span>
-                          <span className="detail-value">{staff.specialization}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-label">Email:</span>
-                          <span className="detail-value">{staff.email}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-label">Schedule:</span>
-                          <span className="detail-value">{staff.schedule}</span>
-                        </div>
-                      </div>
-                    </div>
+          {/* Staff List */}
+          <Box sx={{ p: 3 }}>
+            {staffMembers.map((staff) => (
+              <Card 
+                key={staff.id} 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  mb: 2, 
+                  border: "1px solid #e0e0e0",
+                  borderRadius: 2,
+                }}
+              >
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                  {/* Left Side - Staff Info */}
+                  <Box sx={{ flex: 1 }}>
+                    <Box display="flex" alignItems="center" gap={1} mb={2}>
+                      <Typography variant="h6" fontWeight="bold">
+                        {staff.name}
+                      </Typography>
+                      <Chip
+                        label={staff.role}
+                        size="small"
+                        sx={{ 
+                          backgroundColor: staff.role === 'Doctor' ? '#e0f2fe' : '#f0fdf4',
+                          color: staff.role === 'Doctor' ? '#0369a1' : '#166534'
+                        }}
+                      />
+                      <Chip
+                        label={staff.status}
+                        size="small"
+                        sx={{
+                          backgroundColor: 
+                            staff.status === 'Available' ? '#dcfce7' :
+                            staff.status === 'Busy' ? '#fef3c7' : '#f3f4f6',
+                          color: 
+                            staff.status === 'Available' ? '#166534' :
+                            staff.status === 'Busy' ? '#ca8a04' : '#6b7280',
+                          fontWeight: 600,
+                          fontSize: '12px'
+                        }}
+                      />
+                    </Box>
 
-                    <div className="staff-info-right">
-                      <div className="detail-item">
-                        <span className="detail-label">Contact:</span>
-                        <span className="detail-value">{staff.contact}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="detail-label">Patients Today:</span>
-                        <span className="detail-value">{staff.patientsToday}</span>
-                      </div>
-                    </div>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="body2">
+                          <strong>Specialization:</strong> {staff.specialization}
+                        </Typography>
+                        <Typography variant="body2">
+                          <strong>Email:</strong> {staff.email}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="body2">
+                          <strong>Schedule:</strong> {staff.schedule}
+                        </Typography>
+                        <Typography variant="body2">
+                          <strong>Contact:</strong> {staff.contact}
+                        </Typography>
+                        <Typography variant="body2">
+                          <strong>Patients Today:</strong> {staff.patientsToday}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
 
-                    <button className="more-button">
-                      <svg className="more-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                  {/* Right Side - Actions */}
+                  <IconButton size="small">
+                    <MoreVert />
+                  </IconButton>
+                </Box>
+              </Card>
+            ))}
+          </Box>
+        </Card>
+      </Box>
+    </Box>
   );
 };
 
