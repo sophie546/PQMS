@@ -28,9 +28,12 @@ import {
 } from '@mui/icons-material';
 import { FaChevronRight, FaStethoscope } from 'react-icons/fa';
 import { MdQueue } from 'react-icons/md';
+import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../StatComponents.jsx";
+import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../HeaderComponents.jsx";
+
 
 const PatientQueue = () => {
-  const [patients] = useState([
+  const patients = [
     {
       id: 1,
       name: "Maria Santos",
@@ -71,14 +74,46 @@ const PatientQueue = () => {
       status: "Completed",
       priority: "medium"
     }
-  ]);
+  ];
 
-  const stats = {
-    total: 5,
-    waiting: 3,
-    consulting: 1,
-    completed: 1
-  };
+  const patientStats = [
+  {
+    id: 1,
+    title: 'Total Patients',
+    value: '5',
+    subText: 'In queue today',
+    color: '#667eea',
+    icon: <People sx={{ fontSize: 28, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  },
+  {
+    id: 2,
+    title: 'Waiting',
+    value: '2',
+    subText: 'Average: 15 minutes',
+    color: '#ed6c02',
+    icon: <Schedule sx={{ fontSize: 28, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)'
+  },
+  {
+    id: 3,
+    title: 'Consulting',
+    value: '1',
+    subText: 'Currently with doctor',
+    color: '#667eea',
+    icon: <MedicalServices sx={{ fontSize: 28, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  },
+  {
+    id: 4,
+    title: 'Completed',
+    value: '2',
+    subText: 'Sessions completed',
+    color: '#2e7d32',
+    icon: <CheckCircle sx={{ fontSize: 28, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'
+  }
+];
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -89,6 +124,62 @@ const PatientQueue = () => {
     }
   };
 
+  const Caption = ({ 
+  children,
+  color = '#9ca3af',
+  fontWeight = 600,
+  textTransform = 'uppercase',
+  fontSize = '0.688rem',
+  letterSpacing = '0.5px',
+  display = 'block',
+  mb = 0.5,
+  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+  sx = {},
+  ...props 
+}) => (
+  <Typography 
+    variant="caption"
+    sx={{
+      color,
+      fontWeight,
+      textTransform,
+      fontSize,
+      letterSpacing,
+      display,
+      mb,
+      fontFamily,
+      ...sx
+    }}
+    {...props}
+  >
+    {children}
+  </Typography>
+);
+
+  const SubCaption = ({ 
+  children,
+  color = '#6b7280',
+  fontWeight = 600,
+  fontSize = '0.95rem',
+  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+  sx = {},
+  ...props 
+}) => (
+  <Typography 
+    variant="body1"
+    sx={{
+      color,
+      fontWeight,
+      fontSize,
+      fontFamily,
+      ...sx
+    }}
+    {...props}
+  >
+    {children}
+  </Typography>
+);
+
   return (
     <Box sx={{ 
       minHeight: '100vh', 
@@ -96,73 +187,17 @@ const PatientQueue = () => {
       fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif'
     }}>
       {/* Professional Header - NOW WITH GRADIENT BACKGROUND */}
-      <Paper 
-        elevation={0}
-        sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          px: 4,
-          py: 3,
-          position: 'relative',
-          overflow: 'hidden',
-           borderRadius: 0,
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '100%',
-            background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
-            pointerEvents: 'none',
-          }
-        }}
-      >
+      <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" position="relative" zIndex={1}>
           <Box display="flex" alignItems="center" gap={2}>
-            <Box sx={{
-              width: 44,
-              height: 44,
-              borderRadius: 3,
-              background: 'rgba(255, 255, 255, 0.2)',
-              backdropFilter: 'blur(10px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-            }}>
+            <HeaderIcon>
               <MdQueue size={24} color="white" />
-            </Box>
+            </HeaderIcon>
             <Box>
-              <Typography 
-                variant="h4" 
-                sx={{ 
-                  fontWeight: 700,
-                  color: 'white',
-                  mb: 0.5,
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                  fontSize: '1.75rem',
-                  letterSpacing: '-0.25px',
-                }}
-              >
-                Patient Queue
-              </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontWeight: 500,
-                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                  fontSize: '0.875rem'
-                }}
-              >
+              <HeaderTitle>Patient Queue</HeaderTitle>
+              <HeaderSubText>
                 Real-time patient tracking • {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-              </Typography>
+              </HeaderSubText>
             </Box>
           </Box>
 
@@ -187,348 +222,37 @@ const PatientQueue = () => {
             >
               Refresh
             </Button>
-            <Button 
-              variant="contained" 
-              startIcon={<Add />}
-              sx={{
-                background: 'rgba(255, 255, 255, 0.9)',
-                color: '#667eea',
-                textTransform: 'none',
-                fontWeight: 600,
-                borderRadius: 3,
-                px: 4,
-                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                fontSize: '0.875rem',
-                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-                '&:hover': {
-                  background: 'white',
-                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
-                },
-              }}
-            >
+            <HeaderButton>
               New Patient
-            </Button>
+            </HeaderButton>
           </Stack>
         </Box>
-      </Paper>
+      </HeaderPaper>
 
       {/* Main Content */}
       <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
         {/* Professional Stats Cards */}
-        <Grid container spacing={11.5} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card 
-              sx={{ 
-                background: 'white',
-                borderRadius: 3,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(102, 126, 234, 0.1)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 120,
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(102, 126, 234, 0.15)',
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6b7280', 
-                        fontWeight: 600, 
-                        mb: 1, 
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      Total Patients
-                    </Typography>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#667eea', 
-                        fontWeight: 700, 
-                        fontSize: '2rem', 
-                        lineHeight: 1.2,
-                        fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        mb: 1
-                      }}
-                    >
-                      {stats.total}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: '#9ca3af', 
-                        fontWeight: 500, 
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      In queue today
-                    </Typography>
+        <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+          {patientStats.map((stat) => (
+            <Box key={stat.id} sx={{ flex: 1 }}>
+              <StatCard color={stat.color}>
+                <CardContent sx={{ p: 3, height: '100%' }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
+                    <Box sx={{ flex: 1, mr: 2 }}>
+                      <StatTitle>{stat.title}</StatTitle>
+                      <StatNumber color={stat.color}>{stat.value}</StatNumber>
+                      <SubText>{stat.subText}</SubText>
+                    </Box>
+                    <StatIcon background={stat.gradient}>
+                      {stat.icon}
+                    </StatIcon>
                   </Box>
-                  <Box 
-                    sx={{ 
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      p: 2,
-                      borderRadius: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-                      minWidth: 56
-                    }}
-                  >
-                    <People sx={{ fontSize: 28, color: 'white' }} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card 
-              sx={{ 
-                background: 'white',
-                borderRadius: 3,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(237, 108, 2, 0.1)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 120,
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(237, 108, 2, 0.15)',
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6b7280', 
-                        fontWeight: 600, 
-                        mb: 1, 
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      Waiting
-                    </Typography>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#ed6c02', 
-                        fontWeight: 700, 
-                        fontSize: '2rem', 
-                        lineHeight: 1.2,
-                        fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        mb: 1
-                      }}
-                    >
-                      {stats.waiting}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: '#9ca3af', 
-                        fontWeight: 500, 
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      Average: 15 minutes
-                    </Typography>
-                  </Box>
-                  <Box 
-                    sx={{ 
-                      background: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)',
-                      p: 2,
-                      borderRadius: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(237, 108, 2, 0.3)',
-                      minWidth: 56
-                    }}
-                  >
-                    <Schedule sx={{ fontSize: 28, color: 'white' }} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card 
-              sx={{ 
-                background: 'white',
-                borderRadius: 3,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(102, 126, 234, 0.1)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 120,
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(102, 126, 234, 0.15)',
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6b7280', 
-                        fontWeight: 600, 
-                        mb: 1, 
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      Consulting
-                    </Typography>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#667eea', 
-                        fontWeight: 700, 
-                        fontSize: '2rem', 
-                        lineHeight: 1.2,
-                        fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        mb: 1
-                      }}
-                    >
-                      {stats.consulting}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: '#9ca3af', 
-                        fontWeight: 500, 
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      Currently with doctor
-                    </Typography>
-                  </Box>
-                  <Box 
-                    sx={{ 
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      p: 2,
-                      borderRadius: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-                      minWidth: 56
-                    }}
-                  >
-                    <MedicalServices sx={{ fontSize: 28, color: 'white' }} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card 
-              sx={{ 
-                background: 'white',
-                borderRadius: 3,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(46, 125, 50, 0.1)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 120,
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(46, 125, 50, 0.15)',
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6b7280', 
-                        fontWeight: 600, 
-                        mb: 1, 
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      Completed
-                    </Typography>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#2e7d32', 
-                        fontWeight: 700, 
-                        fontSize: '2rem', 
-                        lineHeight: 1.2,
-                        fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        mb: 1
-                      }}
-                    >
-                      {stats.completed}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: '#9ca3af', 
-                        fontWeight: 500, 
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      Sessions completed
-                    </Typography>
-                  </Box>
-                  <Box 
-                    sx={{ 
-                      background: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
-                      p: 2,
-                      borderRadius: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(46, 125, 50, 0.3)',
-                      minWidth: 56
-                    }}
-                  >
-                    <CheckCircle sx={{ fontSize: 28, color: 'white' }} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
+                </CardContent>
+              </StatCard>
+            </Box>
+          ))}
+        </Box>
+       
         {/* Professional Queue List */}
         <Card 
           sx={{ 
@@ -710,77 +434,16 @@ const PatientQueue = () => {
 
                       <Grid container spacing={3} alignItems="center">
                         <Grid item xs={12} sm={4}>
-                          <Typography 
-                            variant="caption" 
-                            sx={{
-                              color: '#9ca3af',
-                              fontWeight: 600,
-                              textTransform: 'uppercase',
-                              fontSize: '0.688rem',
-                              letterSpacing: '0.5px',
-                              display: 'block',
-                              mb: 0.5,
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                            }}
-                          >
-                            Assigned to
-                          </Typography>
-                          <Typography 
-                            variant="body1"
-                            sx={{
-                              color: '#6b7280',
-                              fontWeight: 600,
-                              fontSize: '0.95rem',
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                            }}
-                          >
-                            {patient.assignedTo}
-                          </Typography>
+                          <Caption>Assigned to</Caption>
+                          <SubCaption>{patient.assignedTo}</SubCaption>
                         </Grid>
                         <Grid item xs={12} sm={4}>
-                          <Typography 
-                            variant="caption"
-                            sx={{
-                              color: '#9ca3af',
-                              fontWeight: 600,
-                              textTransform: 'uppercase',
-                              fontSize: '0.688rem',
-                              letterSpacing: '0.5px',
-                              display: 'block',
-                              mb: 0.5,
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                            }}
-                          >
-                            Arrival Time
-                          </Typography>
-                          <Typography 
-                            variant="body1"
-                            sx={{
-                              color: '#6b7280',
-                              fontWeight: 600,
-                              fontSize: '0.95rem',
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                            }}
-                          >
-                            {patient.arrivalTime}
-                          </Typography>
+                          <Caption>Arrival Time</Caption>
+                          <SubCaption>{patient.arrivalTime}</SubCaption>
                         </Grid>
                         <Grid item xs={12} sm={4}>
-                          <Typography 
-                            variant="caption"
-                            sx={{
-                              color: '#9ca3af',
-                              fontWeight: 600,
-                              textTransform: 'uppercase',
-                              fontSize: '0.688rem',
-                              letterSpacing: '0.5px',
-                              display: 'block',
-                              mb: 0.5,
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                            }}
-                          >
+                          <Caption>Status</Caption>
                             Status
-                          </Typography>
                           <Chip
                             label={patient.status}
                             sx={{

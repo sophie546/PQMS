@@ -10,11 +10,26 @@ import {
   Paper,
   Chip,
   IconButton,
+  Card,
+  Divider,
+  InputAdornment,
+  Avatar,
+  CardContent,
 } from "@mui/material";
+import {
+  Search,
+  Add,
+  MoreVert,
+  FilterList,
+  People,
+  Female,
+  Male
+} from '@mui/icons-material';
 import { styled } from "@mui/material/styles";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import AddIcon from '@mui/icons-material/Add';
-import HeaderStats from "../HeaderStats.jsx";
+import { StatCard, StatTitle, StatNumber, StatIcon } from "../StatComponents.jsx";
+import { FaUsers } from 'react-icons/fa';
+import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../HeaderComponents.jsx";
 
 // Mock data
 const patients = [
@@ -50,8 +65,10 @@ const patients = [
     contact: "09345678901",
     visits: 5,
     history: "Allergy",
-  },
-];const PatientItemBox = styled(Paper)(({ theme }) => ({
+  }
+];
+
+const PatientItemBox = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: "8px",
   border: "1px solid #e0e0e0",
@@ -59,6 +76,88 @@ const patients = [
   justifyContent: "space-between",
   alignItems: "flex-start",
 }));
+
+// Reusable Caption component
+const Caption = ({ 
+  children, 
+  color = '#9ca3af',
+  fontWeight = 600,
+  fontSize = '0.88rem',
+  letterSpacing = '0.5px',
+  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+  sx = {},
+  ...props 
+}) => {
+  return (
+    <Typography
+      variant="caption"
+      sx={{
+        color,
+        fontWeight,
+        fontSize,
+        letterSpacing,
+        display: 'block',
+        fontFamily,
+        textAlign: "center",
+        ...sx
+      }}
+      {...props}
+    >
+      {children}
+    </Typography>
+  );
+};
+
+const SubCaption = ({ 
+  children, 
+  color = '#6b7280',
+  fontWeight = 600,
+  mr = 2,
+  fontSize = '0.95rem',
+  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+  sx = {},
+  ...props 
+}) => (
+  <Typography 
+    variant="body1"
+    sx={{
+      color,
+      fontWeight,
+      fontSize,
+      mr,
+      fontFamily,
+      textAlign: "center",
+      ...sx
+    }}
+    {...props}
+  >
+    {children}
+  </Typography>
+);
+
+const cards = [
+  {
+    id: 1,
+    title: 'Total Patients',
+    stats: '5',
+    icon: <People sx={{ fontSize: 28, color: 'white' }} />
+  },
+  {
+    id: 2,
+    title: 'Male Patients',
+    stats: '2',
+    icon: <Male sx={{ fontSize: 34, color: 'white' }} />,
+    gradient: 'linear-gradient(135deg, #8eb3efff 0%, #1d4ed8 100%)'
+    
+  },
+  {
+    id: 3,
+    title: 'Female Patients',
+    stats: '3',
+    icon: <Female sx={{ fontSize: 34, color: 'white'}} />,
+    gradient: 'linear-gradient(135deg, #e891bcff 0%, #db2777 100%)'
+  },
+];
 
 function PatientItem({ name, gender, age, address, lastVisit, contact, visits }) {
   return (
@@ -97,85 +196,250 @@ function PatientPage() {
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: '100%'}}>
-      <Box 
-            display="flex" 
-            justifyContent="space-between" 
-            alignItems="center" 
-            sx={{
-              backgroundColor: 'white',
-              borderBottom: '3px solid #f0f0f0', 
-              p: 3, 
-            }}
-          >    
-          <Box className="summary-header">
-          <Typography variant="h5" fontWeight="bold">Patient Management</Typography>
-          <Typography variant="h9" color="text.secondary">
-            Add, edit, and manage patient records
-          </Typography>
-        </Box>
-
-        <Button 
-          variant="contained" 
-          color="primary"
-          onClick={handleAddPatient}
-          component={Link}
-          to="/add-patient"
-          startIcon={<AddIcon/>}
-          sx={{
-            boxShadow: 'none',
-            textTransform: 'none',
-            fontSize: 14,
-            borderRadius: 2,
-          }}
-        >
-          Add Patient
-        </Button>
-      </Box>
-    <Box p={3}>  
-      <HeaderStats patients={patients}/>
-
-      <Paper
-        elevation={0}
-        sx={{
-          border: "1px solid #e0e0e0",
-          p: 4,
-          mt: 4,
-          borderRadius: 3,
-        }}
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Box>
-            <Typography variant="h5" fontWeight="bold">
-              Patient Records
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Search and manage all patient information
-            </Typography>
+      {/* header */}
+      <HeaderPaper>
+        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" position="relative" zIndex={1}>
+          <Box display="flex" alignItems="center" gap={2}>
+            <HeaderIcon>
+              <FaUsers size={24} color="white" />
+            </HeaderIcon>
+            <Box>
+              <HeaderTitle>Patient Management</HeaderTitle>
+              <HeaderSubText> 
+                Add, edit, and manage patient records
+              </HeaderSubText>
+            </Box>
           </Box>
 
-          <TextField 
-            id="patient-search" 
-            label="Search by name..." 
-            variant="outlined" 
-            size="small" 
-            sx={{
-              width: '250px', 
-              '& .MuiInputBase-input': {
-                fontSize: '14px', 
-              },
-              '& .MuiInputLabel-root': {
-                fontSize: '13px', 
-              }
-            }}
-          />
+          <Stack direction="row" spacing={2}>
+            <HeaderButton startIcon={<Add />}>
+              Add Patient
+            </HeaderButton>
+          </Stack>
         </Box>
+      </HeaderPaper>
 
-        <Stack spacing={2}>
-          {patients.map((p) => (
-            <PatientItem key={p.id} {...p} />
-          ))}
-        </Stack>
-      </Paper>
+    <Box p={4}>  
+      <Box sx={{ display: 'flex', gap: 2.5, mb: 4}}>
+        {cards.map((card) => (
+          <Box key={card.id} sx={{ flex: 1}}>
+            <StatCard>
+              <CardContent sx={{ p: 3, height: '100%' }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
+                  <Box sx={{ flex: 1, mr: 2 }}>
+                    <StatTitle>{card.title}</StatTitle>
+                    <StatNumber>{card.stats}</StatNumber>
+                  </Box>
+                  <StatIcon background={card.gradient}>{card.icon}</StatIcon>
+                </Box>
+              </CardContent>
+            </StatCard>
+          </Box>
+        ))}
+      </Box>
+      <Card 
+          sx={{ 
+            borderRadius: 3,
+            boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
+            border: '1px solid rgba(102, 126, 234, 0.1)',
+            overflow: 'hidden',
+            background: 'white'
+          }}
+        >
+          <Box sx={{ 
+            p: 3, 
+            borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
+            background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
+          }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2.5} >
+              <Box>
+                <Typography 
+                  variant="h5" 
+                  sx={{
+                    fontWeight: 700,
+                    color: '#1a237e',
+                    mb: 0.5,
+                    fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                    fontSize: '1.5rem',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    backgroundClip: 'text',
+                    textFillColor: 'transparent',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  Patient Records
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{
+                    color: '#6b7280',
+                    fontWeight: 500,
+                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
+                  }}
+                >
+                  Search and manage all patient information
+                </Typography>
+              </Box>
+
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Button
+                  startIcon={<FilterList />}
+                  variant="outlined"
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: 3,
+                    borderColor: 'rgba(102, 126, 234, 0.3)',
+                    color: '#667eea',
+                    fontWeight: 600,
+                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                    fontSize: '0.875rem',
+                    '&:hover': {
+                      borderColor: '#667eea',
+                      background: 'rgba(102, 126, 234, 0.04)',
+                    }
+                  }}
+                >
+                  Filters
+                </Button>
+                
+                <TextField 
+                  placeholder="Search patients..."
+                  variant="outlined"
+                  size="small"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search sx={{ color: '#667eea' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    width: '280px',
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      fontWeight: 500,
+                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                      '& fieldset': { borderColor: 'rgba(102, 126, 234, 0.3)' },
+                      '&:hover fieldset': { borderColor: '#667eea' },
+                      '&.Mui-focused fieldset': { borderColor: '#667eea' },
+                    },
+                  }}
+                />
+              </Stack>
+            </Box>
+          </Box>
+
+          {/* Patient Cards */}
+          <Box sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              {patients.map((patient) => (
+                <Card 
+                  key={patient.id} 
+                  sx={{ 
+                    p: 3, 
+                    borderRadius: 3,
+                    boxShadow: '0 2px 12px rgba(102, 126, 234, 0.08)',
+                    border: '1px solid rgba(102, 126, 234, 0.1)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
+                      transform: 'translateY(-2px)',
+                      borderColor: 'rgba(102, 126, 234, 0.2)',
+                    }
+                  }}
+                >
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    <Box sx={{ flex: 1 }}>
+                      <Box display="flex" alignItems="center" gap={2} mb={2}>
+                        <Avatar 
+                          sx={{ 
+                            width: 52,
+                            height: 52,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            fontWeight: 700,
+                            fontSize: '1rem',
+                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+                          }}
+                        >
+                          {patient.name.split(' ').map(n => n[0]).join('')}
+                        </Avatar>
+                        <Box sx={{ flex: 1 }}>
+                          <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
+                            <Typography 
+                              variant="h6" 
+                              sx={{
+                                fontWeight: 700,
+                                color: '#1a237e',
+                                fontSize: '1.125rem',
+                                fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif'
+                              }}
+                            >
+                              {patient.name}
+                            </Typography>
+                            <Chip
+                              label={`#${patient.id}`}
+                              size="small"
+                              sx={{ 
+                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                color: 'white',
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                                height: '22px',
+                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
+                              }}
+                            />
+                          </Box>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Typography 
+                              variant="body2"
+                              sx={{
+                                color: '#6b7280',
+                                fontWeight: 500,
+                                fontSize: '0.875rem',
+                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
+                              }}
+                            >
+                              {patient.age} years • {patient.gender}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+
+                      <Divider sx={{ mb: 2, borderColor: 'rgba(102, 126, 234, 0.1)' }} />
+
+                      <Grid container spacing={1} alignItems="center">
+                          <Caption> Address:</Caption>
+                          <SubCaption> {patient.address} </SubCaption>
+                          <Caption> Contact Number: </Caption>
+                          <SubCaption> {patient.contact} </SubCaption>
+                          <Caption> Last Visit: </Caption>
+                          <SubCaption> {patient.lastVisit} </SubCaption>
+                      </Grid>
+                    </Box>
+
+                    <IconButton 
+                      size="small"
+                      sx={{
+                        color: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        ml: 2,
+                        borderRadius: 2,
+                        '&:hover': {
+                          backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                          color: '#5a6fd8',
+                        },
+                      }}
+                    >
+                      <MoreVert />
+                    </IconButton>
+                  </Box>
+                </Card>
+              ))}
+            </Stack>
+          </Box>
+        </Card>
     </Box>
     </Box>
   );
