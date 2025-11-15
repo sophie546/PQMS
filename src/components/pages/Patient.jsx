@@ -331,114 +331,193 @@ function PatientPage() {
           </Box>
 
           {/* Patient Cards */}
-          <Box sx={{ p: 3 }}>
-            <Stack spacing={2}>
-              {patients.map((patient) => (
-                <Card 
-                  key={patient.id} 
-                  sx={{ 
-                    p: 3, 
-                    borderRadius: 3,
-                    boxShadow: '0 2px 12px rgba(102, 126, 234, 0.08)',
-                    border: '1px solid rgba(102, 126, 234, 0.1)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
-                      transform: 'translateY(-2px)',
-                      borderColor: 'rgba(102, 126, 234, 0.2)',
-                    }
-                  }}
-                >
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                    <Box sx={{ flex: 1 }}>
-                      <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        <Avatar 
-                          sx={{ 
-                            width: 52,
-                            height: 52,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            fontWeight: 700,
-                            fontSize: '1rem',
-                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-                          }}
-                        >
-                          {patient.name.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        <Box sx={{ flex: 1 }}>
-                          <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
-                            <Typography 
-                              variant="h6" 
-                              sx={{
-                                fontWeight: 700,
-                                color: '#1a237e',
-                                fontSize: '1.125rem',
-                                fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif'
-                              }}
-                            >
-                              {patient.name}
-                            </Typography>
-                            <Chip
-                              label={`#${patient.id}`}
-                              size="small"
-                              sx={{ 
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                color: 'white',
-                                fontWeight: 600,
-                                fontSize: '0.75rem',
-                                height: '22px',
-                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                              }}
-                            />
-                          </Box>
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <Typography 
-                              variant="body2"
-                              sx={{
-                                color: '#6b7280',
-                                fontWeight: 500,
-                                fontSize: '0.875rem',
-                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                              }}
-                            >
-                              {patient.age} years • {patient.gender}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
-
-                      <Divider sx={{ mb: 2, borderColor: 'rgba(102, 126, 234, 0.1)' }} />
-
-                      <Grid container spacing={1} alignItems="center">
-                          <Caption> Address:</Caption>
-                          <SubCaption> {patient.address} </SubCaption>
-                          <Caption> Contact Number: </Caption>
-                          <SubCaption> {patient.contact} </SubCaption>
-                          <Caption> Last Visit: </Caption>
-                          <SubCaption> {patient.lastVisit} </SubCaption>
-                      </Grid>
-                    </Box>
-
-                    <IconButton 
-                      size="small"
-                      sx={{
-                        color: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        ml: 2,
-                        borderRadius: 2,
-                        '&:hover': {
-                          backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                          color: '#5a6fd8',
-                        },
-                      }}
-                    >
-                      <MoreVert />
-                    </IconButton>
-                  </Box>
-                </Card>
-              ))}
-            </Stack>
+<Box sx={{ p: 3 }}>
+  <Stack spacing={2}>
+    {patients.map((patient) => (
+      <Card 
+        key={patient.id} 
+        sx={{ 
+          p: 3, 
+          borderRadius: 2,
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+          border: '1px solid #e5e7eb',
+          transition: 'all 0.2s ease',
+          backgroundColor: 'white',
+          '&:hover': {
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          }
+        }}
+      >
+        {/* Top Section: Avatar, Name, ID */}
+        <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Avatar 
+              sx={{ 
+                width: 48,
+                height: 48,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+              }}
+            >
+              {patient.name.split(' ').map(n => n[0]).join('')}
+            </Avatar>
+            
+            <Box>
+              <Typography 
+                variant="h6" 
+                sx={{
+                  fontWeight: 600,
+                  color: '#1f2937',
+                  fontSize: '1rem',
+                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                  mb: 0.5
+                }}
+              >
+                {patient.name}
+              </Typography>
+              
+              <Typography 
+                variant="body2"
+                sx={{
+                  color: '#6b7280',
+                  fontWeight: 400,
+                  fontSize: '0.875rem',
+                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                }}
+              >
+                {patient.age} years • {patient.gender}
+              </Typography>
+            </Box>
           </Box>
+
+          <Box display="flex" alignItems="center" gap={1}>
+            <Chip
+              label={`#${patient.id}`}
+              size="small"
+              sx={{
+                backgroundColor: '#667eea',
+                color: 'white',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                height: '26px',
+                minWidth: '36px'
+              }}
+            />
+            <IconButton size="small" sx={{ color: '#9ca3af' }}>
+              <MoreVert sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Box>
+        </Box>
+
+        {/* Bottom Section: Patient Details - Aligned horizontally */}
+        <Box display="flex" alignItems="center" flexWrap="wrap">
+          <Typography 
+            sx={{
+              color: '#9ca3af',
+              fontWeight: 400,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 0.75
+            }}
+          >
+            Address
+          </Typography>
+          <Typography 
+            sx={{
+              color: '#9ca3af',
+              fontWeight: 400,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 0.75
+            }}
+          >
+            |
+          </Typography>
+          <Typography 
+            sx={{
+              color: '#374151',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 2
+            }}
+          >
+            {patient.address}
+          </Typography>
+
+          <Typography 
+            sx={{
+              color: '#9ca3af',
+              fontWeight: 400,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 0.75
+            }}
+          >
+            Contact Number
+          </Typography>
+          <Typography 
+            sx={{
+              color: '#9ca3af',
+              fontWeight: 400,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 0.75
+            }}
+          >
+            |
+          </Typography>
+          <Typography 
+            sx={{
+              color: '#374151',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 2
+            }}
+          >
+            {patient.contact}
+          </Typography>
+
+          <Typography 
+            sx={{
+              color: '#9ca3af',
+              fontWeight: 400,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 0.75
+            }}
+          >
+            Last Visit
+          </Typography>
+          <Typography 
+            sx={{
+              color: '#9ca3af',
+              fontWeight: 400,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              mr: 0.75
+            }}
+          >
+            |
+          </Typography>
+          <Typography 
+            sx={{
+              color: '#374151',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+            }}
+          >
+            {patient.lastVisit}
+          </Typography>
+        </Box>
+      </Card>
+    ))}
+  </Stack>
+</Box>
         </Card>
     </Box>
     </Box>
