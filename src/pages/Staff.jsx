@@ -3,32 +3,25 @@ import {
   Box,
   Card,
   CardContent,
-  TextField,
-  Button,
   IconButton,
-  InputAdornment,
   Chip,
   Grid,
   Typography,
   Avatar,
   Stack,
-  Paper,
   Divider
 } from '@mui/material';
 import {
-  Search,
   Add,
   MoreVert,
-  FilterList,
   People,
-  Schedule,
   MedicalServices,
   CheckCircle
 } from '@mui/icons-material';
 import { FaUserMd } from 'react-icons/fa';
-import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../StatComponents.jsx";
-import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../HeaderComponents.jsx";
-
+import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../components/StatComponents";
+import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
+import { SearchFilterBar } from "../components/SearchFilterBar";
 
 const Staff = () => {
   const [staffMembers] = useState([
@@ -213,6 +206,14 @@ const SubCaption = ({
   </Typography>
 );
 
+const handleSearch = (searchTerm) => {
+    console.log("Search:", searchTerm);
+  };
+
+  const handleFilter = () => {
+    console.log("Filter clicked");
+  };
+
   return (
     <Box sx={{ 
       minHeight: '100vh', 
@@ -237,7 +238,7 @@ const SubCaption = ({
           </Box>
 
           <Stack direction="row" spacing={2}>
-            <HeaderButton>
+            <HeaderButton startIcon={<Add />}>
               Add Staff
             </HeaderButton>
           </Stack>
@@ -318,57 +319,12 @@ const SubCaption = ({
                 </Typography>
               </Box>
 
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Button
-                  startIcon={<FilterList />}
-                  variant="outlined"
-                  sx={{
-                    textTransform: 'none',
-                    borderRadius: 3,
-                    borderColor: 'rgba(102, 126, 234, 0.3)',
-                    color: '#667eea',
-                    fontWeight: 600,
-                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                    fontSize: '0.875rem',
-                    '&:hover': {
-                      borderColor: '#667eea',
-                      background: 'rgba(102, 126, 234, 0.04)',
-                    }
-                  }}
-                >
-                  Filters
-                </Button>
-                
-                <TextField 
-                  placeholder="Search staff..."
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: '#667eea' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    width: '280px',
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 3,
-                      fontWeight: 500,
-                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                      '& fieldset': {
-                        borderColor: 'rgba(102, 126, 234, 0.3)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#667eea',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#667eea',
-                      },
-                    },
-                  }}
-                />
-              </Stack>
+              {/* USING REUSABLE SEARCH FILTER BAR */}
+              <SearchFilterBar 
+                onSearch={handleSearch}
+                onFilter={handleFilter}
+                searchPlaceholder="Search staff..."
+              />
             </Box>
           </Box>
 

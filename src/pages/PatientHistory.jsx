@@ -7,18 +7,14 @@ import {
   Select,
   MenuItem,
   Button,
-  IconButton,
-  InputAdornment,
   Chip,
   Grid,
   Typography,
   Avatar,
   Stack,
-  Paper,
   Divider
 } from '@mui/material';
 import {
-  Search,
   Visibility,
   CalendarToday,
   Schedule,
@@ -26,13 +22,12 @@ import {
   FilterList,
   Refresh,
   People,
-  MedicalServices,
-  History
+  History,
 } from '@mui/icons-material';
 import { FaClipboardList } from 'react-icons/fa';
-import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../StatComponents.jsx";
-import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../HeaderComponents.jsx";
-
+import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../components/StatComponents";
+import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
+import { SearchFilterBar } from "../components/SearchFilterBar";
 
 const PatientHistory = () => {
   const [consultations] = useState([
@@ -99,46 +94,61 @@ const PatientHistory = () => {
   ]);
 
   const stats = {
-    totalVisits: 6,
-    thisWeek: 4,
-    uniquePatients: 5
+    totalVisits: consultations.length,
+    thisWeek: consultations.filter(c => {
+      const consultationDate = new Date(c.date);
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      return consultationDate >= oneWeekAgo;
+    }).length,
+    uniquePatients: new Set(consultations.map(c => c.patientName)).size
   };
 
-  const visitStats = [
-  {
-    id: 1,
-    title: 'Total Visits',
-    value: stats.totalVisits,
-    subText: 'All consultations',
-    color: '#667eea',
-    icon: <History sx={{ fontSize: 28, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderColor: 'rgba(102, 126, 234, 0.1)',
-    hoverShadow: 'rgba(102, 126, 234, 0.15)'
-  },
-  {
-    id: 2,
-    title: 'This Week',
-    value: stats.thisWeek,
-    subText: 'Recent consultations',
-    color: '#ed6c02',
-    icon: <Schedule sx={{ fontSize: 28, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)',
-    borderColor: 'rgba(237, 108, 2, 0.1)',
-    hoverShadow: 'rgba(237, 108, 2, 0.15)'
-  },
-  {
-    id: 3,
-    title: 'Unique Patients',
-    value: stats.uniquePatients,
-    subText: 'Individual patients',
-    color: '#2e7d32',
-    icon: <People sx={{ fontSize: 28, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
-    borderColor: 'rgba(46, 125, 50, 0.1)',
-    hoverShadow: 'rgba(46, 125, 50, 0.15)'
-  }
-];
+  const patientStats = [
+    {
+      id: 1,
+      title: 'Total Visits',
+      value: stats.totalVisits,
+      subText: 'All consultations',
+      color: '#667eea',
+      icon: <History sx={{ fontSize: 28, color: 'white' }} />,
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      borderColor: 'rgba(102, 126, 234, 0.1)',
+      hoverShadow: 'rgba(102, 126, 234, 0.15)'
+    },
+    {
+      id: 2,
+      title: 'This Week',
+      value: stats.thisWeek,
+      subText: 'Recent consultations',
+      color: '#ed6c02',
+      icon: <Schedule sx={{ fontSize: 28, color: 'white' }} />,
+      gradient: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)',
+      borderColor: 'rgba(237, 108, 2, 0.1)',
+      hoverShadow: 'rgba(237, 108, 2, 0.15)'
+    },
+    {
+      id: 3,
+      title: 'Unique Patients',
+      value: stats.uniquePatients,
+      subText: 'Individual patients',
+      color: '#2e7d32',
+      icon: <People sx={{ fontSize: 28, color: 'white' }} />,
+      gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
+      borderColor: 'rgba(46, 125, 50, 0.1)',
+      hoverShadow: 'rgba(46, 125, 50, 0.15)'
+    }
+  ];
+
+  const handleSearch = (searchTerm) => {
+    console.log("Search:", searchTerm);
+    // Add search functionality here
+  };
+
+  const handleFilter = () => {
+    console.log("Filter clicked");
+    // Add filter functionality here
+  };
 
   return (
     <Box sx={{ 
@@ -147,7 +157,7 @@ const PatientHistory = () => {
       fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif'
     }}>
       {/* Professional Header */}
-      <HeaderPaper >
+      <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" position="relative" zIndex={1}>
           <Box display="flex" alignItems="center" gap={2}>
             <HeaderIcon>
@@ -162,7 +172,7 @@ const PatientHistory = () => {
           </Box>
 
           <Stack direction="row" spacing={2}>
-            <HeaderButton>
+            <HeaderButton startIcon={<Refresh />}>
               Refresh
             </HeaderButton>
           </Stack>
@@ -173,7 +183,7 @@ const PatientHistory = () => {
       <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
         {/* Professional Stats Cards */}
         <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
-          {visitStats.map((stat) => (
+          {patientStats.map((stat) => (
             <Box key={stat.id} sx={{ flex: 1 }}>
               <StatCard 
                 color={stat.color}
@@ -196,241 +206,6 @@ const PatientHistory = () => {
             </Box>
           ))}
         </Box>
-        {/* <Grid container spacing={4} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} lg={4}>
-            <Card 
-              sx={{ 
-                background: 'white',
-                borderRadius: 3,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(102, 126, 234, 0.1)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 120,
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(102, 126, 234, 0.15)',
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6b7280', 
-                        fontWeight: 600, 
-                        mb: 1, 
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      Total Visits
-                    </Typography>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#667eea', 
-                        fontWeight: 700, 
-                        fontSize: '2rem', 
-                        lineHeight: 1.2,
-                        fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        mb: 1
-                      }}
-                    >
-                      {stats.totalVisits}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: '#9ca3af', 
-                        fontWeight: 500, 
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      All consultations
-                    </Typography>
-                  </Box>
-                  <Box 
-                    sx={{ 
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      p: 2,
-                      borderRadius: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-                      minWidth: 56
-                    }}
-                  >
-                    <History sx={{ fontSize: 28, color: 'white' }} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} lg={4}>
-            <Card 
-              sx={{ 
-                background: 'white',
-                borderRadius: 3,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(237, 108, 2, 0.1)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 120,
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(237, 108, 2, 0.15)',
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6b7280', 
-                        fontWeight: 600, 
-                        mb: 1, 
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      This Week
-                    </Typography>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#ed6c02', 
-                        fontWeight: 700, 
-                        fontSize: '2rem', 
-                        lineHeight: 1.2,
-                        fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        mb: 1
-                      }}
-                    >
-                      {stats.thisWeek}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: '#9ca3af', 
-                        fontWeight: 500, 
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      Recent consultations
-                    </Typography>
-                  </Box>
-                  <Box 
-                    sx={{ 
-                      background: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)',
-                      p: 2,
-                      borderRadius: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(237, 108, 2, 0.3)',
-                      minWidth: 56
-                    }}
-                  >
-                    <Schedule sx={{ fontSize: 28, color: 'white' }} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} lg={4}>
-            <Card 
-              sx={{ 
-                background: 'white',
-                borderRadius: 3,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(46, 125, 50, 0.1)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: 120,
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 30px rgba(46, 125, 50, 0.15)',
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: '#6b7280', 
-                        fontWeight: 600, 
-                        mb: 1, 
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      Unique Patients
-                    </Typography>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#2e7d32', 
-                        fontWeight: 700, 
-                        fontSize: '2rem', 
-                        lineHeight: 1.2,
-                        fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        mb: 1
-                      }}
-                    >
-                      {stats.uniquePatients}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        color: '#9ca3af', 
-                        fontWeight: 500, 
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        fontSize: '0.75rem'
-                      }}
-                    >
-                      Individual patients
-                    </Typography>
-                  </Box>
-                  <Box 
-                    sx={{ 
-                      background: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
-                      p: 2,
-                      borderRadius: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 4px 15px rgba(46, 125, 50, 0.3)',
-                      minWidth: 56
-                    }}
-                  >
-                    <People sx={{ fontSize: 28, color: 'white' }} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid> */}
 
         {/* Professional Consultation List */}
         <Card 
@@ -527,28 +302,11 @@ const PatientHistory = () => {
                   }}
                 />
                 
-                <TextField 
-                  placeholder="Search patient..."
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: '#667eea' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    width: '280px',
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 3,
-                      fontWeight: 500,
-                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                      '& fieldset': {borderColor: 'rgba(102, 126, 234, 0.3)',},
-                      '&:hover fieldset': {borderColor: '#667eea',},
-                      '&.Mui-focused fieldset': {borderColor: '#667eea', },
-                    },
-                  }}
+                {/* USING REUSABLE SEARCH FILTER BAR */}
+                <SearchFilterBar 
+                  onSearch={handleSearch}
+                  onFilter={handleFilter}
+                  searchPlaceholder="Search patient..."
                 />
               </Stack>
             </Box>

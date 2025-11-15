@@ -5,7 +5,6 @@ import {
   Box, 
   TextField,
   Button,
-  MenuItem
 } from "@mui/material";
 
 const CustomTextField = ({ sx, ...props }) => (
@@ -51,11 +50,11 @@ export default function RegisterPage() {
           src= "/rightSection.png"
           alt="Description"
           sx={{
-            width: 'auto',      // Natural width
-            height: 'auto',     // Natural height
-            maxWidth: '100%',   // Don't exceed container width
-            maxHeight: '100%',  // Don't exceed container height
-            objectFit: 'contain', // Show entire image
+            width: 'auto',      
+            height: 'auto',     
+            maxWidth: '100%',   
+            maxHeight: '100%',  
+            objectFit: 'contain', 
             position: 'absolute',
           }}
         />
@@ -73,7 +72,6 @@ export default function RegisterPage() {
           sx={{
             width: 400,
             alignContent: "center",
-            // backgroundColor: "#f5f5f5"
           }}
         >
           <Typography 
@@ -138,4 +136,3 @@ export default function RegisterPage() {
     </Box>
   );
 }
-
