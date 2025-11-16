@@ -1,28 +1,39 @@
 import React, { useState } from 'react';
+
+// All external imports from lib/index.js
 import {
   Box,
   Card,
   CardContent,
   IconButton,
   Chip,
-  Grid,
   Typography,
   Avatar,
   Stack,
-  Divider
-} from '@mui/material';
-import {
   Add,
   MoreVert,
   People,
   MedicalServices,
-  CheckCircle
-} from '@mui/icons-material';
-import { FaUserMd } from 'react-icons/fa';
-import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../components/StatComponents";
-import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
-import { SearchFilterBar } from "../components/SearchFilterBar";
-import { Caption, SubCaption } from "../components/CaptionComponents";
+  CheckCircle,
+  FaUserMd
+} from "../lib";
+
+// All custom components from components/index.js
+import {
+  StatCard,
+  StatTitle,
+  StatNumber,
+  SubText,
+  StatIcon,
+  HeaderPaper,
+  HeaderIcon,
+  HeaderSubText,
+  HeaderTitle,
+  HeaderButton,
+  SearchFilterBar,
+  Caption,
+  SubCaption
+} from "../components";
 
 const Staff = () => {
   const [staffMembers] = useState([

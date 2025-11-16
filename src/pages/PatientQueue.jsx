@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
+
+// All external imports from lib/index.js
 import {
   Box,
   Card,
@@ -6,66 +8,47 @@ import {
   Button,
   IconButton,
   Chip,
-  Grid,
   Typography,
   Avatar,
   Stack,
-  Divider
-} from '@mui/material';
-import {
   Add,
   MoreVert,
   Refresh,
   People,
   Schedule,
   MedicalServices,
-  CheckCircle
-} from '@mui/icons-material';
-import { MdQueue } from 'react-icons/md';
-import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../components/StatComponents";
-import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
-import { SearchFilterBar } from "../components/SearchFilterBar";
-import { Caption, SubCaption } from "../components/CaptionComponents";
+  CheckCircle,
+  MdQueue
+} from "../lib";
+
+// All custom components from components/index.js
+import {
+  StatCard,
+  StatTitle,
+  StatNumber,
+  SubText,
+  StatIcon,
+  HeaderPaper,
+  HeaderIcon,
+  HeaderSubText,
+  HeaderTitle,
+  HeaderButton,
+  SearchFilterBar,
+  Caption,
+  SubCaption
+} from "../components";
+
+// Import the custom hook
+import { usePatientQueue } from "../hooks";
 
 const PatientQueue = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredPatients, setFilteredPatients] = useState([]);
-
-  const patients = [
-    {
-      id: 1,
-      initials : "MS",
-      name: "Maria Santos",
-      age: 45,
-      gender: "Female",
-      assignedTo: "Dr. Cruz",
-      arrivalTime: "08:30 AM",
-      status: "Consulting",
-      priority: "high"
-    },
-    {
-      id: 2,
-      initials : "JDC",
-      name: "Juan Dela Cruz",
-      age: 32,
-      gender: "Male",
-      assignedTo: "Dr. Cruz",
-      arrivalTime: "08:45 AM",
-      status: "Waiting",
-      priority: "medium"
-    },
-    {
-      id: 3,
-      initials : "AR",
-      name: "Ana Reyes",
-      age: 28,
-      gender: "Female",
-      assignedTo: "Dr. Cruz",
-      arrivalTime: "00:00 AM",
-      status: "Completed",
-      priority: "low"
-    }
-  ];
+  // ✅ FIXED: Only destructure what you actually use
+  const {
+    displayPatients,  // ← Now using this!
+    handleSearch,
+    handleFilter,
+    handleRefresh
+  } = usePatientQueue();
 
   const patientStats = [
     {
@@ -105,91 +88,6 @@ const PatientQueue = () => {
       gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'
     }
   ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Consulting': return '#667eea';
-      case 'Waiting': return '#ed6c02';
-      case 'Completed': return '#2e7d32';
-      default: return '#6b7280';
-    }
-  };
-
-  const handleSearch = (searchValue) => {
-    setSearchTerm(searchValue);
-    if (searchValue === '') {
-      setFilteredPatients(patients);
-    } else {
-      const filtered = patients.filter(patient =>
-        patient.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        patient.assignedTo.toLowerCase().includes(searchValue.toLowerCase()) ||
-        patient.status.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      setFilteredPatients(filtered);
-    }
-  };
-
-  const handleFilter = () => {
-    console.log("Filter button clicked");
-    // Add your filter logic here
-  };
-
-  const handleRefresh = () => {
-    console.log("Refresh data");
-    setSearchTerm('');
-    setFilteredPatients(patients);
-  };
-
-  const displayPatients = searchTerm ? filteredPatients : patients;
-
-  // Styled components for captions
-  const Caption = ({ 
-    children,
-    color = '#9ca3af',
-    fontWeight = 400,
-    fontSize = '0.875rem',
-    fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-    sx = {},
-    ...props 
-  }) => (
-    <Typography 
-      variant="body2"
-      sx={{
-        color,
-        fontWeight,
-        fontSize,
-        fontFamily,
-        ...sx
-      }}
-      {...props}
-    >
-      {children}
-    </Typography>
-  );
-
-  const SubCaption = ({ 
-    children,
-    color = '#374151',
-    fontWeight = 600,
-    fontSize = '0.875rem',
-    fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-    sx = {},
-    ...props 
-  }) => (
-    <Typography 
-      variant="body2"
-      sx={{
-        color,
-        fontWeight,
-        fontSize,
-        fontFamily,
-        ...sx
-      }}
-      {...props}
-    >
-      {children}
-    </Typography>
-  );
 
   return (
     <Box sx={{ 
@@ -320,10 +218,10 @@ const PatientQueue = () => {
             </Box>
           </Box>
 
-          {/* Patient Cards */}
+          {/* Patient Cards - NOW USING displayPatients from hook */}
           <Box sx={{ p: 3 }}>
             <Stack spacing={2}>
-              {patients.map((patient) => (
+              {displayPatients.map((patient) => (  // ← Now using displayPatients!
                 <PatientCard key={patient.id} patient={patient} />
               ))}
             </Stack>
@@ -334,25 +232,9 @@ const PatientQueue = () => {
   );
 };
 
-// Separate Patient Card Component for better organization
+// Separate Patient Card Component
 const PatientCard = ({ patient }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Consulting': return '#667eea';
-      case 'Waiting': return '#ed6c02';
-      case 'Completed': return '#2e7d32';
-      default: return '#6b7280';
-    }
-  };
-
-  const getStatusBgColor = (status) => {
-    switch (status) {
-      case 'Consulting': return '#e8eaf6';
-      case 'Waiting': return '#fff3e0';
-      case 'Completed': return '#e8f5e9';
-      default: return '#f5f5f5';
-    }
-  };
+  const { getStatusColor, getStatusBgColor } = usePatientQueue();
 
   return (
     <Card 

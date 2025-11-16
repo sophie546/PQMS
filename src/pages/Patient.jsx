@@ -1,29 +1,39 @@
 import React from "react";
+
+// All external imports from lib/index.js
 import {
   Box,
   Typography,
   Stack,
-  Paper,
   Chip,
   IconButton,
   Card,
   CardContent,
   Avatar,
-  Grid
-} from "@mui/material";
-import {
+  Grid,
   Add,
   People,
   Female,
   Male,
-  MoreVert
-} from '@mui/icons-material';
-import { styled } from "@mui/material/styles";
-import { FaUsers } from 'react-icons/fa';
-import { StatCard, StatTitle, StatNumber, StatIcon } from "../components/StatComponents";
-import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
-import { SearchFilterBar } from "../components/SearchFilterBar";
-import { Caption, SubCaption } from "../components/CaptionComponents";
+  MoreVert,
+  FaUsers
+} from "../lib";
+
+// All custom components from components/index.js
+import {
+  StatCard,
+  StatTitle,
+  StatNumber,
+  StatIcon,
+  HeaderPaper,
+  HeaderIcon,
+  HeaderSubText,
+  HeaderTitle,
+  HeaderButton,
+  SearchFilterBar,
+  Caption,
+  SubCaption
+} from "../components";
 
 // Mock data
 const patients = [
