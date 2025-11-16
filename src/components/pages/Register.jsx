@@ -43,7 +43,7 @@ const role = [
   }
 ];
 
-export default function RegisterPage() {
+export default function Register() {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {/* leftSection */}
