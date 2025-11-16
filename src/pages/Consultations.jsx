@@ -1,23 +1,26 @@
-  import React, { useState } from "react";
-  import {
-    Box,
-    Typography,
-    Button,
-    TextField,
-    Card,
-  } from "@mui/material";
-  import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-  import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-  import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-  import dayjs from 'dayjs';
-  import { styled } from "@mui/material/styles";
-  import AddIcon from '@mui/icons-material/Add';
-  import { FaNotesMedical } from 'react-icons/fa';
-  import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'; // ADD THIS
-  import EditCalendarOutlinedIcon from '@mui/icons-material/EditCalendarOutlined';
-  import LocalHospitalOutlinedIcon from '@mui/icons-material/LocalHospitalOutlined'; 
-  import { FormTextField, FormSelectField } from "../components/FormFields";
-  import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
+import React, { useState } from "react";
+
+// External libraries - ALL from lib/index.js
+import {
+  Box, Typography, Button, TextField, Card, styled,
+  AddIcon, PeopleAltOutlinedIcon, EditCalendarOutlinedIcon, LocalHospitalOutlinedIcon,
+  DatePicker, LocalizationProvider, AdapterDayjs, 
+  FaNotesMedical,
+  dayjs
+} from "../lib";
+
+// Custom Components
+import {
+  FormTextField,
+  FormSelectField,
+  HeaderPaper,
+  HeaderIcon,
+  HeaderSubText, 
+  HeaderTitle,
+  HeaderButton
+} from "../components";
+
+
 
   const SectionHeader = ({ 
     children, 

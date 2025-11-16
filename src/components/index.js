@@ -1,7 +1,10 @@
-// Export all layout components
-export * from './layout';
 
-// Export all reusable UI components
+export { Sidebar } from './Sidebar';
+export { SidebarHeader } from './SidebarHeader';
+export { SidebarMenu } from './SidebarMenu';
+export { SidebarFooter } from './SidebarFooter';
+export { default as Layout } from './Layout';
+
 export { FormTextField, FormSelectField } from './FormFields';
 export { PatientCard } from './PatientCard';
 export { SearchFilterBar } from './SearchFilterBar';

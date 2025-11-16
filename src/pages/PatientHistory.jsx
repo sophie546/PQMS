@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+
+// Only import what you ACTUALLY use
 import {
   Box,
   Card,
@@ -8,27 +10,35 @@ import {
   MenuItem,
   Button,
   Chip,
-  Grid,
   Typography,
   Avatar,
   Stack,
-  Divider
-} from '@mui/material';
-import {
+  Divider,
   Visibility,
-  CalendarToday,
   Schedule,
-  Person,
   FilterList,
   Refresh,
-  People,
   History,
-} from '@mui/icons-material';
-import { FaClipboardList } from 'react-icons/fa';
-import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../components/StatComponents";
-import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
-import { SearchFilterBar } from "../components/SearchFilterBar";
-import { Caption, SubCaption } from "../components/CaptionComponents";
+  People,
+  FaClipboardList
+} from "../lib";
+
+// All custom components from components/index.js
+import {
+  StatCard,
+  StatTitle,
+  StatNumber,
+  SubText,
+  StatIcon,
+  HeaderPaper,
+  HeaderIcon,
+  HeaderSubText,
+  HeaderTitle,
+  HeaderButton,
+  SearchFilterBar,
+  Caption,
+  SubCaption
+} from "../components";
 
 const PatientHistory = () => {
   const [consultations] = useState([
