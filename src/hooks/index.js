@@ -8,3 +8,6 @@ export { useNumericInput, useFormValidation } from './useNumericInput';
 export { useStaff } from './useStaff';
 export { usePatientHistory } from './usePatientHistory';
 export { useConsultation } from './useConsultation';
+export { useAuth } from './useAuth';
+export { useForm } from './useForm';
+export { loginValidation, registerValidation } from './useValidation';
