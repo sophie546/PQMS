@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   AppBar,
@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { ArrowForward } from '@mui/icons-material'; 
-import { QueueModal } from '../components/QueueModal';
 
 const GradientButton = styled(Button)(({ theme }) => ({
   background: "linear-gradient(90deg, #5F67EA 0%, #8178F9 100%)",
@@ -29,12 +28,12 @@ const GradientButton = styled(Button)(({ theme }) => ({
 }));
 
 const OutlineButton = styled(Button)(({ theme }) => ({
-  color: "#ffffffff",
+  color: "whiteq",
   fontWeight: 600,
   textTransform: "none",
   padding: "10px 24px",
   borderRadius: 6,
-  border: "1.5px solid #5F67EA",
+  border: "1.5px solid cornflowerblue",
   backgroundColor: "transparent",
   "&:hover": {
     backgroundColor: "#5F67EA",
@@ -44,17 +43,6 @@ const OutlineButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function LandingPage() {
-  const [queueModalOpen, setQueueModalOpen] = useState(false);
-
-  const handleOpenQueueModal = () => setQueueModalOpen(true);
-  const handleCloseQueueModal = () => setQueueModalOpen(false);
-
-  const handleQueueSubmit = (formData) => {
-    // Handle form submission specific to landing page
-    console.log('Queue form submitted from landing page:', formData);
-    // Add any landing-page-specific logic here
-  };
-
   return (
     <Box sx={{ minHeight: '100vh', fontFamily: 'sans-serif' }}>
       {/* Navbar / Header */}
@@ -66,7 +54,7 @@ export default function LandingPage() {
           color: "white",
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Toolbar sx={{ justifyContent: "space-between", minHeight: { xs: 64, sm: 80 }, py: 1 }}>
           {/* Logo/Title */}
           <Stack
             direction="row"
@@ -80,8 +68,8 @@ export default function LandingPage() {
               sx={{
                 backgroundColor: "cornflower blue",
                 borderRadius: 1,
-                width: 36,
-                height: 36,
+                width: 30,
+                height: 30,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -190,13 +178,13 @@ export default function LandingPage() {
               >
                 <Paper variant="elevation" sx={{ p: 3, borderRadius: 2 }}>
                   <Typography variant="subtitle1" fontWeight={600} mb={2} color="#1A237E">
-                    Patient Queue (Live Preview)
+                    Patient Queue
                   </Typography>
                   <Stack spacing={1}>
                     {[
-                      { num: 1, status: "Consulting", color: "#4CAF50" },
-                      { num: 2, status: "Waiting", color: "#FF9800" },
-                      { num: 3, status: "Waiting", color: "#FF9800" }
+                      { num: 1, status: "Consulting", color: "#667EEA" },
+                      { num: 2, status: "Waiting", color: "#764BA2" },
+                      { num: 3, status: "Waiting", color: "#764BA2" }
                     ].map((item) => (
                       <Paper
                         key={item.num}
@@ -377,7 +365,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="feature2.png"
+                src="/feature2.png"
                 alt="Queue Tracking Illustration"
                 style={{ maxWidth: "100%", height: "auto", maxHeight: 200, borderRadius: 8 }}
                 loading="lazy"
@@ -420,7 +408,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="feature3.png"
+                src="/feature3.png"
                 alt="Consultation Records Illustration"
                 style={{ maxWidth: "100%", height: "auto", maxHeight: 200, borderRadius: 8 }}
                 loading="lazy"
@@ -467,35 +455,51 @@ export default function LandingPage() {
       </Box>
 
       {/* CTA Section */}
-      <Box sx={{ bgcolor: "#5F67EA", py: 6, color: "white", textAlign: "center" }}>
-        <Container maxWidth="sm">
-          <Typography variant="h5" fontWeight={700} gutterBottom>
-            Ready to Simplify Your Clinic Workflow?
+      <Box sx={{ bgcolor: "#6B7BEA", py: 6 }} />
+      
+      <Box sx={{ bgcolor: "white", py: 8, textAlign: "center" }}>
+        <Container maxWidth="md">
+          <Typography 
+            variant="h3" 
+            fontWeight={700} 
+            color="#1A237E"
+            gutterBottom
+            sx={{ mb: 2 }}
+          >
+            Skip the Line. Join Us Online
           </Typography>
-          <Typography variant="body2" sx={{ mb: 4 }}>
-            Start managing patient queues more efficiently today.
+          <Typography 
+            variant="body1" 
+            color="#666" 
+            sx={{ mb: 4, maxWidth: 600, mx: "auto" }}
+          >
+            Register yourself in the patient queue from the comfort of your home. No need to wait at
+            the clinic - we'll notify you when it's your turn.
           </Typography>
           <GradientButton 
-            sx={{ width: "100%", maxWidth: 320 }} 
-            onClick={handleOpenQueueModal}
+            sx={{ 
+              width: "100%", 
+              maxWidth: 500,
+              py: 1.5,
+              fontSize: "1rem"
+            }} 
+            component={Link}
+            to="/Register"
           >
             Join Queue Now
           </GradientButton>
-          <QueueModal 
-            open={queueModalOpen}
-            onClose={handleCloseQueueModal}
-            onSubmit={handleQueueSubmit} // Optional: custom submit handler
-          />
-          <Typography variant="caption" display="block" mt={1}>
-            Register and start your free trial today.
+          <Typography 
+            variant="body2" 
+            color="#999" 
+            sx={{ mt: 2 }}
+          >
+            You'll receive a queue number immediately after registration
           </Typography>
         </Container>
       </Box>
       
-      {/* Footer */}
-      <Box sx={{ width: "100%", backgroundColor: "#333A8A", color: "white", textAlign: "center", py: 3 }}>
-        <Typography variant="body2">© 2025 ClinicaFlow. All rights reserved.</Typography>
-      </Box>
+      <Box sx={{ bgcolor: "#8B6BC7", py: 6 }} />
+      
     </Box>
   );
 }
