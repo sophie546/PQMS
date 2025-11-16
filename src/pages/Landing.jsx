@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AppBar,
@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { ArrowForward } from '@mui/icons-material'; 
+import { QueueModal } from '../components/QueueModal';
 
 const GradientButton = styled(Button)(({ theme }) => ({
   background: "linear-gradient(90deg, #5F67EA 0%, #8178F9 100%)",
@@ -43,6 +44,17 @@ const OutlineButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function LandingPage() {
+  const [queueModalOpen, setQueueModalOpen] = useState(false);
+
+  const handleOpenQueueModal = () => setQueueModalOpen(true);
+  const handleCloseQueueModal = () => setQueueModalOpen(false);
+
+  const handleQueueSubmit = (formData) => {
+    // Handle form submission specific to landing page
+    console.log('Queue form submitted from landing page:', formData);
+    // Add any landing-page-specific logic here
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', fontFamily: 'sans-serif' }}>
       {/* Navbar / Header */}
@@ -465,11 +477,15 @@ export default function LandingPage() {
           </Typography>
           <GradientButton 
             sx={{ width: "100%", maxWidth: 320 }} 
-            component={Link}
-            to="/signup"
+            onClick={handleOpenQueueModal}
           >
-            Get Started Now
+            Join Queue Now
           </GradientButton>
+          <QueueModal 
+            open={queueModalOpen}
+            onClose={handleCloseQueueModal}
+            onSubmit={handleQueueSubmit} // Optional: custom submit handler
+          />
           <Typography variant="caption" display="block" mt={1}>
             Register and start your free trial today.
           </Typography>
