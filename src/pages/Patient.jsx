@@ -1,6 +1,4 @@
-import React from "react";
-
-// All external imports from lib/index.js
+import React from 'react';
 import {
   Box,
   Typography,
@@ -16,10 +14,15 @@ import {
   Female,
   Male,
   MoreVert,
-  FaUsers
+  FaUsers,
+  MenuItem,
+  FilterList,
+  Button,
+  Menu,        
+  Clear 
 } from "../lib";
 
-// All custom components from components/index.js
+
 import {
   StatCard,
   StatTitle,
@@ -30,83 +33,54 @@ import {
   HeaderSubText,
   HeaderTitle,
   HeaderButton,
-  SearchFilterBar,
   Caption,
   SubCaption
 } from "../components";
 
-// Mock data
-const patients = [
-  {
-    id: 1,
-    name: "Maria Santos",
-    gender: "Female",
-    age: 45,
-    address: "123 Main St, Barangay Centro",
-    lastVisit: "2025-01-03",
-    contact: "09123456789",
-    visits: 12,
-    history: "Hypertension, Diabetes Type 2",
-  },
-  {
-    id: 2,
-    name: "Juan Dela Cruz",
-    gender: "Male",
-    age: 32,
-    address: "456 Oak Ave, Barangay San Jose",
-    lastVisit: "2025-01-04",
-    contact: "09234567890",
-    visits: 8,
-    history: "Asthma",
-  },
-  {
-    id: 3,
-    name: "Ana Reyes",
-    gender: "Female",
-    age: 28,
-    address: "789 Pine Rd, Barangay Poblacion",
-    lastVisit: "2025-01-05",
-    contact: "09345678901",
-    visits: 5,
-    history: "Allergy",
-  }
-];
-
-const cards = [
-  {
-    id: 1,
-    title: 'Total Patients',
-    stats: '5',
-    icon: <People sx={{ fontSize: 28, color: 'white' }} />
-  },
-  {
-    id: 2,
-    title: 'Male Patients',
-    stats: '2',
-    icon: <Male sx={{ fontSize: 34, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #8eb3efff 0%, #1d4ed8 100%)'
-    
-  },
-  {
-    id: 3,
-    title: 'Female Patients',
-    stats: '3',
-    icon: <Female sx={{ fontSize: 34, color: 'white'}} />,
-    gradient: 'linear-gradient(135deg, #e891bcff 0%, #db2777 100%)'
-  },
-];
+import { usePatientManagement } from "../hooks";
 
 function PatientPage() {
-  const handleAddPatient = () => {
-    console.log("Add patient clicked");
+  const {
+    patientRecords,
+    managementStats,
+    searchQuery,
+    genderFilter,
+    hasActiveFilters,
+    handleAddPatient,
+    handleSearchPatients,
+    handleFilterRecords,
+    handlePatientMenuClick,
+    clearFilters,
+  } = usePatientManagement();
+
+  // Filter menu state
+  const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
+  const isFilterOpen = Boolean(filterAnchorEl);
+
+  const handleFilterClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
   };
 
-  const handleSearch = (searchTerm) => {
-    console.log("Search:", searchTerm);
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
   };
 
-  const handleFilter = () => {
-    console.log("Filter clicked");
+  const handleGenderFilter = (gender) => {
+    handleFilterRecords('gender', gender);
+    handleFilterClose();
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      console.log("Searching for:", searchQuery);
+    }
+  };
+
+  // Icon mapping
+  const iconMap = {
+    people: <People sx={{ fontSize: 28, color: 'white' }} />,
+    male: <Male sx={{ fontSize: 34, color: 'white' }} />,
+    female: <Female sx={{ fontSize: 34, color: 'white' }} />
   };
 
   return (
@@ -135,17 +109,21 @@ function PatientPage() {
       </HeaderPaper>
 
       <Box p={4}>  
+        {/* REMOVED THE DUPLICATE ACTIVE FILTERS SECTION FROM HERE */}
+
         <Box sx={{ display: 'flex', gap: 2.5, mb: 4}}>
-          {cards.map((card) => (
-            <Box key={card.id} sx={{ flex: 1}}>
+          {managementStats.map((stat) => (
+            <Box key={stat.id} sx={{ flex: 1}}>
               <StatCard>
                 <CardContent sx={{ p: 3, height: '100%' }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
                     <Box sx={{ flex: 1, mr: 2 }}>
-                      <StatTitle>{card.title}</StatTitle>
-                      <StatNumber>{card.stats}</StatNumber>
+                      <StatTitle>{stat.title}</StatTitle>
+                      <StatNumber>{stat.stats}</StatNumber>
                     </Box>
-                    <StatIcon background={card.gradient}>{card.icon}</StatIcon>
+                    <StatIcon background={stat.gradient}>
+                      {iconMap[stat.icon]}
+                    </StatIcon>
                   </Box>
                 </CardContent>
               </StatCard>
@@ -194,123 +172,247 @@ function PatientPage() {
                     fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
                   }}
                 >
-                  Search and manage all patient information
+                  {patientRecords.length} patients found
                 </Typography>
               </Box>
 
-              {/* USING REUSABLE SEARCH FILTER BAR */}
-              <SearchFilterBar 
-                onSearch={handleSearch}
-                onFilter={handleFilter}
-                searchPlaceholder="Search patients..."
-              />
+              {/* Search and Filter Section */}
+              <Box display="flex" alignItems="center" gap={2}>
+                {/* Active Filters Display - ONLY ONE PLACE FOR ACTIVE FILTERS */}
+                {hasActiveFilters && (
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Chip 
+                      label="Active Filters" 
+                      size="small" 
+                      color="primary" 
+                      variant="outlined" 
+                    />
+                    {searchQuery && (
+                      <Chip 
+                        label={`Search: ${searchQuery}`} 
+                        size="small" 
+                        onDelete={() => handleSearchPatients('')}
+                      />
+                    )}
+                    {genderFilter !== 'all' && (
+                      <Chip 
+                        label={`Gender: ${genderFilter}`} 
+                        size="small" 
+                        onDelete={() => handleGenderFilter('all')}
+                      />
+                    )}
+                    <Button 
+                      startIcon={<Clear />} 
+                      onClick={clearFilters} 
+                      size="small" 
+                      sx={{ textTransform: 'none', color: '#667eea', fontWeight: 600 }}
+                    >
+                      Clear All
+                    </Button>
+                  </Box>
+                )}
+                
+                {/* Filter Button */}
+                <Button
+                  startIcon={<FilterList />}
+                  variant="outlined"
+                  onClick={handleFilterClick}
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: 3,
+                    borderColor: hasActiveFilters ? '#667eea' : 'rgba(102, 126, 234, 0.3)',
+                    color: '#667eea',
+                    fontWeight: 600,
+                    background: hasActiveFilters ? 'rgba(102, 126, 234, 0.08)' : 'transparent',
+                    '&:hover': { 
+                      borderColor: '#667eea', 
+                      background: 'rgba(102, 126, 234, 0.04)' 
+                    }
+                  }}
+                >
+                  Filter {genderFilter !== 'all' && `(${genderFilter})`}
+                </Button>
+
+                {/* Filter Menu */}
+                <Menu 
+                  anchorEl={filterAnchorEl} 
+                  open={isFilterOpen} 
+                  onClose={handleFilterClose}
+                  PaperProps={{
+                    sx: {
+                      borderRadius: 2,
+                      boxShadow: '0 4px 25px rgba(0,0,0,0.1)',
+                      mt: 1,
+                      minWidth: 160
+                    }
+                  }}
+                >
+                  {['all', 'Male', 'Female'].map(gender => (
+                    <MenuItem 
+                      key={gender}
+                      onClick={() => handleGenderFilter(gender)}
+                      selected={genderFilter === gender}
+                    >
+                      {gender === 'all' ? 'All Genders' : gender}
+                    </MenuItem>
+                  ))}
+                </Menu>
+
+                {/* Search Input */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  backgroundColor: 'white',
+                  borderRadius: 3,
+                  border: '1px solid rgba(102, 126, 234, 0.3)',
+                  overflow: 'hidden',
+                  width: '280px',
+                  '&:hover': {
+                    borderColor: '#667eea',
+                  }
+                }}>
+      
+                  <input
+                    type="text"
+                    placeholder="Search name, ID..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearchPatients(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    style={{
+                      border: 'none',
+                      outline: 'none',
+                      padding: '10px 16px',
+                      fontSize: '0.875rem',
+                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                      width: '100%',
+                      backgroundColor: 'transparent',
+                      color: '#1f2937'
+                    }}
+                  />
+                </Box>
+              </Box>
             </Box>
           </Box>
 
           {/* Patient Cards */}
           <Box sx={{ p: 3 }}>
             <Stack spacing={2}>
-              {patients.map((patient) => (
-                <Card 
-                  key={patient.id} 
-                  sx={{ 
-                    p: 3, 
-                    borderRadius: 2,
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
-                    border: '1px solid #e5e7eb',
-                    transition: 'all 0.2s ease',
-                    backgroundColor: 'white',
-                    '&:hover': {
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                    }
-                  }}
-                >
-                  {/* Top Section: Avatar, Name, ID */}
-                  <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar 
-                        sx={{ 
-                          width: 48,
-                          height: 48,
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          fontWeight: 700,
-                          fontSize: '0.875rem',
-                          fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        }}
-                      >
-                        {patient.name.split(' ').map(n => n[0]).join('')}
-                      </Avatar>
-                      
-                      <Box>
-                        <Typography 
-                          variant="h6" 
-                          sx={{
-                            fontWeight: 600,
-                            color: '#1f2937',
-                            fontSize: '1rem',
-                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                            mb: 0.5
-                          }}
-                        >
-                          {patient.name}
-                        </Typography>
-                        
-                        <Typography 
-                          variant="body2"
-                          sx={{
-                            color: '#6b7280',
-                            fontWeight: 400,
+              {patientRecords.length > 0 ? (
+                patientRecords.map((patient) => (
+                  <Card 
+                    key={patient.id} 
+                    sx={{ 
+                      p: 3, 
+                      borderRadius: 2,
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+                      border: '1px solid #e5e7eb',
+                      transition: 'all 0.2s ease',
+                      backgroundColor: 'white',
+                      '&:hover': {
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                      }
+                    }}
+                  >
+                    {/* Top Section: Avatar, Name, ID */}
+                    <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Avatar 
+                          sx={{ 
+                            width: 48,
+                            height: 48,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            fontWeight: 700,
                             fontSize: '0.875rem',
-                            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
                           }}
                         >
-                          {patient.age} years • {patient.gender}
-                        </Typography>
+                          {patient.name.split(' ').map(n => n[0]).join('')}
+                        </Avatar>
+                        
+                        <Box>
+                          <Typography 
+                            variant="h6" 
+                            sx={{
+                              fontWeight: 600,
+                              color: '#1f2937',
+                              fontSize: '1rem',
+                              fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                              mb: 0.5
+                            }}
+                          >
+                            {patient.name}
+                          </Typography>
+                          
+                          <Typography 
+                            variant="body2"
+                            sx={{
+                              color: '#6b7280',
+                              fontWeight: 400,
+                              fontSize: '0.875rem',
+                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                            }}
+                          >
+                            {patient.age} years • {patient.gender}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Chip
+                          label={`#${patient.id}`}
+                          size="small"
+                          sx={{
+                            backgroundColor: '#667eea',
+                            color: 'white',
+                            fontWeight: 700,
+                            fontSize: '0.75rem',
+                            height: '26px',
+                            minWidth: '36px'
+                          }}
+                        />
+                        <IconButton 
+                          size="small" 
+                          sx={{ color: '#9ca3af' }}
+                          onClick={() => handlePatientMenuClick(patient.id)}
+                        >
+                          <MoreVert sx={{ fontSize: 20 }} />
+                        </IconButton>
                       </Box>
                     </Box>
 
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Chip
-                        label={`#${patient.id}`}
-                        size="small"
-                        sx={{
-                          backgroundColor: '#667eea',
-                          color: 'white',
-                          fontWeight: 700,
-                          fontSize: '0.75rem',
-                          height: '26px',
-                          minWidth: '36px'
-                        }}
-                      />
-                      <IconButton size="small" sx={{ color: '#9ca3af' }}>
-                        <MoreVert sx={{ fontSize: 20 }} />
-                      </IconButton>
-                    </Box>
-                  </Box>
-
-                  {/* Bottom Section: Patient Details - Using Grid for better alignment */}
-                  <Grid container spacing={1} alignItems="center">
-                    <Grid item >
-                      <Caption>Address |</Caption>
+                    {/* Bottom Section: Patient Details - Using Grid for better alignment */}
+                    <Grid container spacing={1} alignItems="center">
+                      <Grid item >
+                        <Caption>Address |</Caption>
+                      </Grid>
+                      <Grid item>
+                        <SubCaption>{patient.address}</SubCaption>
+                      </Grid>
+                      <Grid item>
+                        <Caption>Contact Number   |</Caption>
+                      </Grid>
+                      <Grid item>
+                        <SubCaption>{patient.contact}</SubCaption>
+                      </Grid>
+                      <Grid item>
+                        <Caption>Last Visit   |</Caption>
+                      </Grid>
+                      <Grid item>
+                        <SubCaption>{patient.lastVisit}</SubCaption>
+                      </Grid>
                     </Grid>
-                    <Grid item>
-                      <SubCaption>{patient.address}</SubCaption>
-                    </Grid>
-                    <Grid item>
-                      <Caption>Contact Number   |</Caption>
-                    </Grid>
-                    <Grid item>
-                      <SubCaption>{patient.contact}</SubCaption>
-                    </Grid>
-                    <Grid item>
-                      <Caption>Last Visit   |</Caption>
-                    </Grid>
-                    <Grid item>
-                      <SubCaption>{patient.lastVisit}</SubCaption>
-                    </Grid>
-                  </Grid>
-                </Card>
-              ))}
+                  </Card>
+                ))
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Typography variant="h6" color="textSecondary">
+                    No patients found
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Try adjusting your search or filters
+                  </Typography>
+                </Box>
+              )}
             </Stack>
           </Box>
         </Card>
