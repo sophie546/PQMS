@@ -59,3 +59,7 @@ export { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 // Utilities
 export { default as dayjs } from 'dayjs';
+
+// MUI Components
+export { Menu } from "@mui/material";
+export { Clear } from "@mui/icons-material";
