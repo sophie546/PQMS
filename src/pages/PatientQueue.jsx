@@ -25,6 +25,7 @@ import { MdQueue } from 'react-icons/md';
 import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../components/StatComponents";
 import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
 import { SearchFilterBar } from "../components/SearchFilterBar";
+import { Caption, SubCaption } from "../components/CaptionComponents";
 
 const PatientQueue = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,6 +34,7 @@ const PatientQueue = () => {
   const patients = [
     {
       id: 1,
+      initials : "MS",
       name: "Maria Santos",
       age: 45,
       gender: "Female",
@@ -43,6 +45,7 @@ const PatientQueue = () => {
     },
     {
       id: 2,
+      initials : "JDC",
       name: "Juan Dela Cruz",
       age: 32,
       gender: "Male",
@@ -53,23 +56,14 @@ const PatientQueue = () => {
     },
     {
       id: 3,
+      initials : "AR",
       name: "Ana Reyes",
       age: 28,
       gender: "Female",
-      assignedTo: "Nurse Lopez",
-      arrivalTime: "09:00 AM",
-      status: "Waiting",
-      priority: "low"
-    },
-    {
-      id: 4,
-      name: "James Wilson",
-      age: 52,
-      gender: "Male",
       assignedTo: "Dr. Cruz",
-      arrivalTime: "09:15 AM",
+      arrivalTime: "00:00 AM",
       status: "Completed",
-      priority: "medium"
+      priority: "low"
     }
   ];
 
@@ -77,7 +71,7 @@ const PatientQueue = () => {
     {
       id: 1,
       title: 'Total Patients',
-      value: patients.length.toString(),
+      value: '5',
       subText: 'In queue today',
       color: '#667eea',
       icon: <People sx={{ fontSize: 28, color: 'white' }} />,
@@ -86,7 +80,7 @@ const PatientQueue = () => {
     {
       id: 2,
       title: 'Waiting',
-      value: patients.filter(p => p.status === 'Waiting').length.toString(),
+      value: '2',
       subText: 'Average: 15 minutes',
       color: '#ed6c02',
       icon: <Schedule sx={{ fontSize: 28, color: 'white' }} />,
@@ -95,7 +89,7 @@ const PatientQueue = () => {
     {
       id: 3,
       title: 'Consulting',
-      value: patients.filter(p => p.status === 'Consulting').length.toString(),
+      value: '1',
       subText: 'Currently with doctor',
       color: '#667eea',
       icon: <MedicalServices sx={{ fontSize: 28, color: 'white' }} />,
@@ -104,7 +98,7 @@ const PatientQueue = () => {
     {
       id: 4,
       title: 'Completed',
-      value: patients.filter(p => p.status === 'Completed').length.toString(),
+      value: '2',
       subText: 'Sessions completed',
       color: '#2e7d32',
       icon: <CheckCircle sx={{ fontSize: 28, color: 'white' }} />,
@@ -148,29 +142,22 @@ const PatientQueue = () => {
 
   const displayPatients = searchTerm ? filteredPatients : patients;
 
+  // Styled components for captions
   const Caption = ({ 
     children,
     color = '#9ca3af',
-    fontWeight = 600,
-    textTransform = 'uppercase',
-    fontSize = '0.688rem',
-    letterSpacing = '0.5px',
-    display = 'block',
-    mb = 0.5,
+    fontWeight = 400,
+    fontSize = '0.875rem',
     fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
     sx = {},
     ...props 
   }) => (
     <Typography 
-      variant="caption"
+      variant="body2"
       sx={{
         color,
         fontWeight,
-        textTransform,
         fontSize,
-        letterSpacing,
-        display,
-        mb,
         fontFamily,
         ...sx
       }}
@@ -182,15 +169,15 @@ const PatientQueue = () => {
 
   const SubCaption = ({ 
     children,
-    color = '#6b7280',
+    color = '#374151',
     fontWeight = 600,
-    fontSize = '0.95rem',
+    fontSize = '0.875rem',
     fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
     sx = {},
     ...props 
   }) => (
     <Typography 
-      variant="body1"
+      variant="body2"
       sx={{
         color,
         fontWeight,
@@ -336,147 +323,140 @@ const PatientQueue = () => {
           {/* Patient Cards */}
           <Box sx={{ p: 3 }}>
             <Stack spacing={2}>
-              {displayPatients.length === 0 ? (
-                <Box sx={{ textAlign: 'center', py: 4 }}>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      color: '#6b7280',
-                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                    }}
-                  >
-                    No patients found matching your search
-                  </Typography>
-                </Box>
-              ) : (
-                displayPatients.map((patient) => (
-                  <Card 
-                    key={patient.id} 
-                    sx={{ 
-                      p: 3, 
-                      borderRadius: 3,
-                      boxShadow: '0 2px 12px rgba(102, 126, 234, 0.08)',
-                      border: '1px solid rgba(102, 126, 234, 0.1)',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover': {
-                        boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
-                        transform: 'translateY(-2px)',
-                        borderColor: 'rgba(102, 126, 234, 0.2)',
-                      }
-                    }}
-                  >
-                    <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                      <Box sx={{ flex: 1 }}>
-                        <Box display="flex" alignItems="center" gap={2} mb={2}>
-                          <Avatar 
-                            sx={{ 
-                              width: 52,
-                              height: 52,
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                              fontWeight: 700,
-                              fontSize: '1rem',
-                              fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                              boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-                            }}
-                          >
-                            {patient.name.split(' ').map(n => n[0]).join('')}
-                          </Avatar>
-                          <Box sx={{ flex: 1 }}>
-                            <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
-                              <Typography 
-                                variant="h6" 
-                                sx={{
-                                  fontWeight: 700,
-                                  color: '#1a237e',
-                                  fontSize: '1.125rem',
-                                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif'
-                                }}
-                              >
-                                {patient.name}
-                              </Typography>
-                              <Chip
-                                label={`#${patient.id}`}
-                                size="small"
-                                sx={{ 
-                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                  color: 'white',
-                                  fontWeight: 600,
-                                  fontSize: '0.75rem',
-                                  height: '22px',
-                                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                                }}
-                              />
-                            </Box>
-                            <Box display="flex" alignItems="center" gap={1}>
-                              <Typography 
-                                variant="body2"
-                                sx={{
-                                  color: '#6b7280',
-                                  fontWeight: 500,
-                                  fontSize: '0.875rem',
-                                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                                }}
-                              >
-                                {patient.age} years • {patient.gender}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Box>
-
-                        <Divider sx={{ mb: 2, borderColor: 'rgba(102, 126, 234, 0.1)' }} />
-
-                        <Grid container spacing={3} alignItems="center">
-                          <Grid item xs={12} sm={4}>
-                            <Caption>Assigned to</Caption>
-                            <SubCaption>{patient.assignedTo}</SubCaption>
-                          </Grid>
-                          <Grid item xs={12} sm={4}>
-                            <Caption>Arrival Time</Caption>
-                            <SubCaption>{patient.arrivalTime}</SubCaption>
-                          </Grid>
-                          <Grid item xs={12} sm={4}>
-                            <Caption>Status</Caption>
-                            <Chip
-                              label={patient.status}
-                              sx={{
-                                backgroundColor: getStatusColor(patient.status) + '15',
-                                color: getStatusColor(patient.status),
-                                fontWeight: 700,
-                                fontSize: '0.813rem',
-                                height: '28px',
-                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                                border: `1px solid ${getStatusColor(patient.status)}30`,
-                                minWidth: '100px'
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
-
-                      <IconButton 
-                        size="small"
-                        sx={{
-                          color: '#667eea',
-                          backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                          ml: 2,
-                          borderRadius: 2,
-                          '&:hover': {
-                            backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                            color: '#5a6fd8',
-                          },
-                        }}
-                      >
-                        <MoreVert />
-                      </IconButton>
-                    </Box>
-                  </Card>
-                ))
-              )}
+              {patients.map((patient) => (
+                <PatientCard key={patient.id} patient={patient} />
+              ))}
             </Stack>
           </Box>
         </Card>
       </Box>
     </Box>
+  );
+};
+
+// Separate Patient Card Component for better organization
+const PatientCard = ({ patient }) => {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Consulting': return '#667eea';
+      case 'Waiting': return '#ed6c02';
+      case 'Completed': return '#2e7d32';
+      default: return '#6b7280';
+    }
+  };
+
+  const getStatusBgColor = (status) => {
+    switch (status) {
+      case 'Consulting': return '#e8eaf6';
+      case 'Waiting': return '#fff3e0';
+      case 'Completed': return '#e8f5e9';
+      default: return '#f5f5f5';
+    }
+  };
+
+  return (
+    <Card 
+      sx={{ 
+        p: 3, 
+        borderRadius: 2,
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+        border: '1px solid #e5e7eb',
+        transition: 'all 0.2s ease',
+        backgroundColor: 'white',
+        '&:hover': {
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        }
+      }}
+    >
+      {/* Top Section: Avatar, Name, Status */}
+      <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Avatar 
+            sx={{ 
+              width: 48,
+              height: 48,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+            }}
+          >
+            {patient.initials}
+          </Avatar>
+          
+          <Box>
+            <Typography 
+              variant="h6" 
+              sx={{
+                fontWeight: 600,
+                color: '#1f2937',
+                fontSize: '1rem',
+                fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                mb: 0.5
+              }}
+            >
+              {patient.name}
+            </Typography>
+            
+            <Typography 
+              variant="body2"
+              sx={{
+                color: '#6b7280',
+                fontWeight: 400,
+                fontSize: '0.875rem',
+                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              }}
+            >
+              {patient.age} years • {patient.gender}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Box display="flex" alignItems="center" gap={1}>
+          <Chip
+            label={patient.status}
+            sx={{
+              backgroundColor: getStatusBgColor(patient.status),
+              color: getStatusColor(patient.status),
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              height: '26px',
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              border: 'none',
+              px: 1.5
+            }}
+          />
+          <Chip
+            label={`#${patient.id}`}
+            size="small"
+            sx={{
+              backgroundColor: getStatusColor(patient.status),
+              color: 'white',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              height: '26px',
+              minWidth: '36px'
+            }}
+          />
+          <IconButton size="small" sx={{ color: '#9ca3af' }}>
+            <MoreVert sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Bottom Section: Assigned to and Arrival time using Caption and SubCaption */}
+      <Box display="flex" alignItems="center" gap={4}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Caption>Assigned to |</Caption>
+          <SubCaption>{patient.assignedTo}</SubCaption>
+        </Box>
+        
+        <Box display="flex" alignItems="center" gap={1}>
+          <Caption>Arrival time |</Caption>
+          <SubCaption>{patient.arrivalTime}</SubCaption>
+        </Box>
+      </Box>
+    </Card>
   );
 };
 

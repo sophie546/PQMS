@@ -22,12 +22,16 @@ import { FaUserMd } from 'react-icons/fa';
 import { StatCard, StatTitle, StatNumber, SubText, StatIcon } from "../components/StatComponents";
 import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
 import { SearchFilterBar } from "../components/SearchFilterBar";
+import { Caption, SubCaption } from "../components/CaptionComponents";
 
 const Staff = () => {
   const [staffMembers] = useState([
     {
       id: 1,
+      initials: "DMC",
       name: "Dr. Maria Cruz",
+      age: 45,
+      gender: "Female",
       role: "Doctor",
       status: "Available",
       specialization: "General Medicine",
@@ -38,10 +42,13 @@ const Staff = () => {
     },
     {
       id: 2,
+      initials: "DRS",
       name: "Dr. Roberto Santos",
+      age: 32,
+      gender: "Male",
       role: "Doctor",
       status: "Busy",
-      specialization: "Pediatrics",
+      specialization: "General Medicine",
       email: "roberto.santos@clinic.com",
       schedule: "Mon-Sat, 9:00 AM - 6:00 PM",
       contact: "09234567890",
@@ -49,36 +56,15 @@ const Staff = () => {
     },
     {
       id: 3,
-      name: "Nurse Lopez",
-      role: "Nurse",
-      status: "Available",
-      specialization: "General Care",
-      email: "nurse.lopez@clinic.com",
-      schedule: "Mon-Fri, 7:00 AM - 4:00 PM",
-      contact: "09345678901",
-      patientsToday: 5
-    },
-    {
-      id: 4,
+      initials: "NMR",
       name: "Nurse Maria Reyes",
       role: "Nurse",
-      status: "Available",
+      status: "Off Duty",
       specialization: "Emergency Care",
       email: "maria.reyes@clinic.com",
       schedule: "Tue-Sat, 8:00 AM - 5:00 PM",
-      contact: "09456789012",
-      patientsToday: 6
-    },
-    {
-      id: 5,
-      name: "Dr. Juan Dela Cruz",
-      role: "Doctor",
-      status: "Off Duty",
-      specialization: "Cardiology",
-      email: "juan.delacruz@clinic.com",
-      schedule: "Mon-Thu, 10:00 AM - 7:00 PM",
       contact: "09567890123",
-      patientsToday: 0
+      patientsToday: 5
     }
   ]);
 
@@ -95,6 +81,15 @@ const Staff = () => {
     }
   };
 
+  const getStatusBgColor = (status) => {
+    switch (status) {
+      case 'Available': return '#e8f5e9';
+      case 'Busy': return '#fff3e0';
+      case 'Off Duty': return '#f5f5f5';
+      default: return '#f5f5f5';
+    }
+  };
+
   const getRoleColor = (role) => {
     switch (role) {
       case 'Doctor': return '#667eea';
@@ -104,109 +99,53 @@ const Staff = () => {
   };
 
   const staffStats = [
-  {
-    id: 1,
-    title: 'Total Staff',
-    value: staffMembers.length,
-    subText: 'All medical staff',
-    color: '#EF6F02',
-    icon: <People sx={{ fontSize: 28, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #EF6F02 0%, #FF9800 100%)',
-    borderColor: 'rgba(243, 178, 0, 0.1)',
-    hoverShadow: 'rgba(234, 188, 102, 0.15)'
-  },
-  {
-    id: 2,
-    title: 'Doctors',
-    value: doctorCount,
-    subText: 'Medical physicians',
-    color: '#667eea',
-    icon: <MedicalServices sx={{ fontSize: 28, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderColor: 'rgba(102, 126, 234, 0.1)',
-    hoverShadow: 'rgba(102, 126, 234, 0.15)'
-  },
-  {
-    id: 3,
-    title: 'Nurses',
-    value: nurseCount,
-    subText: 'Nursing staff',
-    color: '#764ba2',
-    icon: <People sx={{ fontSize: 28, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #764ba2 0%, #9c7acd 100%)',
-    borderColor: 'rgba(118, 75, 162, 0.1)',
-    hoverShadow: 'rgba(118, 75, 162, 0.15)'
-  },
-  {
-    id: 4,
-    title: 'Available Now',
-    value: availableCount,
-    subText: 'Currently active',
-    color: '#2e7d32',
-    icon: <CheckCircle sx={{ fontSize: 28, color: 'white' }} />,
-    gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
-    borderColor: 'rgba(46, 125, 50, 0.1)',
-    hoverShadow: 'rgba(46, 125, 50, 0.15)'
-  }
-];
+    {
+      id: 1,
+      title: 'Total Staff',
+      value: staffMembers.length,
+      subText: 'All medical staff',
+      color: '#EF6F02',
+      icon: <People sx={{ fontSize: 28, color: 'white' }} />,
+      gradient: 'linear-gradient(135deg, #EF6F02 0%, #FF9800 100%)',
+      borderColor: 'rgba(243, 178, 0, 0.1)',
+      hoverShadow: 'rgba(234, 188, 102, 0.15)'
+    },
+    {
+      id: 2,
+      title: 'Doctors',
+      value: doctorCount,
+      subText: 'Medical physicians',
+      color: '#667eea',
+      icon: <MedicalServices sx={{ fontSize: 28, color: 'white' }} />,
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      borderColor: 'rgba(102, 126, 234, 0.1)',
+      hoverShadow: 'rgba(102, 126, 234, 0.15)'
+    },
+    {
+      id: 3,
+      title: 'Nurses',
+      value: nurseCount,
+      subText: 'Nursing staff',
+      color: '#764ba2',
+      icon: <People sx={{ fontSize: 28, color: 'white' }} />,
+      gradient: 'linear-gradient(135deg, #764ba2 0%, #9c7acd 100%)',
+      borderColor: 'rgba(118, 75, 162, 0.1)',
+      hoverShadow: 'rgba(118, 75, 162, 0.15)'
+    },
+    {
+      id: 4,
+      title: 'Available Now',
+      value: availableCount,
+      subText: 'Currently active',
+      color: '#2e7d32',
+      icon: <CheckCircle sx={{ fontSize: 28, color: 'white' }} />,
+      gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
+      borderColor: 'rgba(46, 125, 50, 0.1)',
+      hoverShadow: 'rgba(46, 125, 50, 0.15)'
+    }
+  ];
 
-const Caption = ({ 
-  children,
-  color = '#9ca3af',
-  fontWeight = 600,
-  textTransform = 'uppercase',
-  fontSize = '0.688rem',
-  letterSpacing = '0.5px',
-  display = 'block',
-  mb = 0.5,
-  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-  sx = {},
-  ...props 
-  }) => (
-  <Typography 
-    variant="caption"
-    sx={{
-      color,
-      fontWeight,
-      textTransform,
-      fontSize,
-      letterSpacing,
-      display,
-      mb,
-      fontFamily,
-      ...sx
-    }}
-    {...props}
-  >
-    {children}
-  </Typography>
-);
-
-const SubCaption = ({ 
-  children,
-  color = '#6b7280',
-  fontWeight = 600,
-  fontSize = '0.95rem',
-  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-  sx = {},
-  ...props 
-  }) => (
-  <Typography 
-    variant="body1"
-    sx={{
-      color,
-      fontWeight,
-      fontSize,
-      fontFamily,
-      ...sx
-    }}
-    {...props}
-  >
-    {children}
-  </Typography>
-);
-
-const handleSearch = (searchTerm) => {
+  const handleSearch = (searchTerm) => {
     console.log("Search:", searchTerm);
   };
 
@@ -294,15 +233,10 @@ const handleSearch = (searchTerm) => {
                   variant="h5" 
                   sx={{
                     fontWeight: 700,
-                    color: '#1a237e',
+                    color: '#667eea',
                     mb: 0.5,
                     fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                    fontSize: '1.5rem',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    backgroundClip: 'text',
-                    textFillColor: 'transparent',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
+                    fontSize: '1.25rem',
                   }}
                 >
                   Staff Directory
@@ -310,9 +244,10 @@ const handleSearch = (searchTerm) => {
                 <Typography 
                   variant="body2" 
                   sx={{
-                    color: '#6b7280',
-                    fontWeight: 500,
-                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
+                    color: '#9ca3af',
+                    fontWeight: 400,
+                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                    fontSize: '0.875rem'
                   }}
                 >
                   View and manage all staff members
@@ -336,131 +271,206 @@ const handleSearch = (searchTerm) => {
                   key={staff.id} 
                   sx={{ 
                     p: 3, 
-                    borderRadius: 3,
-                    boxShadow: '0 2px 12px rgba(102, 126, 234, 0.08)',
-                    border: '1px solid rgba(102, 126, 234, 0.1)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    borderRadius: 2,
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+                    border: '1px solid #e5e7eb',
+                    transition: 'all 0.2s ease',
+                    backgroundColor: 'white',
                     '&:hover': {
-                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.15)',
-                      transform: 'translateY(-2px)',
-                      borderColor: 'rgba(102, 126, 234, 0.2)',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
                     }
                   }}
                 >
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                    <Box sx={{ flex: 1 }}>
-                      <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        <Avatar 
-                          sx={{ 
-                            width: 52,
-                            height: 52,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            fontWeight: 700,
-                            fontSize: '1rem',
-                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+                  {/* Top Section: Avatar, Name, Role, Status */}
+                  <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Avatar 
+                        sx={{ 
+                          width: 48,
+                          height: 48,
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          fontWeight: 700,
+                          fontSize: '0.875rem',
+                          fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                        }}
+                      >
+                        {staff.initials}
+                      </Avatar>
+                      <Box>
+                        <Box display="flex" alignItems="center" gap={1.5} mb={0.5}>
+                          <Typography 
+                            variant="h6" 
+                            sx={{
+                              fontWeight: 600,
+                              color: '#1f2937',
+                              fontSize: '1rem',
+                              fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                            }}
+                          >
+                            {staff.name}
+                          </Typography>
+                          <Chip
+                            label={staff.role}
+                            size="small"
+                            sx={{ 
+                              backgroundColor: getRoleColor(staff.role) + '15',
+                              color: getRoleColor(staff.role),
+                              fontWeight: 600,
+                              fontSize: '0.688rem',
+                              height: '20px',
+                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                              borderRadius: '4px',
+                            }}
+                          />
+                        </Box>
+                        <Typography 
+                          variant="body2"
+                          sx={{
+                            color: '#6b7280',
+                            fontWeight: 400,
+                            fontSize: '0.875rem',
+                            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
                           }}
                         >
-                          {staff.name.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        <Box sx={{ flex: 1 }}>
-                          <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.5}>
-                            <Typography 
-                              variant="h6" 
-                              sx={{
-                                fontWeight: 700,
-                                color: '#1a237e',
-                                fontSize: '1.125rem',
-                                fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif'
-                              }}
-                            >
-                              {staff.name}
-                            </Typography>
-                            <Chip
-                              label={`#${staff.id}`}
-                              size="small"
-                              sx={{ 
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                color: 'white',
-                                fontWeight: 600,
-                                fontSize: '0.75rem',
-                                height: '22px',
-                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                              }}
-                            />
-                          </Box>
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <Chip
-                              label={staff.role}
-                              size="small"
-                              sx={{ 
-                                backgroundColor: getRoleColor(staff.role) + '15',
-                                color: getRoleColor(staff.role),
-                                fontWeight: 600,
-                                fontSize: '0.688rem',
-                                textTransform: 'uppercase',
-                                height: '20px',
-                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                                border: `1px solid ${getRoleColor(staff.role)}30`
-                              }}
-                            />
-                            <Chip
-                              label={staff.status}
-                              size="small"
-                              sx={{
-                                backgroundColor: getStatusColor(staff.status) + '15',
-                                color: getStatusColor(staff.status),
-                                fontWeight: 600,
-                                fontSize: '0.688rem',
-                                height: '20px',
-                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                                border: `1px solid ${getStatusColor(staff.status)}30`
-                              }}
-                            />
-                          </Box>
-                        </Box>
+                          {staff.age} years • {staff.gender}
+                        </Typography>
                       </Box>
-
-                      <Divider sx={{ mb: 2, borderColor: 'rgba(102, 126, 234, 0.1)' }} />
-
-                      <Grid container spacing={3} alignItems="center">
-                        <Grid item xs={12} sm={6} md={3}>
-                          <Caption>Specialization</Caption>
-                          <SubCaption>{staff.specialization}</SubCaption>
-                        </Grid>
-
-                        <Grid item xs={12} sm={6} md={3}>
-                          <Caption>Email</Caption>
-                          <SubCaption>{staff.email}</SubCaption>
-                        </Grid>
-
-                        <Grid item xs={12} sm={6} md={3}>
-                          <Caption>Schedule</Caption>
-                          <SubCaption>{staff.schedule}</SubCaption>
-                        </Grid>
-
-                        <Grid item xs={12} sm={6} md={3}>
-                          <Caption>Patients Today</Caption>
-                          <SubCaption>{staff.patientsToday}</SubCaption>
-                        </Grid>
-                      </Grid>
                     </Box>
 
-                    <IconButton 
-                      size="small"
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Chip
+                        label={staff.status}
+                        sx={{
+                          backgroundColor: getStatusBgColor(staff.status),
+                          color: getStatusColor(staff.status),
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          height: '26px',
+                          fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                          border: 'none',
+                          px: 1.5
+                        }}
+                      />
+                      <Chip
+                        label={`#${staff.patientsToday}`}
+                        size="small"
+                        sx={{
+                          backgroundColor: '#667eea',
+                          color: 'white',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          height: '26px',
+                          minWidth: '36px'
+                        }}
+                      />
+                      <IconButton size="small" sx={{ color: '#9ca3af' }}>
+                        <MoreVert sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+
+                  {/* Bottom Section: Staff Details in inline format with separators */}
+                  <Box display="flex" alignItems="center" flexWrap="wrap">
+                    <Typography 
                       sx={{
-                        color: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        ml: 2,
-                        borderRadius: 2,
-                        '&:hover': {
-                          backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                          color: '#5a6fd8',
-                        },
+                        color: '#9ca3af',
+                        fontWeight: 400,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 0.75
                       }}
                     >
-                      <MoreVert />
-                    </IconButton>
+                      Specialization
+                    </Typography>
+                    <Typography 
+                      sx={{
+                        color: '#9ca3af',
+                        fontWeight: 400,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 0.75
+                      }}
+                    >
+                      |
+                    </Typography>
+                    <Typography 
+                      sx={{
+                        color: '#374151',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 2
+                      }}
+                    >
+                      {staff.specialization}
+                    </Typography>    
+
+                    <Typography 
+                      sx={{
+                        color: '#9ca3af',
+                        fontWeight: 400,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 0.75
+                      }}
+                    >
+                      Email
+                    </Typography>
+                    <Typography 
+                      sx={{
+                        color: '#9ca3af',
+                        fontWeight: 400,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 0.75
+                      }}
+                    >
+                      |
+                    </Typography>
+                    <Typography 
+                      sx={{
+                        color: '#374151',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 2
+                      }}
+                    >
+                      {staff.email}
+                    </Typography>  
+
+                    <Typography 
+                      sx={{
+                        color: '#9ca3af',
+                        fontWeight: 400,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 0.75
+                      }}
+                    >
+                      Schedule
+                    </Typography>
+                    <Typography 
+                      sx={{
+                        color: '#9ca3af',
+                        fontWeight: 400,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                        mr: 0.75
+                      }}
+                    >
+                      |
+                    </Typography>
+                    <Typography 
+                      sx={{
+                        color: '#374151',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                      }}
+                    >
+                      {staff.schedule}
+                    </Typography>
                   </Box>
                 </Card>
               ))}

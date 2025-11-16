@@ -9,19 +9,21 @@ export const SearchFilterBar = ({ onSearch, onFilter, searchPlaceholder = "Searc
       onClick={onFilter}
       sx={{
         textTransform: 'none',
-        borderRadius: 3,
-        borderColor: 'rgba(102, 126, 234, 0.3)',
+        borderRadius: 2,
+        borderColor: '#e5e7eb',
         color: '#667eea',
-        fontWeight: 600,
+        fontWeight: 500,
         fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
         fontSize: '0.875rem',
+        px: 2,
+        py: 0.75,
         '&:hover': {
           borderColor: '#667eea',
           background: 'rgba(102, 126, 234, 0.04)',
         }
       }}
     >
-      Filters
+      Filter
     </Button>
     
     <TextField 
@@ -32,19 +34,21 @@ export const SearchFilterBar = ({ onSearch, onFilter, searchPlaceholder = "Searc
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <Search sx={{ color: '#667eea' }} />
+            <Search sx={{ color: '#9ca3af', fontSize: 20 }} />
           </InputAdornment>
         ),
       }}
       sx={{
         width: '280px',
         '& .MuiOutlinedInput-root': {
-          borderRadius: 3,
-          fontWeight: 500,
+          borderRadius: 2,
+          fontWeight: 400,
+          fontSize: '0.875rem',
           fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-          '& fieldset': { borderColor: 'rgba(102, 126, 234, 0.3)' },
-          '&:hover fieldset': { borderColor: '#667eea' },
+          '& fieldset': { borderColor: '#e5e7eb', },
+          '&:hover fieldset': { borderColor: '#d1d5db', },
           '&.Mui-focused fieldset': { borderColor: '#667eea' },
+          '& .MuiOutlinedInput-input': {py: 1,}
         },
       }}
     />

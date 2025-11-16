@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   Avatar,
+  Grid
 } from "@mui/material";
 import {
   Add,
@@ -22,6 +23,7 @@ import { FaUsers } from 'react-icons/fa';
 import { StatCard, StatTitle, StatNumber, StatIcon } from "../components/StatComponents";
 import { HeaderPaper, HeaderIcon, HeaderSubText, HeaderTitle, HeaderButton } from "../components/HeaderComponents";
 import { SearchFilterBar } from "../components/SearchFilterBar";
+import { Caption, SubCaption } from "../components/CaptionComponents";
 
 // Mock data
 const patients = [
@@ -115,32 +117,33 @@ function PatientPage() {
           </Box>
 
           <Stack direction="row" spacing={2}>
-            <HeaderButton startIcon={<Add />}>
+            <HeaderButton startIcon={<Add />} onClick={handleAddPatient}>
               Add Patient
             </HeaderButton>
           </Stack>
         </Box>
       </HeaderPaper>
 
-    <Box p={4}>  
-      <Box sx={{ display: 'flex', gap: 2.5, mb: 4}}>
-        {cards.map((card) => (
-          <Box key={card.id} sx={{ flex: 1}}>
-            <StatCard>
-              <CardContent sx={{ p: 3, height: '100%' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                  <Box sx={{ flex: 1, mr: 2 }}>
-                    <StatTitle>{card.title}</StatTitle>
-                    <StatNumber>{card.stats}</StatNumber>
+      <Box p={4}>  
+        <Box sx={{ display: 'flex', gap: 2.5, mb: 4}}>
+          {cards.map((card) => (
+            <Box key={card.id} sx={{ flex: 1}}>
+              <StatCard>
+                <CardContent sx={{ p: 3, height: '100%' }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
+                    <Box sx={{ flex: 1, mr: 2 }}>
+                      <StatTitle>{card.title}</StatTitle>
+                      <StatNumber>{card.stats}</StatNumber>
+                    </Box>
+                    <StatIcon background={card.gradient}>{card.icon}</StatIcon>
                   </Box>
-                  <StatIcon background={card.gradient}>{card.icon}</StatIcon>
-                </Box>
-              </CardContent>
-            </StatCard>
-          </Box>
-        ))}
-      </Box>
-      <Card 
+                </CardContent>
+              </StatCard>
+            </Box>
+          ))}
+        </Box>
+
+        <Card 
           sx={{ 
             borderRadius: 3,
             boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
@@ -275,115 +278,33 @@ function PatientPage() {
                     </Box>
                   </Box>
 
-                  {/* Bottom Section: Patient Details*/}
-                  <Box display="flex" alignItems="center" flexWrap="wrap">
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      Address
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      |
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#374151',
-                        fontWeight: 600,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 2
-                      }}
-                    >
-                      {patient.address}
-                    </Typography>
-
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      Contact Number
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      |
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#374151',
-                        fontWeight: 600,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 2
-                      }}
-                    >
-                      {patient.contact}
-                    </Typography>
-
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      Last Visit
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      |
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#374151',
-                        fontWeight: 600,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                      }}
-                    >
-                      {patient.lastVisit}
-                    </Typography>
-                  </Box>
+                  {/* Bottom Section: Patient Details - Using Grid for better alignment */}
+                  <Grid container spacing={1} alignItems="center">
+                    <Grid item >
+                      <Caption>Address |</Caption>
+                    </Grid>
+                    <Grid item>
+                      <SubCaption>{patient.address}</SubCaption>
+                    </Grid>
+                    <Grid item>
+                      <Caption>Contact Number   |</Caption>
+                    </Grid>
+                    <Grid item>
+                      <SubCaption>{patient.contact}</SubCaption>
+                    </Grid>
+                    <Grid item>
+                      <Caption>Last Visit   |</Caption>
+                    </Grid>
+                    <Grid item>
+                      <SubCaption>{patient.lastVisit}</SubCaption>
+                    </Grid>
+                  </Grid>
                 </Card>
               ))}
             </Stack>
           </Box>
         </Card>
-    </Box>
+      </Box>
     </Box>
   );
 }
