@@ -207,13 +207,6 @@ function ConsultationPage() {
           <HeaderButton 
             startIcon={<AddIcon />}
             onClick={saveConsultation}
-            disabled={!isFormValid}
-            sx={{
-              '&:disabled': {
-                opacity: 0.6,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              }
-            }}
           >
             Save Consultation
           </HeaderButton>
@@ -471,7 +464,7 @@ function ConsultationPage() {
                 Patient Name
               </SectionHeader>
               <StyledTextField 
-                value={patientInfo.name || "Not entered"}
+                value={patientInfo.name || ""}
                 InputProps={{
                   readOnly: true,
                 }}
@@ -481,7 +474,7 @@ function ConsultationPage() {
                 Date
               </SectionHeader>
               <StyledTextField
-                value={patientInfo.date ? dayjs(patientInfo.date).format('MMM DD, YYYY') : "Not selected"}
+                value={patientInfo.date ? dayjs(patientInfo.date).format('MMM DD, YYYY') : ""}
                 InputProps={{
                   readOnly: true,
                 }}

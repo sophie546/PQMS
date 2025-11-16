@@ -1,48 +1,5 @@
 import { useState, useMemo } from "react";
-
-// Mock data for staff members
-const staffMembers = [
-  {
-    id: 1,
-    initials: "DMC",
-    name: "Dr. Maria Cruz",
-    age: 45,
-    gender: "Female",
-    role: "Doctor",
-    status: "Available",
-    specialization: "General Medicine",
-    email: "maria.cruz@clinic.com",
-    schedule: "Mon-Fri, 8:00 AM - 5:00 PM",
-    contact: "09123456789",
-    patientsToday: 8
-  },
-  {
-    id: 2,
-    initials: "DRS",
-    name: "Dr. Roberto Santos",
-    age: 32,
-    gender: "Male",
-    role: "Doctor",
-    status: "Busy",
-    specialization: "General Medicine",
-    email: "roberto.santos@clinic.com",
-    schedule: "Mon-Sat, 9:00 AM - 6:00 PM",
-    contact: "09234567890",
-    patientsToday: 12
-  },
-  {
-    id: 3,
-    initials: "NMR",
-    name: "Nurse Maria Reyes",
-    role: "Nurse",
-    status: "Off Duty",
-    specialization: "Emergency Care",
-    email: "maria.reyes@clinic.com",
-    schedule: "Tue-Sat, 8:00 AM - 5:00 PM",
-    contact: "09567890123",
-    patientsToday: 5
-  }
-];
+import { mockMedicalStaff } from '../data/mockMedicalStaff.js';
 
 export const useStaff = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,29 +8,23 @@ export const useStaff = () => {
 
   // Filter staff based on search and filter criteria
   const filteredStaff = useMemo(() => {
-    console.log("🔍 Searching for:", searchQuery, "Type:", typeof searchQuery); // Debug log
-    
-    return staffMembers.filter(staff => {
-      // If search query is a pure number, search ONLY by exact staff ID
+    return mockMedicalStaff.filter((staff) => {
+      // If search query is a pure number, search by staff ID
       const isPureNumber = /^\d+$/.test(searchQuery);
       
       let matchesSearch = searchQuery === '';
       
       if (searchQuery !== '') {
         if (isPureNumber) {
-          // Convert searchQuery to number for exact comparison
-          const searchId = parseInt(searchQuery, 10);
-          // Pure number search: only match by exact staff ID
-          matchesSearch = staff.id === searchId;
-          console.log(`Number search: ${searchId} vs Staff ID ${staff.id} = ${matchesSearch}`);
+          // Number search: search by staffId (e.g., "001" part of "STAFF-001")
+          matchesSearch = staff.staffId.toLowerCase().includes(searchQuery.toLowerCase());
         } else {
-          // Text search: match by name, email, specialization, or role
+          // Text search: match by name, email, specialty, or role
           matchesSearch = 
             staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            staff.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            staff.specialization.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (staff.email && staff.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            staff.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
             staff.role.toLowerCase().includes(searchQuery.toLowerCase());
-          console.log(`Text search: ${searchQuery} vs ${staff.name} = ${matchesSearch}`);
         }
       }
 
@@ -83,15 +34,11 @@ export const useStaff = () => {
       // Status filter
       const matchesStatus = statusFilter === 'all' || staff.status === statusFilter;
 
-      const finalMatch = matchesSearch && matchesRole && matchesStatus;
-      console.log(`Staff ${staff.id} final match: ${finalMatch}`);
-      
-      return finalMatch;
+      return matchesSearch && matchesRole && matchesStatus;
     });
   }, [searchQuery, roleFilter, statusFilter]);
 
-  // ... rest of the code remains the same
-  // Calculate stats based on filtered staff
+  // ... rest of your existing hook code remains the same
   const staffStats = useMemo(() => {
     const totalStaff = filteredStaff.length;
     const doctorCount = filteredStaff.filter(s => s.role === "Doctor").length;
@@ -146,7 +93,8 @@ export const useStaff = () => {
     ];
   }, [filteredStaff]);
 
-  const getStatusColor = (status) => {
+  // ... rest of your functions remain the same
+  const getStatusColor = (status = '') => {
     switch (status) {
       case 'Available': return '#2e7d32';
       case 'Busy': return '#ed6c02';
@@ -155,7 +103,7 @@ export const useStaff = () => {
     }
   };
 
-  const getStatusBgColor = (status) => {
+  const getStatusBgColor = (status = '') => {
     switch (status) {
       case 'Available': return '#e8f5e9';
       case 'Busy': return '#fff3e0';
@@ -164,7 +112,7 @@ export const useStaff = () => {
     }
   };
 
-  const getRoleColor = (role) => {
+  const getRoleColor = (role = '') => {
     switch (role) {
       case 'Doctor': return '#667eea';
       case 'Nurse': return '#764ba2';
