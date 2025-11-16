@@ -5,3 +5,6 @@ export { usePatientManagement } from './usePatientManagement';
 export { useQueueStats } from './useQueueStats';
 export { usePatientCard, getStatusColor, getStatusBgColor } from './usePatientCard';
 export { useNumericInput, useFormValidation } from './useNumericInput';
+export { useStaff } from './useStaff';
+export { usePatientHistory } from './usePatientHistory';
+export { useConsultation } from './useConsultation';

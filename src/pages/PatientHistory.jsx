@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-// Only import what you ACTUALLY use
+// All external imports from lib/index.js
 import {
   Box,
   Card,
   CardContent,
-  TextField,
-  Select,
-  MenuItem,
-  Button,
+  IconButton,
   Chip,
   Typography,
   Avatar,
   Stack,
+  Button,
   Divider,
   Visibility,
   Schedule,
@@ -20,7 +18,10 @@ import {
   Refresh,
   History,
   People,
-  FaClipboardList
+  FaClipboardList,
+  MenuItem,
+  Menu,
+  Clear
 } from "../lib";
 
 // All custom components from components/index.js
@@ -35,130 +36,73 @@ import {
   HeaderSubText,
   HeaderTitle,
   HeaderButton,
-  SearchFilterBar,
   Caption,
   SubCaption
 } from "../components";
 
+// Custom hook
+import { usePatientHistory } from "../hooks";
+
 const PatientHistory = () => {
-  const [consultations] = useState([
-    {
-      id: 1,
-      patientName: "Maria Santos",
-      gender: "Female",
-      age: 45,
-      date: "2025-01-05",
-      time: "09:30 AM",
-      doctor: "Dr. Maria Cruz",
-      diagnosis: "Hypertension - Stage 2"
-    },
-    {
-      id: 2,
-      patientName: "Juan Dela Cruz",
-      gender: "Male",
-      age: 32,
-      date: "2025-01-05",
-      time: "10:15 AM",
-      doctor: "Dr. Roberto Santos",
-      diagnosis: "Acute Asthma Exacerbation"
-    },
-    {
-      id: 3,
-      patientName: "Ana Reyes",
-      gender: "Female",
-      age: 28,
-      date: "2025-01-04",
-      time: "02:00 PM",
-      doctor: "Dr. Maria Cruz",
-      diagnosis: "Migraine with Aura"
-    },
-    {
-      id: 4,
-      patientName: "Pedro Garcia",
-      gender: "Male",
-      age: 55,
-      date: "2025-01-04",
-      time: "11:30 AM",
-      doctor: "Dr. Roberto Santos",
-      diagnosis: "Type 2 Diabetes Mellitus"
-    },
-    {
-      id: 5,
-      patientName: "Maria Santos",
-      gender: "Female",
-      age: 45,
-      date: "2024-12-28",
-      time: "08:45 AM",
-      doctor: "Dr. Maria Cruz",
-      diagnosis: "Follow-up: Hypertension Management"
-    },
-    {
-      id: 6,
-      patientName: "Rosa Martinez",
-      gender: "Female",
-      age: 38,
-      date: "2024-12-27",
-      time: "03:15 PM",
-      doctor: "Dr. Roberto Santos",
-      diagnosis: "Acute Bronchitis"
-    }
-  ]);
+  const {
+    consultations,
+    patientStats,
+    searchQuery,
+    doctorFilter,
+    dateFilter,
+    hasActiveFilters,
+    handleSearch,
+    handleDoctorFilter,
+    handleDateFilter,
+    handleRefresh,
+    handleViewDetails,
+    clearFilters
+  } = usePatientHistory();
 
-  const stats = {
-    totalVisits: consultations.length,
-    thisWeek: consultations.filter(c => {
-      const consultationDate = new Date(c.date);
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      return consultationDate >= oneWeekAgo;
-    }).length,
-    uniquePatients: new Set(consultations.map(c => c.patientName)).size
+  // Filter menu states
+  const [doctorAnchorEl, setDoctorAnchorEl] = React.useState(null);
+  const [dateAnchorEl, setDateAnchorEl] = React.useState(null);
+  const isDoctorMenuOpen = Boolean(doctorAnchorEl);
+  const isDateMenuOpen = Boolean(dateAnchorEl);
+
+  const handleDoctorMenuClick = (event) => {
+    setDoctorAnchorEl(event.currentTarget);
   };
 
-  const patientStats = [
-    {
-      id: 1,
-      title: 'Total Visits',
-      value: stats.totalVisits,
-      subText: 'All consultations',
-      color: '#667eea',
-      icon: <History sx={{ fontSize: 28, color: 'white' }} />,
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      borderColor: 'rgba(102, 126, 234, 0.1)',
-      hoverShadow: 'rgba(102, 126, 234, 0.15)'
-    },
-    {
-      id: 2,
-      title: 'This Week',
-      value: stats.thisWeek,
-      subText: 'Recent consultations',
-      color: '#ed6c02',
-      icon: <Schedule sx={{ fontSize: 28, color: 'white' }} />,
-      gradient: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)',
-      borderColor: 'rgba(237, 108, 2, 0.1)',
-      hoverShadow: 'rgba(237, 108, 2, 0.15)'
-    },
-    {
-      id: 3,
-      title: 'Unique Patients',
-      value: stats.uniquePatients,
-      subText: 'Individual patients',
-      color: '#2e7d32',
-      icon: <People sx={{ fontSize: 28, color: 'white' }} />,
-      gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
-      borderColor: 'rgba(46, 125, 50, 0.1)',
-      hoverShadow: 'rgba(46, 125, 50, 0.15)'
-    }
-  ];
-
-  const handleSearch = (searchTerm) => {
-    console.log("Search:", searchTerm);
-    // Add search functionality here
+  const handleDateMenuClick = (event) => {
+    setDateAnchorEl(event.currentTarget);
   };
 
-  const handleFilter = () => {
-    console.log("Filter clicked");
-    // Add filter functionality here
+  const handleDoctorMenuClose = () => {
+    setDoctorAnchorEl(null);
+  };
+
+  const handleDateMenuClose = () => {
+    setDateAnchorEl(null);
+  };
+
+  const handleDoctorSelect = (doctor) => {
+    handleDoctorFilter(doctor);
+    handleDoctorMenuClose();
+  };
+
+  const handleDateSelect = (dateType) => {
+    // Handle date filter logic here
+    console.log("Date filter:", dateType);
+    handleDateMenuClose();
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      console.log("Searching for:", searchQuery);
+    }
+  };
+
+  // Icon mapping
+  const iconMap = {
+    history: <History sx={{ fontSize: 28, color: 'white' }} />,
+    schedule: <Schedule sx={{ fontSize: 28, color: 'white' }} />,
+    people: <People sx={{ fontSize: 28, color: 'white' }} />
   };
 
   return (
@@ -183,7 +127,7 @@ const PatientHistory = () => {
           </Box>
 
           <Stack direction="row" spacing={2}>
-            <HeaderButton startIcon={<Refresh />}>
+            <HeaderButton startIcon={<Refresh />} onClick={handleRefresh}>
               Refresh
             </HeaderButton>
           </Stack>
@@ -192,6 +136,47 @@ const PatientHistory = () => {
 
       {/* Main Content */}
       <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
+        {/* Active filters indicator */}
+        {hasActiveFilters && (
+          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+            <Chip 
+              label="Active Filters" 
+              size="small" 
+              color="primary" 
+              variant="outlined" 
+            />
+            {searchQuery && (
+              <Chip 
+                label={`Search: ${searchQuery}`} 
+                size="small" 
+                onDelete={() => handleSearch('')}
+              />
+            )}
+            {doctorFilter !== 'all' && (
+              <Chip 
+                label={`Doctor: ${doctorFilter}`} 
+                size="small" 
+                onDelete={() => handleDoctorFilter('all')}
+              />
+            )}
+            {dateFilter && (
+              <Chip 
+                label={`Date: ${dateFilter}`} 
+                size="small" 
+                onDelete={() => handleDateFilter('')}
+              />
+            )}
+            <Button 
+              startIcon={<Clear />} 
+              onClick={clearFilters} 
+              size="small" 
+              sx={{ textTransform: 'none', color: '#667eea', fontWeight: 600 }}
+            >
+              Clear All
+            </Button>
+          </Box>
+        )}
+
         {/* Professional Stats Cards */}
         <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
           {patientStats.map((stat) => (
@@ -209,7 +194,7 @@ const PatientHistory = () => {
                       <SubText>{stat.subText}</SubText>
                     </Box>
                     <StatIcon background={stat.gradient}>
-                      {stat.icon}
+                      {iconMap[stat.icon]}
                     </StatIcon>
                   </Box>
                 </CardContent>
@@ -260,195 +245,298 @@ const PatientHistory = () => {
                     fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
                   }}
                 >
-                  Search and filter past patient visits
+                  {consultations.length} consultations found
                 </Typography>
               </Box>
 
-              <Stack direction="row" spacing={2} alignItems="center">
+              {/* Search and Filter Section */}
+              <Box display="flex" alignItems="center" gap={2}>
+                {/* Active Filters Display */}
+                {(searchQuery || doctorFilter !== 'all' || dateFilter) && (
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {searchQuery && (
+                      <Chip 
+                        label={`Search: ${searchQuery}`} 
+                        size="small" 
+                        onDelete={() => handleSearch('')}
+                      />
+                    )}
+                    {doctorFilter !== 'all' && (
+                      <Chip 
+                        label={`Doctor: ${doctorFilter}`} 
+                        size="small" 
+                        onDelete={() => handleDoctorFilter('all')}
+                      />
+                    )}
+                    {dateFilter && (
+                      <Chip 
+                        label={`Date: ${dateFilter}`} 
+                        size="small" 
+                        onDelete={() => handleDateFilter('')}
+                      />
+                    )}
+                  </Box>
+                )}
+                
+                {/* Doctor Filter Button */}
                 <Button
                   startIcon={<FilterList />}
                   variant="outlined"
+                  onClick={handleDoctorMenuClick}
                   sx={{
                     textTransform: 'none',
                     borderRadius: 3,
-                    borderColor: 'rgba(102, 126, 234, 0.3)',
+                    borderColor: doctorFilter !== 'all' ? '#667eea' : 'rgba(102, 126, 234, 0.3)',
                     color: '#667eea',
                     fontWeight: 600,
-                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                    fontSize: '0.875rem',
-                    '&:hover': {
-                      borderColor: '#667eea',
-                      background: 'rgba(102, 126, 234, 0.04)',
+                    background: doctorFilter !== 'all' ? 'rgba(102, 126, 234, 0.08)' : 'transparent',
+                    '&:hover': { 
+                      borderColor: '#667eea', 
+                      background: 'rgba(102, 126, 234, 0.04)' 
                     }
                   }}
                 >
-                  Filters
+                  Doctor {doctorFilter !== 'all' && `(${doctorFilter})`}
                 </Button>
-                
-                <Select
-                  defaultValue="All Doctors"
-                  size="small"
-                  sx={{ 
-                    minWidth: 140,
+
+                {/* Date Filter Button */}
+                <Button
+                  startIcon={<FilterList />}
+                  variant="outlined"
+                  onClick={handleDateMenuClick}
+                  sx={{
+                    textTransform: 'none',
                     borderRadius: 3,
-                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(102, 126, 234, 0.3)', },
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#667eea', },
+                    borderColor: dateFilter ? '#667eea' : 'rgba(102, 126, 234, 0.3)',
+                    color: '#667eea',
+                    fontWeight: 600,
+                    background: dateFilter ? 'rgba(102, 126, 234, 0.08)' : 'transparent',
+                    '&:hover': { 
+                      borderColor: '#667eea', 
+                      background: 'rgba(102, 126, 234, 0.04)' 
+                    }
                   }}
                 >
-                  <MenuItem value="All Doctors">All Doctors</MenuItem>
-                  <MenuItem value="Dr. Maria Cruz">Dr. Maria Cruz</MenuItem>
-                  <MenuItem value="Dr. Roberto Santos">Dr. Roberto Santos</MenuItem>
-                </Select>
+                  Date {dateFilter && `(${dateFilter})`}
+                </Button>
 
-                <TextField 
-                  type="date"
-                  size="small"
-                  sx={{ 
-                    width: '180px',
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 3,
-                      '& fieldset': { borderColor: 'rgba(102, 126, 234, 0.3)', },
-                      '&:hover fieldset': { borderColor: '#667eea', },
-                    },
+                {/* Doctor Filter Menu */}
+                <Menu 
+                  anchorEl={doctorAnchorEl} 
+                  open={isDoctorMenuOpen} 
+                  onClose={handleDoctorMenuClose}
+                  PaperProps={{
+                    sx: {
+                      borderRadius: 2,
+                      boxShadow: '0 4px 25px rgba(0,0,0,0.1)',
+                      mt: 1,
+                      minWidth: 160
+                    }
                   }}
-                />
-                
-                {/* USING REUSABLE SEARCH FILTER BAR */}
-                <SearchFilterBar 
-                  onSearch={handleSearch}
-                  onFilter={handleFilter}
-                  searchPlaceholder="Search patient..."
-                />
-              </Stack>
+                >
+                  {['all', 'Dr. Maria Cruz', 'Dr. Roberto Santos'].map(doctor => (
+                    <MenuItem 
+                      key={doctor}
+                      onClick={() => handleDoctorSelect(doctor)}
+                      selected={doctorFilter === doctor}
+                    >
+                      {doctor === 'all' ? 'All Doctors' : doctor}
+                    </MenuItem>
+                  ))}
+                </Menu>
+
+                {/* Date Filter Menu */}
+                <Menu 
+                  anchorEl={dateAnchorEl} 
+                  open={isDateMenuOpen} 
+                  onClose={handleDateMenuClose}
+                  PaperProps={{
+                    sx: {
+                      borderRadius: 2,
+                      boxShadow: '0 4px 25px rgba(0,0,0,0.1)',
+                      mt: 1,
+                      minWidth: 160
+                    }
+                  }}
+                >
+                  <MenuItem onClick={() => handleDateSelect('today')}>Today</MenuItem>
+                  <MenuItem onClick={() => handleDateSelect('thisWeek')}>This Week</MenuItem>
+                  <MenuItem onClick={() => handleDateSelect('thisMonth')}>This Month</MenuItem>
+                </Menu>
+
+                {/* Search Input */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  backgroundColor: 'white',
+                  borderRadius: 3,
+                  border: '1px solid rgba(102, 126, 234, 0.3)',
+                  overflow: 'hidden',
+                  width: '280px',
+                  '&:hover': {
+                    borderColor: '#667eea',
+                  }
+                }}>
+                  <input
+                    type="text"
+                    placeholder="Search patient, ID, doctor..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    style={{
+                      border: 'none',
+                      outline: 'none',
+                      padding: '10px 16px',
+                      fontSize: '0.875rem',
+                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                      width: '100%',
+                      backgroundColor: 'transparent',
+                      color: '#1f2937'
+                    }}
+                  />
+                </Box>
+              </Box>
             </Box>
           </Box>
 
           {/* Consultation Cards */}
           <Box sx={{ p: 3 }}>
             <Stack spacing={2}>
-              {consultations.map((consultation) => (
-                <Card 
-                  key={consultation.id} 
-                  sx={{ 
-                    p: 3, 
-                    borderRadius: 2,
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
-                    border: '1px solid #e5e7eb',
-                    transition: 'all 0.2s ease',
-                    backgroundColor: 'white',
-                    '&:hover': {
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                    }
-                  }}
-                >
-                  {/* Top Section: Avatar, Name, View Details, ID */}
-                  <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar 
-                        sx={{ 
-                          width: 48,
-                          height: 48,
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          fontWeight: 700,
-                          fontSize: '0.875rem',
-                          fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                        }}
-                      >
-                        {consultation.patientName.split(' ').map(n => n[0]).join('')}
-                      </Avatar>
-                      
-                      <Box>
-                        <Typography 
-                          variant="h6" 
-                          sx={{
-                            fontWeight: 600,
-                            color: '#1f2937',
-                            fontSize: '1rem',
-                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                            mb: 0.5
-                          }}
-                        >
-                          {consultation.patientName}
-                        </Typography>
-                        
-                        <Typography 
-                          variant="body2"
-                          sx={{
-                            color: '#6b7280',
-                            fontWeight: 400,
+              {consultations.length > 0 ? (
+                consultations.map((consultation) => (
+                  <Card 
+                    key={consultation.id} 
+                    sx={{ 
+                      p: 3, 
+                      borderRadius: 2,
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+                      border: '1px solid #e5e7eb',
+                      transition: 'all 0.2s ease',
+                      backgroundColor: 'white',
+                      '&:hover': {
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                      }
+                    }}
+                  >
+                    {/* Top Section: Avatar, Name, View Details, ID */}
+                    <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Avatar 
+                          sx={{ 
+                            width: 48,
+                            height: 48,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            fontWeight: 700,
                             fontSize: '0.875rem',
-                            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
                           }}
                         >
-                          {consultation.age} years • {consultation.gender}
-                        </Typography>
+                          {consultation.patientName.split(' ').map(n => n[0]).join('')}
+                        </Avatar>
+                        
+                        <Box>
+                          <Typography 
+                            variant="h6" 
+                            sx={{
+                              fontWeight: 600,
+                              color: '#1f2937',
+                              fontSize: '1rem',
+                              fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                              mb: 0.5
+                            }}
+                          >
+                            {consultation.patientName}
+                          </Typography>
+                          
+                          <Typography 
+                            variant="body2"
+                            sx={{
+                              color: '#6b7280',
+                              fontWeight: 400,
+                              fontSize: '0.875rem',
+                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                            }}
+                          >
+                            {consultation.age} years • {consultation.gender}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Box display="flex" alignItems="center" gap={1.5}>
+                        <Button
+                          variant="outlined"
+                          startIcon={<Visibility sx={{ fontSize: 18 }} />}
+                          onClick={() => handleViewDetails(consultation.id)}
+                          sx={{
+                            borderColor: 'rgba(102, 126, 234, 0.3)',
+                            color: '#667eea',
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            borderRadius: 3,
+                            px: 2.5,
+                            py: 0.5,
+                            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                            fontSize: '0.813rem',
+                            height: '32px',
+                            '&:hover': {
+                              borderColor: '#667eea',
+                              backgroundColor: 'rgba(102, 126, 234, 0.04)',
+                            },
+                          }}
+                        >
+                          View Details
+                        </Button>
+                        <Chip
+                          label={`#${consultation.id}`}
+                          size="small"
+                          sx={{
+                            backgroundColor: '#667eea',
+                            color: 'white',
+                            fontWeight: 700,
+                            fontSize: '0.75rem',
+                            height: '26px',
+                            minWidth: '36px'
+                          }}
+                        />
                       </Box>
                     </Box>
 
-                    <Box display="flex" alignItems="center" gap={1.5}>
-                      <Button
-                        variant="outlined"
-                        startIcon={<Visibility sx={{ fontSize: 18 }} />}
-                        sx={{
-                          borderColor: 'rgba(102, 126, 234, 0.3)',
-                          color: '#667eea',
-                          textTransform: 'none',
-                          fontWeight: 600,
-                          borderRadius: 3,
-                          px: 2.5,
-                          py: 0.5,
-                          fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                          fontSize: '0.813rem',
-                          height: '32px',
-                          '&:hover': {
-                            borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.04)',
-                          },
-                        }}
-                      >
-                        View Details
-                      </Button>
-                      <Chip
-                        label={`#${consultation.id}`}
-                        size="small"
-                        sx={{
-                          backgroundColor: '#667eea',
-                          color: 'white',
-                          fontWeight: 700,
-                          fontSize: '0.75rem',
-                          height: '26px',
-                          minWidth: '36px'
-                        }}
-                      />
-                    </Box>
-                  </Box>
+                    <Divider sx={{ mb: 2, borderColor: 'rgba(102, 126, 234, 0.1)' }} />
+                    
+                    {/* Bottom Section: Consultation Details */}
+                    <Box display="flex" alignItems="center" flexWrap="wrap" gap={2}>
+                      {/* Date & Time */}
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <Caption>Date & Time |</Caption>
+                        <SubCaption>
+                          {consultation.date} at {consultation.time}
+                        </SubCaption>
+                      </Box>
 
-                  <Divider sx={{ mb: 2, borderColor: 'rgba(102, 126, 234, 0.1)' }} />
-                  
-                  {/* Bottom Section: Consultation Details - Using Caption and SubCaption components */}
-                  <Box display="flex" alignItems="center" flexWrap="wrap" gap={2}>
-                    {/* Date & Time */}
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Caption>Date & Time |</Caption>
-                      <SubCaption>
-                        {consultation.date} at {consultation.time}
-                      </SubCaption>
-                    </Box>
+                      {/* Doctor */}
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <Caption>Doctor |</Caption>
+                        <SubCaption>{consultation.doctor}</SubCaption>
+                      </Box>
 
-                    {/* Doctor */}
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Caption>Doctor |</Caption>
-                      <SubCaption>{consultation.doctor}</SubCaption>
+                      {/* Diagnosis */}
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <Caption>Diagnosis |</Caption>
+                        <SubCaption>{consultation.diagnosis}</SubCaption>
+                      </Box>
                     </Box>
-
-                    {/* Diagnosis */}
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Caption>Diagnosis |</Caption>
-                      <SubCaption>{consultation.diagnosis}</SubCaption>
-                    </Box>
-                  </Box>
-                </Card>
-              ))}
+                  </Card>
+                ))
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Typography variant="h6" color="textSecondary">
+                    No consultations found
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Try adjusting your search or filters
+                  </Typography>
+                </Box>
+              )}
             </Stack>
           </Box>
         </Card>
