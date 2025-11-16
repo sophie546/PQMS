@@ -7,6 +7,7 @@ import Modal from '@mui/material/Modal';
 import { FormTextField, FormSelectField } from './FormFields';
 import { HeaderButton } from './HeaderComponents';
 import { useNumericInput, useFormValidation } from '../hooks';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -50,6 +51,7 @@ const CustomTextField = ({ sx, ...props }) => (
 );
 
 export function QueueModal({ open, onClose }) { 
+  const navigate = useNavigate();
   const ageInput = useNumericInput('');
   const contactInput = useNumericInput('');
   const { errors, validateField, setFieldError, clearErrors } = useFormValidation();
@@ -119,6 +121,16 @@ export function QueueModal({ open, onClose }) {
       ageInput.reset();
       contactInput.reset();
       clearErrors();
+      
+      onClose(); // Close the modal
+      
+      // Redirect to success page or queue page
+      navigate('/QueueDashboard', { 
+        state: { 
+          patientData: formData,
+          queueNumber: Math.floor(Math.random() * 100) + 1 // Generate random queue number
+        }
+      });
     }
   };
 
@@ -294,6 +306,7 @@ export function QueueModal({ open, onClose }) {
                 color="white"
                 background="#667eea"
                 type="submit"
+                hoverBackground="#556cd6"
                 >
                 Submit & Join Queue
             </HeaderButton>

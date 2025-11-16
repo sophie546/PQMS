@@ -1,27 +1,164 @@
- import React from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";  
 import { 
   Typography, 
   Box, 
   TextField,
   Button,
-  MenuItem
-} from "@mui/material";
+  MenuItem,
+  IconButton,
+  Visibility
+} from "../lib";
+import { useAuth, useForm } from "../hooks"; 
 
-const CustomTextField = ({ sx, ...props }) => (
+const CustomTooltip = ({ children, content }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const timeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setIsVisible(true);
+    }, 300);
+  };
+
+  const handleMouseLeave = () => {
+    clearTimeout(timeoutRef.current);
+    setIsVisible(false);
+  };
+
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-block' }}>
+      <Box
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {children}
+      </Box>
+      {isVisible && (
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            mb: 1,
+            zIndex: 1000,
+            minWidth: 220,
+            backgroundColor: 'white',
+            color: '#333',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            border: '1px solid #e0e0e0',
+            borderRadius: 2,
+            p: 2,
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: '100%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              borderWidth: '6px',
+              borderStyle: 'solid',
+              borderColor: 'white transparent transparent transparent',
+            }
+          }}
+        >
+          {content}
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+// Custom TextField with password toggle using Visibility icon - FIXED ALIGNMENT
+const PasswordTextField = ({ error, helperText, showPassword, onToggleVisibility, sx, ...props }) => (
+  <Box sx={{ position: 'relative' }}>
+    <TextField
+      fullWidth
+      variant="outlined" 
+      size="small"
+      error={error}
+      helperText={helperText}
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          borderRadius: 3,
+          fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+          '& fieldset': { 
+            borderColor: error ? '#f44336' : 'rgba(102, 126, 234, 0.3)',
+          },
+          '&:hover fieldset': { 
+            borderColor: error ? '#f44336' : '#667eea',
+          },
+          '&.Mui-focused fieldset': { 
+            borderColor: error ? '#f44336' : '#667eea',
+          },
+        },
+        '& .MuiInputBase-input': {
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+          padding: '12px 16px',
+          paddingRight: '45px',
+        },
+        mb: 2,
+        ...sx,
+      }}
+      {...props} 
+    />
+    <IconButton
+      onClick={onToggleVisibility}
+      sx={{
+        position: 'absolute',
+        right: '6px',
+        top: '12px', // Fixed position from top instead of percentage
+        color: '#667eea',
+        zIndex: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        '&:hover': {
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+        },
+        width: '28px',
+        height: '28px',
+      }}
+    >
+      <Visibility 
+        sx={{ 
+          fontSize: '18px',
+          color: showPassword ? '#667eea' : '#999',
+        }}
+      />
+    </IconButton>
+  </Box>
+);
+
+const CustomTextField = ({ error, helperText, sx, ...props }) => (
   <TextField
     fullWidth
-    variant="standard" 
+    variant="outlined" 
     size="small"
+    error={error}
+    helperText={helperText}
     sx={{
       '& .MuiOutlinedInput-root': {
-        border: '1px solid #E0E3E7',
+        borderRadius: 3,
+        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+        '& fieldset': { 
+          borderColor: error ? '#f44336' : 'rgba(102, 126, 234, 0.3)',
+        },
+        '&:hover fieldset': { 
+          borderColor: error ? '#f44336' : '#667eea',
+        },
+        '&.Mui-focused fieldset': { 
+          borderColor: error ? '#f44336' : '#667eea',
+        },
       },
       '& .MuiInputBase-input': {
-        fontSize: 14,
-        padding: '10px 2px', 
+        fontSize: '0.875rem',
+        fontWeight: 500,
+        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+        padding: '12px 16px',
       },
-      mb:3,
+      mb: 2,
       ...sx,
     }}
     {...props} 
@@ -43,137 +180,510 @@ const role = [
   }
 ];
 
-export default function RegisterPage() {
+// Password requirements component for tooltip
+const PasswordRequirementsTooltip = () => {
+  const requirements = [
+    { text: 'At least 8 characters' },
+    { text: 'One lowercase letter' },
+    { text: 'One uppercase letter' },
+    { text: 'One number' },
+    { text: 'One special character (@$!%*?&)' },
+  ];
+
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {/* leftSection */}
-      <Box sx={{ width: "50%", height:"100vh", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box sx={{ p: 1 }}>
+      <Typography variant="caption" sx={{ color: '#1a237e', fontWeight: 600, mb: 1, display: 'block' }}>
+        Password must contain:
+      </Typography>
+      {requirements.map((req, index) => (
+        <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+          <Box
+            sx={{
+              width: 4,
+              height: 4,
+              borderRadius: '50%',
+              backgroundColor: '#667eea',
+              mr: 1,
+            }}
+          />
+          <Typography
+            variant="caption"
+            sx={{
+              color: '#666',
+              fontSize: '0.75rem',
+            }}
+          >
+            {req.text}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+};
+
+// Enhanced validation with letters-only for names - FIXED PASSWORD MATCHING
+const enhancedRegisterValidation = (values) => {
+  const errors = {};
+
+  // First Name validation
+  if (!values.firstName) {
+    errors.firstName = 'First name is required';
+  } else if (!/^[A-Za-z\s]+$/.test(values.firstName)) {
+    errors.firstName = 'First name should contain only letters';
+  } else if (values.firstName.length < 2) {
+    errors.firstName = 'First name must be at least 2 characters';
+  }
+
+  // Last Name validation
+  if (!values.lastName) {
+    errors.lastName = 'Last name is required';
+  } else if (!/^[A-Za-z\s]+$/.test(values.lastName)) {
+    errors.lastName = 'Last name should contain only letters';
+  } else if (values.lastName.length < 2) {
+    errors.lastName = 'Last name must be at least 2 characters';
+  }
+
+  // Email validation
+  if (!values.email) {
+    errors.email = 'Email is required';
+  } else if (!/\S+@\S+\.\S+/.test(values.email)) {
+    errors.email = 'Email is invalid';
+  }
+
+  // Role validation
+  if (!values.role) {
+    errors.role = 'Role is required';
+  }
+
+  // Password validation with requirements
+  if (!values.password) {
+    errors.password = 'Password is required';
+  } else {
+    const requirements = [];
+    if (values.password.length < 8) requirements.push('at least 8 characters');
+    if (!/(?=.*[a-z])/.test(values.password)) requirements.push('one lowercase letter');
+    if (!/(?=.*[A-Z])/.test(values.password)) requirements.push('one uppercase letter');
+    if (!/(?=.*\d)/.test(values.password)) requirements.push('one number');
+    if (!/(?=.*[@$!%*?&])/.test(values.password)) requirements.push('one special character');
+    
+    if (requirements.length > 0) {
+      errors.password = `Password must contain: ${requirements.join(', ')}`;
+    }
+  }
+
+  // Confirm Password validation - FIXED LOGIC
+  if (!values.confirmPassword) {
+    errors.confirmPassword = 'Please confirm your password';
+  } else if (values.password && values.confirmPassword && values.password !== values.confirmPassword) {
+    errors.confirmPassword = 'Passwords do not match';
+  }
+
+  return errors;
+};
+
+export default function RegisterPage() {
+  const { register, loading, error: authError } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const formRef = useRef(null);
+  
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    validateForm
+  } = useForm(
+    { 
+      firstName: '',
+      lastName: '',
+      email: '',
+      role: '',
+      password: '',
+      confirmPassword: ''
+    },
+    enhancedRegisterValidation
+  );
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      setTimeout(() => {
+        const firstError = document.querySelector('.Mui-error');
+        if (firstError) {
+          firstError.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          const input = firstError.querySelector('input') || firstError;
+          input.focus();
+        }
+      }, 100);
+      return;
+    }
+
+    try {
+      await register(values);
+    } catch (error) {
+      console.error('Registration error:', error);
+    }
+  };
+
+  // Prevent numbers in name fields
+  const handleNameChange = (field, value) => {
+    const lettersOnly = value.replace(/[^A-Za-z\s]/g, '');
+    handleChange(field, lettersOnly);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  return (
+    <Box sx={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%)',
+      fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif',
+      overflow: 'hidden'
+    }}>
+      {/* Left Section - unchanged */}
+      <Box sx={{ 
+        width: "50%", 
+        height: "100vh", 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
         <Box
           sx={{
             width: '100%',
             height: '100%', 
-            backgroundColor: "#5416B5",
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            display: 'flex',
           }}
         />
-        <Typography variant="h4" color="#fff" sx={{position: 'absolute', top:'15%', fontWeight: '700'}}>
+        <Typography 
+          variant="h3" 
+          sx={{
+            position: 'absolute',
+            top: '15%',
+            fontWeight: 700,
+            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           ClinicaFlow
         </Typography>
         <Box
           component="img"
-          src= "/rightSection.png"
-          alt="Description"
+          src="/rightSection.png"
+          alt="Healthcare Management"
           sx={{
             width: 'auto',      
             height: 'auto',     
-            maxWidth: '100%',   
-            maxHeight: '100%',  
+            maxWidth: '80%',   
+            maxHeight: '60%',  
             objectFit: 'contain', 
             position: 'absolute',
           }}
         />
-        <Typography variant="h6" color="#fff" sx={{position: 'absolute', bottom:'20%'}}>
+        <Typography 
+          variant="h5" 
+          sx={{
+            position: 'absolute',
+            bottom: '20%',
+            fontWeight: 600,
+            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+            color: 'white',
+            textAlign: 'center',
+            px: 4
+          }}
+        >
           Digital Health Management Made Simple
         </Typography>    
-        <Typography variant="body1" color="#fff" sx={{position: 'absolute', bottom:'15%'}}>
+        <Typography 
+          variant="body1" 
+          sx={{
+            position: 'absolute',
+            bottom: '15%',
+            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+            color: 'rgba(255, 255, 255, 0.9)',
+            textAlign: 'center',
+            px: 4,
+            fontSize: '0.875rem',
+            fontWeight: 400
+          }}
+        >
           Easily manage patient records, queues, and consultations — all in one place.
         </Typography>    
       </Box>
 
-      {/* rightSection */}
-      <Box sx={{width: '50%', height:"100%", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Box
-          sx={{
-            width: 400,
-          }}
-        >
-          <Typography fontSize={26} fontWeight="700" justifyContent={"center"} textAlign="center" sx={{ whiteSpace: 'pre-line' }}>
-            Create an Account        
-          </Typography>
-          <Typography fontSize={16} fontWeight="400" mb={5} textAlign={"center"} mt={0.5} color="text.secondary">
-            Get started with ClinicaFlow today
-          </Typography>
-          <Box display={"flex"} gap={3} mt={4}>
-            <Box flex={1}>
-              <Typography fontSize={13} fontWeight="400" >
-                First Name
-              </Typography>
-              <CustomTextField />
-            </Box>  
-            <Box flex={1}>
-              <Typography fontSize={13} fontWeight="400" >
-                Last Name
-              </Typography>
-              <CustomTextField />
-            </Box>  
+      {/* Right Section - Form */}
+      <Box sx={{
+        width: '50%', 
+        height: "100vh", 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        background: 'white',
+        overflow: 'auto',
+        py: 2
+      }}>
+        <Box sx={{ width: 400, maxWidth: '90%' }} ref={formRef}>
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Typography 
+              variant="h4"
+              sx={{ 
+                fontWeight: 700,
+                fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                backgroundClip: 'text',
+                textFillColor: 'transparent',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 1
+              }}
+            >
+              Create an Account
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#6b7280',
+                fontWeight: 500,
+                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
+              }}
+            >
+              Get started with ClinicaFlow today
+            </Typography>
           </Box>
-          <Typography fontSize={13} fontWeight="400" >
-            Email
-          </Typography>
-          <CustomTextField />
-          <Typography fontSize={13} fontWeight="400" >
-            Role
-          </Typography>
-          <TextField
-            select
-            placeholder="Select"
-            defaultValue="E"
-            variant="standard"
-            fullWidth
-            sx={{'& .MuiInputBase-input': { fontSize: 14 }, mb: 3 }}  
-          >
-            {role.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-          <Typography fontSize={13} fontWeight="400" >
-            Password
-          </Typography>
-          <CustomTextField 
-            type="password"
-          />
-          <Typography fontSize={13} fontWeight="400" >
-            Confirm Password
-          </Typography>
-          <CustomTextField 
-            type="password"
-          />
-          <Button 
-            variant="contained" 
-            color="primary"
-            component={Link}
-            to="/patient"
-            fullWidth
-            sx={{
-              boxShadow: 'none',
-              textTransform: 'none',
-              fontSize: 14,
-              borderRadius: 20,
-              mt: 1
-            }}
-          >
-            Sign Up
-          </Button>
 
+          {authError && (
+            <Box 
+              sx={{ 
+                mb: 3, 
+                p: 2, 
+                borderRadius: 2,
+                backgroundColor: '#fee',
+                border: '1px solid #fcc',
+                color: '#c33',
+                fontSize: '0.875rem'
+              }}
+            >
+              {authError}
+            </Box>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            {/* Name Fields */}
+            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
+                  First Name
+                </Typography>
+                <CustomTextField 
+                  placeholder="Enter your first name"
+                  value={values.firstName}
+                  onChange={(e) => handleNameChange('firstName', e.target.value)}
+                  onBlur={() => handleBlur('firstName')}
+                  error={touched.firstName && !!errors.firstName}
+                  helperText={touched.firstName && errors.firstName}
+                />
+              </Box>  
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
+                  Last Name
+                </Typography>
+                <CustomTextField 
+                  placeholder="Enter your last name"
+                  value={values.lastName}
+                  onChange={(e) => handleNameChange('lastName', e.target.value)}
+                  onBlur={() => handleBlur('lastName')}
+                  error={touched.lastName && !!errors.lastName}
+                  helperText={touched.lastName && errors.lastName}
+                />
+              </Box>  
+            </Box>
+
+            {/* Email */}
+            <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
+              Email
+            </Typography>
+            <CustomTextField 
+              placeholder="Enter your email"
+              type="email"
+              value={values.email}
+              onChange={(e) => handleChange('email', e.target.value)}
+              onBlur={() => handleBlur('email')}
+              error={touched.email && !!errors.email}
+              helperText={touched.email && errors.email}
+            />
+
+            {/* Role */}
+            <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
+              Role
+            </Typography>
+            <TextField
+              select
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={values.role}
+              onChange={(e) => handleChange('role', e.target.value)}
+              onBlur={() => handleBlur('role')}
+              error={touched.role && !!errors.role}
+              helperText={touched.role && errors.role}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 3,
+                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                  '& fieldset': { 
+                    borderColor: (touched.role && errors.role) ? '#f44336' : 'rgba(102, 126, 234, 0.3)',
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  padding: '12px 16px',
+                },
+                mb: 2
+              }}  
+            >
+              <MenuItem value=""><em>Select your role</em></MenuItem>
+              {role.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {/* Password with Eye Icon and Question Mark Tooltip */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mr: 1 }}>
+                Password
+              </Typography>
+              <CustomTooltip content={<PasswordRequirementsTooltip />}>
+                <Box
+                  sx={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    backgroundColor: '#667eea',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'help',
+                    '&:hover': {
+                      backgroundColor: '#5a6fd8',
+                    }
+                  }}
+                >
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      color: 'white', 
+                      fontSize: '0.7rem', 
+                      fontWeight: 600,
+                      lineHeight: 1
+                    }}
+                  >
+                    ?
+                  </Typography>
+                </Box>
+              </CustomTooltip>
+            </Box>
+
+            <PasswordTextField 
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              value={values.password}
+              onChange={(e) => handleChange('password', e.target.value)}
+              onBlur={() => handleBlur('password')}
+              error={touched.password && !!errors.password}
+              helperText={touched.password && errors.password}
+              showPassword={showPassword}
+              onToggleVisibility={togglePasswordVisibility}
+            />
+
+            {/* Confirm Password with Eye Icon */}
+            <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
+              Confirm Password
+            </Typography>
+            <PasswordTextField 
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm your password"
+              value={values.confirmPassword}
+              onChange={(e) => handleChange('confirmPassword', e.target.value)}
+              onBlur={() => handleBlur('confirmPassword')}
+              error={touched.confirmPassword && !!errors.confirmPassword}
+              helperText={touched.confirmPassword && errors.confirmPassword}
+              showPassword={showConfirmPassword}
+              onToggleVisibility={toggleConfirmPasswordVisibility}
+            />
+            
+            {/* Sign Up Button */}
+            <Button 
+              type="submit"
+              variant="contained" 
+              fullWidth
+              disabled={loading}
+              sx={{
+                boxShadow: 'none',
+                textTransform: 'none',
+                fontSize: '0.875rem',
+                borderRadius: 3,
+                mt: 2,
+                py: 1.5,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                fontWeight: 600,
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #7d93ff 0%, #8a6cbb 100%)',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                },
+                '&:disabled': {
+                  background: '#ccc',
+                }
+              }}
+            >
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </Button>
+          </form>
+
+          {/* Sign In Link */}
           <Box display="flex" alignItems="center" gap={1} mt={3} justifyContent={"center"}>
-            <Typography fontSize={13} fontWeight="400">
+            <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 400, color: '#6b7280' }}>
               Already have an account?
             </Typography>
             <Button 
               variant="text" 
-              color="primary"
               component={Link}
               to="/login"
               sx={{
                 textTransform: 'none',
-                fontSize: 13,
+                fontSize: '0.875rem',
                 fontWeight: 600,
+                color: '#667eea',
                 minWidth: 'auto',
                 p: 1,
+                '&:hover': { background: 'rgba(102, 126, 234, 0.04)' }
               }}
             >
               Sign in
@@ -184,4 +694,3 @@ export default function RegisterPage() {
     </Box>
   );
 }
-

@@ -1,0 +1,10 @@
+{
+  "consultationId": "CONS-001",
+  "symptoms": "Headache, dizziness, high blood pressure",
+  "diagnosis": "Hypertension Stage 2",
+  "medicinePrescribed": "Lisinopril 10mg once daily",
+  "remarks": "Follow up in 2 weeks, low sodium diet",
+  "consultationDate": "2025-01-03",
+  "patientId": "PAT-001",
+  "staffId": "STAFF-001"
+}
