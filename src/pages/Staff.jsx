@@ -369,108 +369,25 @@ const Staff = () => {
                     </Box>
                   </Box>
 
-                  {/* Bottom Section: Staff Details in inline format with separators */}
-                  <Box display="flex" alignItems="center" flexWrap="wrap">
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      Specialization
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      |
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#374151',
-                        fontWeight: 600,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 2
-                      }}
-                    >
-                      {staff.specialization}
-                    </Typography>    
+                  {/* Bottom Section: Staff Details using Caption and SubCaption */}
+                  <Box display="flex" alignItems="center" flexWrap="wrap" gap={2}>
+                    {/* Specialization */}
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                      <Caption>Specialization |</Caption>
+                      <SubCaption>{staff.specialization}</SubCaption>
+                    </Box>
 
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      Email
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      |
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#374151',
-                        fontWeight: 600,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 2
-                      }}
-                    >
-                      {staff.email}
-                    </Typography>  
+                    {/* Email */}
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                      <Caption>Email |</Caption>
+                      <SubCaption>{staff.email}</SubCaption>
+                    </Box>
 
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      Schedule
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#9ca3af',
-                        fontWeight: 400,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                        mr: 0.75
-                      }}
-                    >
-                      |
-                    </Typography>
-                    <Typography 
-                      sx={{
-                        color: '#374151',
-                        fontWeight: 600,
-                        fontSize: '0.875rem',
-                        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                      }}
-                    >
-                      {staff.schedule}
-                    </Typography>
+                    {/* Schedule */}
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                      <Caption>Schedule |</Caption>
+                      <SubCaption>{staff.schedule}</SubCaption>
+                    </Box>
                   </Box>
                 </Card>
               ))}
