@@ -178,7 +178,7 @@ export default function LandingPage() {
               >
                 <Paper variant="elevation" sx={{ p: 3, borderRadius: 2 }}>
                   <Typography variant="subtitle1" fontWeight={600} mb={2} color="#1A237E">
-                    Patient Queue (Live Preview)
+                    Patient Queue
                   </Typography>
                   <Stack spacing={1}>
                     {[
@@ -261,7 +261,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="/Layer_2.png"
+                src="Layer_2.png"
                 alt="Illustration - working on laptop"
                 style={{ maxWidth: "100%", height: "auto", borderRadius: 8 }}
                 loading="lazy"
@@ -321,7 +321,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="/feature1.png"
+                src="feature1.png"
                 alt="Patient Management Illustration"
                 style={{ maxWidth: "100%", height: "auto", maxHeight: 200, borderRadius: 8 }}
                 loading="lazy"
@@ -408,7 +408,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="feature3.png"
+                src="/feature3.png"
                 alt="Consultation Records Illustration"
                 style={{ maxWidth: "100%", height: "auto", maxHeight: 200, borderRadius: 8 }}
                 loading="lazy"
@@ -455,23 +455,43 @@ export default function LandingPage() {
       </Box>
 
       {/* CTA Section */}
-      <Box sx={{ bgcolor: "#5F67EA", py: 6, color: "white", textAlign: "center" }}>
-        <Container maxWidth="sm">
-          <Typography variant="h5" fontWeight={700} gutterBottom>
-            Ready to Simplify Your Clinic Workflow?
+      <Box sx={{ bgcolor: "white", py: 8, textAlign: "center" }}>
+        <Container maxWidth="md">
+          <Typography 
+            variant="h3" 
+            fontWeight={700} 
+            color="#1A237E"
+            gutterBottom
+            sx={{ mb: 2 }}
+          >
+            Skip the Line. Join Us Online
           </Typography>
-          <Typography variant="body2" sx={{ mb: 4 }}>
-            Start managing patient queues more efficiently today.
+          <Typography 
+            variant="body1" 
+            color="#666" 
+            sx={{ mb: 4, maxWidth: 600, mx: "auto" }}
+          >
+            Register yourself in the patient queue from the comfort of your home. No need to wait at
+            the clinic - we'll notify you when it's your turn.
           </Typography>
           <GradientButton 
-            sx={{ width: "100%", maxWidth: 320 }} 
+            sx={{ 
+              width: "100%", 
+              maxWidth: 500,
+              py: 1.5,
+              fontSize: "1rem"
+            }} 
             component={Link}
-            to="/signup"
+            to="/Register"
           >
-            Get Started Now
+            Join Queue Now
           </GradientButton>
-          <Typography variant="caption" display="block" mt={1}>
-            Register and start your free trial today.
+          <Typography 
+            variant="body2" 
+            color="#999" 
+            sx={{ mt: 2 }}
+          >
+            You'll receive a queue number immediately after registration
           </Typography>
         </Container>
       </Box>
