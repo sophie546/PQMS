@@ -1,15 +1,15 @@
 import React from 'react';
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
-import LandingPage from './components/pages/Landing.jsx';
-import PatientPage from './components/pages/Patient.jsx';
-import Layout from './components/Layout.jsx';
-import ConsultationPage from './components/pages/Consultations.jsx';
-import RegisterPage from './components/pages/Register.jsx';
-import LoginPage from './components/pages/Login.jsx';  
-import PatientHistory from './components/pages/PatientHistory.jsx';
-import PatientQueue from './components/pages/PatientQueue.jsx';
-import Staff from './components/pages/Staff.jsx';
+import LandingPage from './pages/Landing.jsx';
+import PatientPage from './pages/Patient.jsx';
+import { Layout } from './components';
+import ConsultationPage from './pages/Consultations.jsx';
+import RegisterPage from './pages/Register.jsx';
+import LoginPage from './pages/Login.jsx';  
+import PatientHistory from './pages/PatientHistory.jsx';
+import PatientQueue from './pages/PatientQueue.jsx';
+import Staff from './pages/Staff.jsx';
 
 
 function App() {
