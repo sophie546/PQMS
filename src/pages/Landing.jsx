@@ -261,7 +261,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="Layer_2.png"
+                src="/Layer_2.png"
                 alt="Illustration - working on laptop"
                 style={{ maxWidth: "100%", height: "auto", borderRadius: 8 }}
                 loading="lazy"
@@ -321,7 +321,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="feature1.png"
+                src="/feature1.png"
                 alt="Patient Management Illustration"
                 style={{ maxWidth: "100%", height: "auto", maxHeight: 200, borderRadius: 8 }}
                 loading="lazy"
@@ -365,7 +365,7 @@ export default function LandingPage() {
 
             <Box sx={{ flex: 1, textAlign: "center" }}>
               <img
-                src="feature2.png"
+                src="/feature2.png"
                 alt="Queue Tracking Illustration"
                 style={{ maxWidth: "100%", height: "auto", maxHeight: 200, borderRadius: 8 }}
                 loading="lazy"
