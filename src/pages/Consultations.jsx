@@ -17,20 +17,27 @@ import {
   HeaderIcon,
   HeaderSubText, 
   HeaderTitle,
-  HeaderButton
+  HeaderButton,
+  StatCard,
+  StatTitle,
+  StatNumber,
+  SubText,
+  StatIcon,
+  Caption,
+  SubCaption
 } from "../components";
 
 // Custom hook
 import { useConsultation } from "../hooks";
 
-// Styled Components
+// Styled Components using Patient Queue styling
 const SectionHeader = ({ 
   children, 
   icon, 
-  color = '#1a237e',
-  fontWeight = 'bold',
+  color = '#1f2937',
+  fontWeight = 600,
   mb = 1,
-  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+  fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   sx = {},
   ...props 
 }) => (
@@ -42,6 +49,7 @@ const SectionHeader = ({
       sx={{ 
         fontFamily,
         color,
+        fontSize: '0.875rem',
         ...sx 
       }}
       {...props}
@@ -53,7 +61,7 @@ const SectionHeader = ({
 
 const StyledTextField = ({ 
   fullWidth = true,
-  variant = "standard",
+  variant = "outlined",
   type = "text",
   size = "small",
   mb = 3,
@@ -66,14 +74,29 @@ const StyledTextField = ({
     type={type}
     size={size}
     sx={{
-      '& .MuiInput-underline:before': { borderBottomColor: 'rgba(102, 126, 234, 0.3)' },
-      '& .MuiInput-underline:hover:before': { borderBottomColor: '#667eea' },
-      '& .MuiInput-underline:after': { borderBottomColor: '#667eea' },
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 2,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        '& fieldset': { 
+          borderColor: '#e5e7eb',
+          borderWidth: '1px'
+        },
+        '&:hover fieldset': { 
+          borderColor: '#d1d5db' 
+        },
+        '&.Mui-focused fieldset': { 
+          borderColor: '#667eea',
+          borderWidth: '1px'
+        },
+      },
       '& .MuiInputBase-input': {
-        fontSize: 14,
-        fontWeight: 600,
-        padding: '10px 2px',
-        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+        fontSize: '0.875rem',
+        fontWeight: 500,
+        color: '#374151',
+      },
+      '& .MuiInputLabel-root': {
+        fontSize: '0.875rem',
+        color: '#6b7280',
       },
       mb,
       ...sx
@@ -86,37 +109,38 @@ const SymptomButton = styled(Button)(({ theme }) => ({
   boxShadow: 'none',
   textTransform: 'none',
   fontSize: '0.875rem',
-  borderRadius: 12,
+  borderRadius: 8,
   justifyContent: 'flex-start',
   marginBottom: 8,
   padding: '12px 16px',
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-  color: 'white', 
+  background: 'white',
+  border: '1px solid #e5e7eb',
+  color: '#374151', 
   fontWeight: 600,
-  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  transition: 'all 0.2s ease',
   
   '&:hover': {
-    background: 'linear-gradient(135deg, #7d93ff 0%, #8a6cbb 100%)', 
-    color: 'white',
-    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+    background: '#f9fafb',
+    borderColor: '#d1d5db',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
   },
   '&:active': {
-    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a5590 100%)',
-    color: 'white',
+    background: '#f3f4f6',
   },
   '&.Mui-selected': { 
-    background: 'linear-gradient(135deg, #7d93ff 0%, #8a6cbb 100%)',
+    background: '#667eea',
     color: 'white',
+    borderColor: '#667eea',
   }
 }));
 
 const SectionTitle = ({ 
   children, 
-  color = '#1a237e',
-  fontWeight = 'bold',
-  mb = 1,
-  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+  color = '#1f2937',
+  fontWeight = 600,
+  mb = 2,
+  fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   sx = {},
   ...props 
 }) => (
@@ -127,6 +151,7 @@ const SectionTitle = ({
     sx={{ 
       fontFamily,
       color,
+      fontSize: '0.875rem',
       ...sx 
     }}
     {...props}
@@ -138,8 +163,8 @@ const SectionTitle = ({
 const StyledTextArea = ({ 
   placeholder = "Enter text...",
   multiline = true,
-  minRows = 1,
-  maxRows = 4,
+  minRows = 3,
+  maxRows = 6,
   mb = 3,
   sx = {},
   ...props 
@@ -152,15 +177,28 @@ const StyledTextArea = ({
     maxRows={maxRows}
     sx={{
       '& .MuiOutlinedInput-root': {
-        borderRadius: 3,
+        borderRadius: 2,
         fontWeight: 500,
-        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-        '& fieldset': { borderColor: 'rgba(102, 126, 234, 0.3)' },
-        '&:hover fieldset': { borderColor: '#667eea' },
-        '&.Mui-focused fieldset': { borderColor: '#667eea' },
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        '& fieldset': { 
+          borderColor: '#e5e7eb',
+          borderWidth: '1px'
+        },
+        '&:hover fieldset': { 
+          borderColor: '#d1d5db' 
+        },
+        '&.Mui-focused fieldset': { 
+          borderColor: '#667eea',
+          borderWidth: '1px'
+        },
       },
       '& .MuiInputBase-input': {
-        fontSize: 14,
+        fontSize: '0.875rem',
+        color: '#374151',
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: '#9ca3af',
+        fontSize: '0.875rem',
       },
       mb,
       ...sx
@@ -188,13 +226,13 @@ function ConsultationPage() {
   } = useConsultation();
 
   return (
-    <Box sx={{ flexGrow: 1, maxWidth: '100%'}}>
+    <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
       {/* header - USING REUSABLE COMPONENTS */}
       <HeaderPaper>
-        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" position="relative" zIndex={1}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            <HeaderIcon>
-              <FaNotesMedical size={24} color="white" />
+            <HeaderIcon sx={{ background: '#667eea' }}>
+              <FaNotesMedical size={20} color="white" />
             </HeaderIcon>
             <Box>
               <HeaderTitle>Consultation Notes</HeaderTitle>
@@ -205,397 +243,357 @@ function ConsultationPage() {
           </Box>
 
           <HeaderButton 
-            startIcon={<AddIcon />}
+            variant="contained"
+            startIcon={<AddIcon sx={{ fontSize: 18 }} />}
             onClick={saveConsultation}
+            disabled={!isFormValid}
           >
             Save Consultation
           </HeaderButton>
         </Box>
       </HeaderPaper>
 
-      <Box display="flex" gap={4}>
-        <Box p={4} width="67%" pr={0}>  
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(102, 126, 234, 0.1)',
-              overflow: 'hidden',
-              background: 'white',
-              mb: 4     
-            }}
-          >
-            <Box sx={{ 
-              p: 3, 
-              borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
-              background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
-            }}>
-              <Typography 
-                variant="h5" 
-                sx={{
-                  fontWeight: 700,
-                  color: '#1a237e',
-                  mb: 0.5,
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                  fontSize: '1.5rem',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  textFillColor: 'transparent',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Patient Information
-              </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{
-                  color: '#6b7280',
-                  fontWeight: 500,
-                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                }}
-              >
-                Enter or select patient details
-              </Typography>
-            </Box>
-
-            {/* patient info form - USING REUSABLE FORM COMPONENTS */}
-            <Box p={4}>
-              <FormTextField 
-                label="Patient Name"
-                placeholder="Enter patient name"
-                value={patientInfo.name}
-                onChange={(e) => handlePatientInfoChange('name', e.target.value)}
-                required
-                error={!!errors.name}
-                helperText={errors.name}
-              />
-
-              <Box display="flex" gap={2} mt={2}>
-                <Box flex={1}>
-                  <FormTextField 
-                    label="Age"
-                    placeholder="19"
-                    value={patientInfo.age}
-                    onChange={(e) => handlePatientInfoChange('age', e.target.value)}
-                    error={!!errors.age}
-                    helperText={errors.age}
-                  />
-                </Box>
-                <Box flex={1}>
-                  <FormSelectField 
-                    label="Gender"
-                    options={gender}
-                    placeholder="Select"
-                    value={patientInfo.gender}
-                    onChange={(e) => handlePatientInfoChange('gender', e.target.value)}
-                  />
-                </Box>
-              </Box>
-
-              <Box display="flex" gap={2} mt={2}>
-                <Box flex={1}>
-                  <FormSelectField 
-                    label="Doctor"
-                    options={doctors}
-                    placeholder="Select"
-                    value={patientInfo.doctor}
-                    onChange={(e) => handlePatientInfoChange('doctor', e.target.value)}
-                    required
-                    error={!!errors.doctor}
-                    helperText={errors.doctor}
-                  />
-                </Box>
-                <Box flex={1}>
-                  <Typography variant="body1" fontWeight="bold" mb={1} sx={{ fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif', color: '#1a237e' }}>
-                    Date
-                  </Typography>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker 
-                      placeholder="Select date"
-                      value={patientInfo.date}
-                      onChange={(newValue) => handlePatientInfoChange('date', newValue)}
-                      slotProps={{
-                        textField: {
-                          size: 'small',
-                          fullWidth: true,
-                          error: !!errors.date,
-                          helperText: errors.date,
-                          sx: {
-                            '& .MuiOutlinedInput-root': {
-                              borderRadius: 3,
-                              fontWeight: 500,
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                              '& fieldset': { borderColor: 'rgba(102, 126, 234, 0.3)' },
-                              '&:hover fieldset': { borderColor: '#667eea' },
-                              '&.Mui-focused fieldset': { borderColor: '#667eea' },
-                            },
-                            '& .MuiInputBase-input': {
-                              fontSize: 14,
-                              padding: '11px 12px',
-                            },
-                          }
-                        }
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Box>
-              </Box>
-            </Box>
-          </Card>
-          
-          {/* consultation notes */}
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(102, 126, 234, 0.1)',
-              overflow: 'hidden',
-              background: 'white'
-            }}
-          >
-            <Box sx={{ 
-              p: 3, 
-              borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
-              background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
-            }}>
-              <Typography 
-                variant="h5" 
-                sx={{
-                  fontWeight: 700,
-                  color: '#1a237e',
-                  mb: 0.5,
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                  fontSize: '1.5rem',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  textFillColor: 'transparent',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Consultation Details
-              </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{
-                  color: '#6b7280',
-                  fontWeight: 500,
-                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                }}
-              >
-                Document symptoms, diagnosis, and treatment
-              </Typography>
-            </Box>
-
-            <Box p={4}>
-              <SectionTitle>Symptoms</SectionTitle>
-              <StyledTextArea 
-                placeholder="Enter symptoms..."
-                value={consultationDetails.symptoms}
-                onChange={(e) => handleConsultationChange('symptoms', e.target.value)}
-                required
-                error={!!errors.symptoms}
-                helperText={errors.symptoms}
-              />
-
-              <SectionTitle>Diagnosis</SectionTitle>
-              <StyledTextArea 
-                placeholder="Enter diagnosis..."
-                value={consultationDetails.diagnosis}
-                onChange={(e) => handleConsultationChange('diagnosis', e.target.value)}
-                required
-                error={!!errors.diagnosis}
-                helperText={errors.diagnosis}
-              />
-
-              <SectionTitle>Prescription</SectionTitle>
-              <StyledTextArea 
-                placeholder="Enter prescription..."
-                value={consultationDetails.prescription}
-                onChange={(e) => handleConsultationChange('prescription', e.target.value)}
-              />
-
-              <SectionTitle>Remarks</SectionTitle>
-              <StyledTextArea 
-                placeholder="Enter remarks..."
-                value={consultationDetails.remarks}
-                onChange={(e) => handleConsultationChange('remarks', e.target.value)}
-              />
-            </Box>
-          </Card>
-        </Box>
-
-        <Box p={4} width="33%" pl={0}>
-          {/* consultation summary */}
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(102, 126, 234, 0.1)',
-              overflow: 'hidden',
-              background: 'white',
-              mb: 4
-            }}
-          >
-            <Box sx={{ 
-              p: 3, 
-              borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
-              background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
-            }}>
-              <Typography 
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1.125rem',
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  textFillColor: 'transparent',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Consultation Summary
-              </Typography>
-            </Box>
-
-            <Box p={3}>
-              <SectionHeader icon={<PeopleAltOutlinedIcon sx={{ fontSize: 18, color: '#1a237e' }} />}>
-                Patient Name
-              </SectionHeader>
-              <StyledTextField 
-                value={patientInfo.name || ""}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-
-              <SectionHeader icon={<EditCalendarOutlinedIcon sx={{ fontSize: 18, color: '#1a237e' }} />}>
-                Date
-              </SectionHeader>
-              <StyledTextField
-                value={patientInfo.date ? dayjs(patientInfo.date).format('MMM DD, YYYY') : ""}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-
-              <SectionHeader icon={<LocalHospitalOutlinedIcon sx={{ fontSize: 18, color: '#1a237e' }} />}>
-                Doctor
-              </SectionHeader>
-              <StyledTextField 
-                value={getDoctorLabel()}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-            </Box>
-          </Card>
-
-          {/* quick templates */}
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(102, 126, 234, 0.1)',
-              overflow: 'hidden',
-              background: 'white',
-              mb: 4
-            }}
-          >
-            <Box sx={{ 
-              p: 3, 
-              borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
-              background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
-            }}>
-              <Typography 
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1.125rem',
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  textFillColor: 'transparent',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Quick Templates
-              </Typography>
-            </Box>
-
-            <Box p={3}>
-              {quickTemplates.map((template) => (
-                <SymptomButton 
-                  key={template.id} 
-                  onClick={() => applyTemplate(template.id)} 
-                  fullWidth
+      <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
+        <Box display="flex" gap={4}>
+          <Box width="67%" pr={0}>  
+            {/* Patient Information Card */}
+            <Card
+              sx={{
+                background: 'white',
+                borderRadius: 2,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                border: '1px solid #e5e7eb',
+                overflow: 'hidden',
+                mb: 4,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                },
+              }}
+            >
+              <Box sx={{ 
+                p: 3, 
+                borderBottom: "1px solid #e5e7eb", 
+                background: 'white'
+              }}>
+                <Typography 
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    color: '#1f2937',
+                    mb: 0.5,
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontSize: '1.125rem',
+                  }}
                 >
-                  {template.name}
-                </SymptomButton>
-              ))}
-            </Box>
-          </Card>
+                  Patient Information
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{
+                    color: '#6b7280',
+                    fontWeight: 400,
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  Enter or select patient details
+                </Typography>
+              </Box>
 
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(102, 126, 234, 0.1)',
-              overflow: 'hidden',
-              background: 'white'
-            }}
-          >
-            <Box sx={{ 
-              p: 3, 
-              borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
-              background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
-            }}>
-              <Typography 
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1.125rem',
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  textFillColor: 'transparent',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Today's Consultations
-              </Typography>
-            </Box>
+              {/* patient info form - USING REUSABLE FORM COMPONENTS */}
+              <Box p={3}>
+                <FormTextField 
+                  label="Patient Name"
+                  placeholder="Enter patient name"
+                  value={patientInfo.name}
+                  onChange={(e) => handlePatientInfoChange('name', e.target.value)}
+                  required
+                  error={!!errors.name}
+                  helperText={errors.name}
+                />
+
+                <Box display="flex" gap={2}>
+                  <Box flex={1}>
+                    <FormTextField 
+                      label="Age"
+                      placeholder="19"
+                      value={patientInfo.age}
+                      onChange={(e) => handlePatientInfoChange('age', e.target.value)}
+                      error={!!errors.age}
+                      helperText={errors.age}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <FormSelectField 
+                      label="Gender"
+                      options={gender}
+                      placeholder="Select"
+                      value={patientInfo.gender}
+                      onChange={(e) => handlePatientInfoChange('gender', e.target.value)}
+                    />
+                  </Box>
+                </Box>
+
+                <Box display="flex" gap={2}>
+                  <Box flex={1}>
+                    <FormSelectField 
+                      label="Doctor"
+                      options={doctors}
+                      placeholder="Select"
+                      value={patientInfo.doctor}
+                      onChange={(e) => handlePatientInfoChange('doctor', e.target.value)}
+                      required
+                      error={!!errors.doctor}
+                      helperText={errors.doctor}
+                    />
+                  </Box>
+                  <Box flex={1}>
+                    <SectionTitle>Date</SectionTitle>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker 
+                        placeholder="Select date"
+                        value={patientInfo.date}
+                        onChange={(newValue) => handlePatientInfoChange('date', newValue)}
+                        slotProps={{
+                          textField: {
+                            size: 'small',
+                            fullWidth: true,
+                            error: !!errors.date,
+                            helperText: errors.date,
+                            sx: {
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                fontWeight: 500,
+                                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                '& fieldset': { 
+                                  borderColor: '#e5e7eb',
+                                  borderWidth: '1px'
+                                },
+                                '&:hover fieldset': { 
+                                  borderColor: '#d1d5db' 
+                                },
+                                '&.Mui-focused fieldset': { 
+                                  borderColor: '#667eea',
+                                  borderWidth: '1px'
+                                },
+                              },
+                              '& .MuiInputBase-input': {
+                                fontSize: '0.875rem',
+                                padding: '8.5px 14px',
+                                color: '#374151',
+                              },
+                            }
+                          }
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </Box>
+                </Box>
+              </Box>
+            </Card>
             
-            <Box p={3} textAlign="center">
-              <Typography 
-                variant="h3" 
-                component="div"
-                sx={{ 
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  backgroundClip: 'text',
-                  textFillColor: 'transparent',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                }}
-              >
-                {todayConsultations}
-              </Typography>
-              <Typography 
-                sx={{
-                  fontSize: '0.875rem',
-                  mt: 1,
-                  color: '#6b7280',
-                  fontWeight: 500,
-                  fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                }}
-              >
-                Consultations saved today
-              </Typography>
-            </Box>
-          </Card>
+            {/* Consultation Details Card */}
+            <Card
+              sx={{
+                background: 'white',
+                borderRadius: 2,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                border: '1px solid #e5e7eb',
+                overflow: 'hidden',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                },
+              }}
+            >
+              <Box sx={{ 
+                p: 3, 
+                borderBottom: "1px solid #e5e7eb", 
+                background: 'white'
+              }}>
+                <Typography 
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    color: '#1f2937',
+                    mb: 0.5,
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontSize: '1.125rem',
+                  }}
+                >
+                  Consultation Details
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{
+                    color: '#6b7280',
+                    fontWeight: 400,
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  Document symptoms, diagnosis, and treatment
+                </Typography>
+              </Box>
+
+              <Box p={3}>
+                <SectionTitle>Symptoms</SectionTitle>
+                <StyledTextArea 
+                  placeholder="Enter symptoms..."
+                  value={consultationDetails.symptoms}
+                  onChange={(e) => handleConsultationChange('symptoms', e.target.value)}
+                  required
+                  error={!!errors.symptoms}
+                  helperText={errors.symptoms}
+                />
+
+                <SectionTitle>Diagnosis</SectionTitle>
+                <StyledTextArea 
+                  placeholder="Enter diagnosis..."
+                  value={consultationDetails.diagnosis}
+                  onChange={(e) => handleConsultationChange('diagnosis', e.target.value)}
+                  required
+                  error={!!errors.diagnosis}
+                  helperText={errors.diagnosis}
+                />
+
+                <SectionTitle>Prescription</SectionTitle>
+                <StyledTextArea 
+                  placeholder="Enter prescription..."
+                  value={consultationDetails.prescription}
+                  onChange={(e) => handleConsultationChange('prescription', e.target.value)}
+                />
+
+                <SectionTitle>Remarks</SectionTitle>
+                <StyledTextArea 
+                  placeholder="Enter remarks..."
+                  value={consultationDetails.remarks}
+                  onChange={(e) => handleConsultationChange('remarks', e.target.value)}
+                />
+              </Box>
+            </Card>
+          </Box>
+
+          <Box width="33%" pl={0}>
+            {/* Consultation Summary Card */}
+            <StatCard sx={{ mb: 4 }}>
+              <Box sx={{ 
+                p: 3, 
+                borderBottom: "1px solid #e5e7eb", 
+                background: 'white'
+              }}>
+                <Typography 
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    color: '#1f2937',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontSize: '1.125rem',
+                  }}
+                >
+                  Consultation Summary
+                </Typography>
+              </Box>
+
+              <Box p={3}>
+                <SectionHeader icon={<PeopleAltOutlinedIcon sx={{ fontSize: 16, color: '#6b7280' }} />}>
+                  Patient Name
+                </SectionHeader>
+                <StyledTextField 
+                  value={patientInfo.name || ""}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  sx={{ mb: 2 }}
+                />
+
+                <SectionHeader icon={<EditCalendarOutlinedIcon sx={{ fontSize: 16, color: '#6b7280' }} />}>
+                  Date
+                </SectionHeader>
+                <StyledTextField
+                  value={patientInfo.date ? dayjs(patientInfo.date).format('MMM DD, YYYY') : ""}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  sx={{ mb: 2 }}
+                />
+
+                <SectionHeader icon={<LocalHospitalOutlinedIcon sx={{ fontSize: 16, color: '#6b7280' }} />}>
+                  Doctor
+                </SectionHeader>
+                <StyledTextField 
+                  value={getDoctorLabel()}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Box>
+            </StatCard>
+
+            {/* Quick Templates Card */}
+            <StatCard sx={{ mb: 4 }}>
+              <Box sx={{ 
+                p: 3, 
+                borderBottom: "1px solid #e5e7eb", 
+                background: 'white'
+              }}>
+                <Typography 
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    color: '#1f2937',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontSize: '1.125rem',
+                  }}
+                >
+                  Quick Templates
+                </Typography>
+              </Box>
+
+              <Box p={3}>
+                {quickTemplates.map((template) => (
+                  <SymptomButton 
+                    key={template.id} 
+                    onClick={() => applyTemplate(template.id)} 
+                    fullWidth
+                  >
+                    {template.name}
+                  </SymptomButton>
+                ))}
+              </Box>
+            </StatCard>
+
+            {/* Today's Consultations Card */}
+            <StatCard>
+              <Box sx={{ 
+                p: 3, 
+                borderBottom: "1px solid #e5e7eb", 
+                background: 'white'
+              }}>
+                <Typography 
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    color: '#1f2937',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontSize: '1.125rem',
+                  }}
+                >
+                  Today's Consultations
+                </Typography>
+              </Box>
+              
+              <Box p={4} textAlign="center">
+                <StatNumber sx={{ mb: 1, fontSize: '2.5rem' }}>
+                  {todayConsultations}
+                </StatNumber>
+                <SubText sx={{ fontSize: '0.875rem' }}>
+                  Consultations saved today
+                </SubText>
+              </Box>
+            </StatCard>
+          </Box>
         </Box>
       </Box>
     </Box>

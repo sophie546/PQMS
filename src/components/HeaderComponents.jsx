@@ -1,112 +1,49 @@
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-} from "@mui/material";
+import React from 'react';
+import { Box, Typography } from '@mui/material';
 
-export const HeaderPaper = ({ 
-  children,
-  background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  backdropFilter = 'blur(20px)',
-  borderBottom = '1px solid rgba(255,255,255,0.1)',
-  position = 'sticky',
-  top = 0,
-  zIndex = 10,
-  px = 4,
-  py = 3,
-  overflow = 'hidden',
-  borderRadius = 0,
-  sx = {},
-  ...props 
-}) => (
-  <Paper 
-    elevation={0}
+// Header Components
+export const HeaderPaper = ({ children, sx = {}, ...props }) => (
+  <Box
     sx={{
-      background,
-      backdropFilter,
-      borderBottom,
-      position,
-      top,
-      zIndex,
-      px,
-      py,
-      position: 'relative',
-      overflow,
-      borderRadius,
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '100%',
-        background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
-        pointerEvents: 'none',
-      },
+      background: 'white',
+      borderBottom: '1px solid #e5e7eb',
+      py: 3,
+      px: 4,
+      mb: 0,
       ...sx
     }}
     {...props}
-  >
-    {children}
-  </Paper>
-);
-
-export const HeaderIcon = ({ 
-  children,
-  width = 44,
-  height = 44,
-  borderRadius = 3,
-  background = 'rgba(255, 255, 255, 0.2)',
-  backdropFilter = 'blur(10px)',
-  display = 'flex',
-  alignItems = 'center',
-  justifyContent = 'center',
-  boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)',
-  border = '1px solid rgba(255, 255, 255, 0.2)',
-  sx = {},
-  ...props 
-}) => (
-  <Box sx={{
-    width,
-    height,
-    borderRadius,
-    background,
-    backdropFilter,
-    display,
-    alignItems,
-    justifyContent,
-    boxShadow,
-    border,
-    ...sx
-  }}
-  {...props}
   >
     {children}
   </Box>
 );
 
-export const HeaderTitle = ({ 
-  children,
-  variant = "h4",
-  fontWeight = 700,
-  color = 'white',
-  mb = 0.5,
-  fontFamily = '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-  fontSize = '1.75rem',
-  letterSpacing = '-0.25px',
-  sx = {},
-  ...props 
-}) => (
-  <Typography 
-    variant={variant}
-    sx={{ 
-      fontWeight,
-      color,
-      mb,
-      fontFamily,
-      fontSize,
-      letterSpacing,
+export const HeaderIcon = ({ children, sx = {}, ...props }) => (
+  <Box
+    sx={{
+      width: 40,
+      height: 40,
+      borderRadius: 2,
+      background: '#f3f4f6',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...sx
+    }}
+    {...props}
+  >
+    {children}
+  </Box>
+);
+
+export const HeaderTitle = ({ children, sx = {}, ...props }) => (
+  <Typography
+    variant="h5"
+    sx={{
+      color: '#1f2937',
+      fontWeight: 700,
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '1.5rem',
       ...sx
     }}
     {...props}
@@ -115,23 +52,13 @@ export const HeaderTitle = ({
   </Typography>
 );
 
-export const HeaderSubText = ({ 
-  children,
-  variant = "body2",
-  color = 'rgba(255, 255, 255, 0.8)',
-  fontWeight = 500,
-  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-  fontSize = '0.875rem',
-  sx = {},
-  ...props 
-}) => (
-  <Typography 
-    variant={variant}
+export const HeaderSubText = ({ children, sx = {}, ...props }) => (
+  <Typography
+    variant="body2"
     sx={{
-      color,
-      fontWeight,
-      fontFamily,
-      fontSize,
+      color: '#6b7280',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '0.875rem',
       ...sx
     }}
     {...props}
@@ -140,43 +67,31 @@ export const HeaderSubText = ({
   </Typography>
 );
 
-export const HeaderButton = ({ 
-  children,
-  variant = "contained",
-  startIcon,
-  background = 'rgba(255, 255, 255, 0.9)',
-  color = '#667eea',
-  textTransform = 'none',
-  fontWeight = 700,
-  borderRadius = 3,
-  px = 4,
-  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-  fontSize = '0.875rem',
-  boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)',
-  sx = {},
-  ...props 
-}) => (
-  <Button 
-    variant={variant}
-    startIcon={startIcon}
+export const HeaderButton = ({ children, variant = 'outlined', sx = {}, ...props }) => (
+  <Box
+    component="button"
     sx={{
-      background,
-      color,
-      textTransform,
-      fontWeight,
-      borderRadius,
-      px,
-      fontFamily,
-      fontSize,
-      boxShadow,
+      background: variant === 'contained' ? '#667eea' : 'white',
+      border: '1px solid #e5e7eb',
+      color: variant === 'contained' ? 'white' : '#374151',
+      px: 2.5,
+      py: 1,
+      borderRadius: 2,
+      cursor: 'pointer',
+      fontWeight: 600,
+      fontSize: '0.875rem',
+      transition: 'all 0.2s',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1,
       '&:hover': {
-        background: 'white',
-        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
+        background: variant === 'contained' ? '#5568d3' : '#f9fafb',
+        borderColor: variant === 'contained' ? '#5568d3' : '#d1d5db',
       },
       ...sx
     }}
     {...props}
   >
     {children}
-  </Button>
+  </Box>
 );

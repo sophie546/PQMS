@@ -25,19 +25,15 @@ const SidebarHeader = () => (
     alignItems: 'center',
     gap: 2,
     px: 3,
-    position: 'relative',
-    zIndex: 1,
   }}>
     <Box sx={{
       width: 44,
       height: 44,
-      borderRadius: 3,
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)',
-      backdropFilter: 'blur(10px)',
+      borderRadius: 2,
+      background: 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      border: '1px solid rgba(255,255,255,0.1)',
     }}>
       <FaStethoscope size={24} color="white" />
     </Box>
@@ -50,11 +46,7 @@ const SidebarHeader = () => (
           fontWeight: 700, 
           letterSpacing: '0.5px',
           fontFamily: '"Inter", "Segoe UI", sans-serif',
-          background: 'linear-gradient(135deg, #fff 0%, #f0f0f0 100%)',
-          backgroundClip: 'text',
-          textFillColor: 'transparent',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: '#1a1a1a',
         }}
       >
         ClinicaFlow
@@ -62,7 +54,7 @@ const SidebarHeader = () => (
       <Typography 
         variant="caption" 
         sx={{
-          color: 'rgba(255,255,255,0.7)',
+          color: '#6b7280',
           fontFamily: '"Inter", "Segoe UI", sans-serif',
           fontWeight: 500,
           fontSize: '0.75rem',
@@ -77,41 +69,31 @@ const SidebarHeader = () => (
 
 // Individual Menu Item Component
 const SidebarMenuItem = ({ item, isSelected, onClick }) => (
-  <ListItem disablePadding sx={{ mb: 1 }}>
+  <ListItem disablePadding sx={{ mb: 0.5 }}>
     <ListItemButton
       component={Link}
       to={item.path}
       selected={isSelected}
       onClick={() => onClick?.(item)}
       sx={{
-        borderRadius: 3,
+        borderRadius: 2,
         py: 1.5,
         px: 2.5,
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        color: 'rgba(255,255,255,0.8)',
-        background: isSelected 
-          ? 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)'
-          : 'transparent',
-        backdropFilter: isSelected ? 'blur(10px)' : 'none',
-        border: isSelected ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent',
+        transition: 'all 0.2s ease',
+        color: '#6b7280',
+        background: isSelected ? '#f3f4f6' : 'transparent',
         '&:hover': {
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-          color: 'white',
-          transform: 'translateX(8px)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          backdropFilter: 'blur(10px)',
+          background: '#f9fafb',
+          color: '#7c3aed',
         },
         "&.Mui-selected": {
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%)',
-          color: "white",
-          border: '1px solid rgba(255,255,255,0.2)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+          background: '#ede9fe',
+          color: "#7c3aed",
           "&:hover": {
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%)',
+            background: '#e9d5ff',
           },
           '& .MuiListItemIcon-root': {
-            color: 'white',
+            color: '#7c3aed',
           }
         },
       }}
@@ -131,9 +113,6 @@ const SidebarMenuItem = ({ item, isSelected, onClick }) => (
           letterSpacing: '0.2px',
         }}
       />
-      {isSelected && (
-        <FaChevronRight size={14} color="white" />
-      )}
     </ListItemButton>
   </ListItem>
 );
@@ -142,10 +121,8 @@ const SidebarMenuItem = ({ item, isSelected, onClick }) => (
 const SidebarMenu = ({ items = [], currentPath, onItemClick }) => (
   <List sx={{ 
     px: 2, 
-    py: 3, 
+    py: 2, 
     flex: 1,
-    position: 'relative',
-    zIndex: 1,
   }}>
     {items && items.map((item) => (
       <SidebarMenuItem 
@@ -175,31 +152,28 @@ const UserProfile = () => {
     <Box 
       onClick={handleProfileClick}
       sx={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: 3,
-        p: 2.5,
+        background: '#f9fafb',
+        borderRadius: 2,
+        p: 2,
         display: 'flex',
         alignItems: 'center',
         gap: 2,
-        border: '1px solid rgba(255,255,255,0.1)',
-        transition: 'all 0.3s ease',
+        border: '1px solid #e5e7eb',
+        transition: 'all 0.2s ease',
         cursor: 'pointer',
         '&:hover': {
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          transform: 'translateY(-2px)',
+          background: '#f3f4f6',
+          border: '1px solid #d1d5db',
         }
       }}
     >
       <Avatar sx={{ 
         width: 44, 
         height: 44,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)',
         fontSize: '0.875rem',
         fontWeight: 700,
         fontFamily: '"Inter", "Segoe UI", sans-serif',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
       }}>
         DS
       </Avatar>
@@ -207,7 +181,7 @@ const UserProfile = () => {
         <Typography 
           variant="body2" 
           sx={{ 
-            color: 'white', 
+            color: '#1a1a1a', 
             fontWeight: 600, 
             lineHeight: 1.3,
             fontFamily: '"Inter", "Segoe UI", sans-serif',
@@ -220,7 +194,7 @@ const UserProfile = () => {
         <Typography 
           variant="caption" 
           sx={{ 
-            color: 'rgba(255,255,255,0.7)',
+            color: '#6b7280',
             fontFamily: '"Inter", "Segoe UI", sans-serif',
             fontSize: '0.75rem',
             fontWeight: 500,
@@ -234,10 +208,10 @@ const UserProfile = () => {
         size="small"
         onClick={handleSettingsClick}
         sx={{
-          color: 'rgba(255,255,255,0.7)',
+          color: '#6b7280',
           '&:hover': {
-            color: 'white',
-            background: 'rgba(255,255,255,0.1)',
+            color: '#7c3aed',
+            background: '#f3f4f6',
           }
         }}
       >
@@ -252,8 +226,6 @@ const SidebarFooter = () => (
   <Box sx={{ 
     p: 2, 
     mt: 'auto',
-    position: 'relative',
-    zIndex: 1,
   }}>
     <UserProfile />
   </Box>
@@ -265,22 +237,11 @@ export const Sidebar = ({ menuItems, currentPath, onItemClick }) => (
     height: '100%', 
     display: 'flex', 
     flexDirection: 'column',
-    background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
-    position: 'relative',
-    overflow: 'hidden',
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: '100%',
-      background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
-      pointerEvents: 'none',
-    }
+    background: '#ffffff',
+    borderRight: '1px solid #e5e7eb',
   }}>
     <SidebarHeader />
-    <Divider sx={{ borderColor: 'rgba(255,255,255,0.15)', mx: 2, position: 'relative', zIndex: 1 }} />
+    <Divider sx={{ borderColor: '#e5e7eb', mx: 2 }} />
     <SidebarMenu items={menuItems} currentPath={currentPath} onItemClick={onItemClick} />
     <SidebarFooter />
   </Box>
@@ -316,7 +277,7 @@ export const SidebarNavigation = ({
           '& .MuiDrawer-paper': { 
             boxSizing: 'border-box', 
             width: drawerWidth,
-            background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
+            background: '#ffffff',
           },
         }}
       >
@@ -335,9 +296,9 @@ export const SidebarNavigation = ({
           '& .MuiDrawer-paper': { 
             boxSizing: 'border-box', 
             width: drawerWidth,
-            background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
+            background: '#ffffff',
             border: 'none',
-            boxShadow: '8px 0 40px rgba(0,0,0,0.2)',
+            borderRight: '1px solid #e5e7eb',
           },
         }}
         open

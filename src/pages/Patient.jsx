@@ -2,26 +2,15 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Stack,
   Chip,
   IconButton,
   Card,
   CardContent,
   Avatar,
-  Grid,
-  Add,
-  People,
-  Female,
-  Male,
-  MoreVert,
-  FaUsers,
-  MenuItem,
-  FilterList,
   Button,
-  Menu,        
-  Clear 
+  Menu,
+  MenuItem
 } from "../lib";
-
 
 import {
   StatCard,
@@ -38,6 +27,18 @@ import {
 } from "../components";
 
 import { usePatientManagement } from "../hooks";
+
+// Import icons directly
+import { 
+  Add,
+  People,
+  Female,
+  Male,
+  MoreVert,
+  FaUsers,
+  FilterList,
+  Clear 
+} from "../lib";
 
 function PatientPage() {
   const {
@@ -78,19 +79,19 @@ function PatientPage() {
 
   // Icon mapping
   const iconMap = {
-    people: <People sx={{ fontSize: 28, color: 'white' }} />,
-    male: <Male sx={{ fontSize: 34, color: 'white' }} />,
-    female: <Female sx={{ fontSize: 34, color: 'white' }} />
+    people: <People sx={{ fontSize: 24, color: 'white' }} />,
+    male: <Male sx={{ fontSize: 24, color: 'white' }} />,
+    female: <Female sx={{ fontSize: 24, color: 'white' }} />
   };
 
   return (
-    <Box sx={{ flexGrow: 1, maxWidth: '100%'}}>
-      {/* header */}
+    <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
+      {/* Header */}
       <HeaderPaper>
-        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" position="relative" zIndex={1}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            <HeaderIcon>
-              <FaUsers size={24} color="white" />
+            <HeaderIcon sx={{ background: '#667eea' }}>
+              <FaUsers size={20} color="white" />
             </HeaderIcon>
             <Box>
               <HeaderTitle>Patient Management</HeaderTitle>
@@ -100,137 +101,124 @@ function PatientPage() {
             </Box>
           </Box>
 
-          <Stack direction="row" spacing={2}>
-            <HeaderButton startIcon={<Add />} onClick={handleAddPatient}>
-              Add Patient
-            </HeaderButton>
-          </Stack>
+          <HeaderButton 
+            variant="contained"
+            startIcon={<Add sx={{ fontSize: 18 }} />}
+            onClick={handleAddPatient}
+          >
+            Add Patient
+          </HeaderButton>
         </Box>
       </HeaderPaper>
 
-      <Box p={4}>  
-        {/* REMOVED THE DUPLICATE ACTIVE FILTERS SECTION FROM HERE */}
-
-        <Box sx={{ display: 'flex', gap: 2.5, mb: 4}}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
+        {/* Stats Grid */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, mb: 4 }}>
           {managementStats.map((stat) => (
-            <Box key={stat.id} sx={{ flex: 1}}>
-              <StatCard>
-                <CardContent sx={{ p: 3, height: '100%' }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                    <Box sx={{ flex: 1, mr: 2 }}>
-                      <StatTitle>{stat.title}</StatTitle>
-                      <StatNumber>{stat.stats}</StatNumber>
-                    </Box>
-                    <StatIcon background={stat.gradient}>
-                      {iconMap[stat.icon]}
-                    </StatIcon>
+            <StatCard key={stat.id}>
+              <CardContent sx={{ p: 3 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                  <Box>
+                    <StatTitle>{stat.title}</StatTitle>
+                    <StatNumber>{stat.stats}</StatNumber>
                   </Box>
-                </CardContent>
-              </StatCard>
-            </Box>
+                  <StatIcon background={stat.gradient}>
+                    {iconMap[stat.icon]}
+                  </StatIcon>
+                </Box>
+              </CardContent>
+            </StatCard>
           ))}
         </Box>
 
-        <Card 
-          sx={{ 
-            borderRadius: 3,
-            boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-            border: '1px solid rgba(102, 126, 234, 0.1)',
-            overflow: 'hidden',
-            background: 'white'
-          }}
-        >
-          <Box sx={{ 
-            p: 3, 
-            borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
-            background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
-          }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2.5} >
+        {/* Main Patient Records Card */}
+        <Card sx={{ 
+          borderRadius: 2, 
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)', 
+          border: '1px solid #e5e7eb' 
+        }}>
+          {/* Card Header */}
+          <Box sx={{ p: 3, borderBottom: "1px solid #e5e7eb" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
               <Box>
-                <Typography 
-                  variant="h5" 
-                  sx={{
-                    fontWeight: 700,
-                    color: '#1a237e',
-                    mb: 0.5,
-                    fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                    fontSize: '1.5rem',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    backgroundClip: 'text',
-                    textFillColor: 'transparent',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937', mb: 0.5 }}>
                   Patient Records
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{
-                    color: '#6b7280',
-                    fontWeight: 500,
-                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-                  }}
-                >
+                <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
                   {patientRecords.length} patients found
                 </Typography>
               </Box>
-
-              {/* Search and Filter Section */}
+              
+              {/* Search and Filter Controls */}
               <Box display="flex" alignItems="center" gap={2}>
-                {/* Active Filters Display - ONLY ONE PLACE FOR ACTIVE FILTERS */}
+                {/* Active Filters */}
                 {hasActiveFilters && (
                   <Box display="flex" alignItems="center" gap={1}>
-                    <Chip 
-                      label="Active Filters" 
-                      size="small" 
-                      color="primary" 
-                      variant="outlined" 
-                    />
                     {searchQuery && (
                       <Chip 
                         label={`Search: ${searchQuery}`} 
-                        size="small" 
+                        size="small"
                         onDelete={() => handleSearchPatients('')}
+                        sx={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          fontWeight: 500,
+                          fontSize: '0.75rem',
+                          height: '24px'
+                        }}
                       />
                     )}
                     {genderFilter !== 'all' && (
                       <Chip 
                         label={`Gender: ${genderFilter}`} 
-                        size="small" 
+                        size="small"
                         onDelete={() => handleGenderFilter('all')}
+                        sx={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          fontWeight: 500,
+                          fontSize: '0.75rem',
+                          height: '24px'
+                        }}
                       />
                     )}
                     <Button 
-                      startIcon={<Clear />} 
+                      startIcon={<Clear sx={{ fontSize: 16 }} />} 
                       onClick={clearFilters} 
                       size="small" 
-                      sx={{ textTransform: 'none', color: '#667eea', fontWeight: 600 }}
+                      sx={{ 
+                        textTransform: 'none', 
+                        color: '#6b7280',
+                        fontWeight: 500,
+                        fontSize: '0.75rem',
+                        minWidth: 'auto'
+                      }}
                     >
-                      Clear All
+                      Clear
                     </Button>
                   </Box>
                 )}
                 
                 {/* Filter Button */}
                 <Button
-                  startIcon={<FilterList />}
+                  startIcon={<FilterList sx={{ fontSize: 16 }} />}
                   variant="outlined"
                   onClick={handleFilterClick}
+                  size="small"
                   sx={{
                     textTransform: 'none',
-                    borderRadius: 3,
-                    borderColor: hasActiveFilters ? '#667eea' : 'rgba(102, 126, 234, 0.3)',
-                    color: '#667eea',
+                    borderRadius: 2,
+                    borderColor: '#e5e7eb',
+                    color: '#374151',
                     fontWeight: 600,
-                    background: hasActiveFilters ? 'rgba(102, 126, 234, 0.08)' : 'transparent',
+                    fontSize: '0.875rem',
                     '&:hover': { 
-                      borderColor: '#667eea', 
-                      background: 'rgba(102, 126, 234, 0.04)' 
+                      borderColor: '#d1d5db', 
+                      background: '#f9fafb' 
                     }
                   }}
                 >
-                  Filter {genderFilter !== 'all' && `(${genderFilter})`}
+                  Filter
                 </Button>
 
                 {/* Filter Menu */}
@@ -241,7 +229,8 @@ function PatientPage() {
                   PaperProps={{
                     sx: {
                       borderRadius: 2,
-                      boxShadow: '0 4px 25px rgba(0,0,0,0.1)',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                      border: '1px solid #e5e7eb',
                       mt: 1,
                       minWidth: 160
                     }
@@ -252,6 +241,10 @@ function PatientPage() {
                       key={gender}
                       onClick={() => handleGenderFilter(gender)}
                       selected={genderFilter === gender}
+                      sx={{
+                        fontSize: '0.875rem',
+                        fontWeight: genderFilter === gender ? 600 : 400
+                      }}
                     >
                       {gender === 'all' ? 'All Genders' : gender}
                     </MenuItem>
@@ -263,27 +256,27 @@ function PatientPage() {
                   display: 'flex', 
                   alignItems: 'center', 
                   backgroundColor: 'white',
-                  borderRadius: 3,
-                  border: '1px solid rgba(102, 126, 234, 0.3)',
+                  borderRadius: 2,
+                  border: '1px solid #e5e7eb',
                   overflow: 'hidden',
                   width: '280px',
-                  '&:hover': {
+                  transition: 'border-color 0.2s',
+                  '&:focus-within': {
                     borderColor: '#667eea',
                   }
                 }}>
-      
                   <input
                     type="text"
-                    placeholder="Search name, ID..."
+                    placeholder="Search patients..."
                     value={searchQuery}
                     onChange={(e) => handleSearchPatients(e.target.value)}
                     onKeyPress={handleKeyPress}
                     style={{
                       border: 'none',
                       outline: 'none',
-                      padding: '10px 16px',
+                      padding: '8px 16px',
                       fontSize: '0.875rem',
-                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                       width: '100%',
                       backgroundColor: 'transparent',
                       color: '#1f2937'
@@ -294,126 +287,101 @@ function PatientPage() {
             </Box>
           </Box>
 
-          {/* Patient Cards */}
-          <Box sx={{ p: 3 }}>
-            <Stack spacing={2}>
-              {patientRecords.length > 0 ? (
-                patientRecords.map((patient) => (
-                  <Card 
-                    key={patient.id} 
-                    sx={{ 
-                      p: 3, 
-                      borderRadius: 2,
-                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
-                      border: '1px solid #e5e7eb',
-                      transition: 'all 0.2s ease',
-                      backgroundColor: 'white',
-                      '&:hover': {
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                      }
-                    }}
-                  >
-                    {/* Top Section: Avatar, Name, ID */}
-                    <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
-                      <Box display="flex" alignItems="center" gap={2}>
-                        <Avatar 
-                          sx={{ 
-                            width: 48,
-                            height: 48,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            fontWeight: 700,
-                            fontSize: '0.875rem',
-                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                          }}
-                        >
-                          {patient.name.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        
-                        <Box>
-                          <Typography 
-                            variant="h6" 
-                            sx={{
-                              fontWeight: 600,
-                              color: '#1f2937',
-                              fontSize: '1rem',
-                              fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                              mb: 0.5
-                            }}
-                          >
-                            {patient.name}
-                          </Typography>
-                          
-                          <Typography 
-                            variant="body2"
-                            sx={{
-                              color: '#6b7280',
-                              fontWeight: 400,
-                              fontSize: '0.875rem',
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                            }}
-                          >
-                            {patient.age} years • {patient.gender}
-                          </Typography>
-                        </Box>
-                      </Box>
+          {/* Table Header */}
+          <Box sx={{ px: 3, py: 2, background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+            <Box display="grid" gridTemplateColumns="60px 2fr 1fr 2fr 1.5fr 1fr 60px" gap={2} alignItems="center">
+              <SubCaption>#</SubCaption>
+              <SubCaption>PATIENT</SubCaption>
+              <SubCaption>AGE</SubCaption>
+              <SubCaption>ADDRESS</SubCaption>
+              <SubCaption>CONTACT</SubCaption>
+              <SubCaption>LAST VISIT</SubCaption>
+              <Box />
+            </Box>
+          </Box>
 
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Chip
-                          label={`#${patient.id}`}
-                          size="small"
-                          sx={{
-                            backgroundColor: '#667eea',
-                            color: 'white',
-                            fontWeight: 700,
-                            fontSize: '0.75rem',
-                            height: '26px',
-                            minWidth: '36px'
-                          }}
-                        />
-                        <IconButton 
-                          size="small" 
-                          sx={{ color: '#9ca3af' }}
-                          onClick={() => handlePatientMenuClick(patient.id)}
-                        >
-                          <MoreVert sx={{ fontSize: 20 }} />
-                        </IconButton>
+          {/* Patient List - Table Format */}
+          <Box>
+            {patientRecords.length > 0 ? (
+              patientRecords.map((patient, index) => (
+                <Box 
+                  key={patient.id}
+                  sx={{ 
+                    px: 3, 
+                    py: 2.5, 
+                    borderBottom: index < patientRecords.length - 1 ? '1px solid #f3f4f6' : 'none',
+                    '&:hover': { background: '#f9fafb' },
+                    transition: 'background 0.2s'
+                  }}
+                >
+                  <Box display="grid" gridTemplateColumns="60px 2fr 1fr 2fr 1.5fr 1fr 60px" gap={2} alignItems="center">
+                    {/* Number */}
+                    <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 600 }}>
+                      {index + 1}
+                    </Typography>
+                    
+                    {/* Patient Info */}
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Avatar sx={{ 
+                        width: 40, 
+                        height: 40, 
+                        background: '#667eea', 
+                        fontWeight: 700, 
+                        fontSize: '0.875rem' 
+                      }}>
+                        {patient.name.split(' ').map(n => n[0]).join('')}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1f2937', mb: 0.25 }}>
+                          {patient.name}
+                        </Typography>
+                        <Caption>#{patient.id}</Caption>
                       </Box>
                     </Box>
-
-                    {/* Bottom Section: Patient Details - Using Grid for better alignment */}
-                    <Grid container spacing={1} alignItems="center">
-                      <Grid item >
-                        <Caption>Address |</Caption>
-                      </Grid>
-                      <Grid item>
-                        <SubCaption>{patient.address}</SubCaption>
-                      </Grid>
-                      <Grid item>
-                        <Caption>Contact Number   |</Caption>
-                      </Grid>
-                      <Grid item>
-                        <SubCaption>{patient.contact}</SubCaption>
-                      </Grid>
-                      <Grid item>
-                        <Caption>Last Visit   |</Caption>
-                      </Grid>
-                      <Grid item>
-                        <SubCaption>{patient.lastVisit}</SubCaption>
-                      </Grid>
-                    </Grid>
-                  </Card>
-                ))
-              ) : (
-                <Box sx={{ textAlign: 'center', py: 4 }}>
-                  <Typography variant="h6" color="textSecondary">
-                    No patients found
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Try adjusting your search or filters
-                  </Typography>
+                    
+                    {/* Age */}
+                    <Typography variant="body2" sx={{ color: '#374151' }}>
+                      {patient.age}
+                    </Typography>
+                    
+                    {/* Address */}
+                    <Typography variant="body2" sx={{ color: '#374151', fontSize: '0.875rem' }}>
+                      {patient.address}
+                    </Typography>
+                    
+                    {/* Contact */}
+                    <Typography variant="body2" sx={{ color: '#374151', fontSize: '0.875rem' }}>
+                      {patient.contact}
+                    </Typography>
+                    
+                    {/* Last Visit */}
+                    <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                      {patient.lastVisit}
+                    </Typography>
+                    
+                    {/* Actions */}
+                    <Box display="flex" justifyContent="flex-end">
+                      <IconButton 
+                        size="small" 
+                        sx={{ color: '#9ca3af' }}
+                        onClick={() => handlePatientMenuClick(patient.id)}
+                      >
+                        <MoreVert sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Box>
+                  </Box>
                 </Box>
-              )}
-            </Stack>
+              ))
+            ) : (
+              <Box sx={{ textAlign: 'center', py: 8 }}>
+                <Typography variant="body1" sx={{ color: '#6b7280', mb: 1 }}>
+                  No patients found
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+                  Try adjusting your search or filters
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Card>
       </Box>
