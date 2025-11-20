@@ -1,7 +1,16 @@
-import { Consultation } from '../types/entities.js';
+const createConsultation = (id, symptoms, diagnosis, prescription, notes, date, patientId, staffId) => ({
+  id,
+  symptoms,
+  diagnosis,
+  prescription,
+  notes,
+  date,
+  patientId,
+  staffId
+});
 
 export const mockConsultations = [
-  new Consultation(
+  createConsultation(
     "CONS-001",
     "Headache, dizziness, high blood pressure",
     "Hypertension Stage 2",
@@ -11,7 +20,7 @@ export const mockConsultations = [
     "PAT-001",
     "STAFF-001"
   ),
-  new Consultation(
+  createConsultation(
     "CONS-002",
     "Wheezing, shortness of breath, chest tightness",
     "Acute Asthma Exacerbation",
@@ -21,7 +30,7 @@ export const mockConsultations = [
     "PAT-002",
     "STAFF-002"
   ),
-  new Consultation(
+  createConsultation(
     "CONS-003",
     "Sneezing, runny nose, itchy eyes",
     "Allergic Rhinitis",
