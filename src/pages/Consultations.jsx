@@ -1,6 +1,5 @@
 import React from "react";
 
-// External libraries - ALL from lib/index.js
 import {
   Box, Typography, Button, TextField, Card, styled,
   AddIcon, PeopleAltOutlinedIcon, EditCalendarOutlinedIcon, LocalHospitalOutlinedIcon,
@@ -9,7 +8,6 @@ import {
   dayjs
 } from "../lib";
 
-// Custom Components
 import {
   FormTextField,
   FormSelectField,
@@ -23,10 +21,8 @@ import {
   SubText,
 } from "../components";
 
-// Custom hook
 import { useConsultation } from "../hooks";
 
-// Styled Components using Patient Queue styling
 const SectionHeader = ({ 
   children, 
   icon, 
@@ -204,7 +200,6 @@ const StyledTextArea = ({
 );
 
 function ConsultationPage() {
-  // Use the custom hook
   const {
     patientInfo,
     consultationDetails,
@@ -223,7 +218,7 @@ function ConsultationPage() {
 
   return (
     <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
-      {/* header - USING REUSABLE COMPONENTS */}
+      {/* header  */}
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
@@ -297,7 +292,7 @@ function ConsultationPage() {
                 </Typography>
               </Box>
 
-              {/* patient info form - USING REUSABLE FORM COMPONENTS */}
+              {/* patient info form */}
               <Box p={3}>
                 <FormTextField 
                   label="Patient Name"

@@ -97,7 +97,6 @@ export const HeaderButton = ({
       fontSize,
       boxShadow,
       '&:hover': {
-        background: 'white',
         boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
       },
       ...sx

@@ -1,6 +1,4 @@
 import React from 'react';
-
-// All external imports from lib/index.js
 import {
   Box,
   Card,
@@ -12,7 +10,6 @@ import {
   CardContent
 } from "../lib";
 
-// All custom components from components/index.js
 import {
   StatCard,
   StatTitle,
@@ -28,10 +25,8 @@ import {
   SubCaption
 } from "../components";
 
-// Custom hook
 import { usePatientHistory } from "../hooks";
 
-// Import icons directly
 import {
   Refresh,
   History,
@@ -82,7 +77,6 @@ const PatientHistory = () => {
   };
 
   const handleDateSelect = (dateType) => {
-    // Handle date filter logic here
     console.log("Date filter:", dateType);
     handleDateMenuClose();
   };
@@ -93,7 +87,6 @@ const PatientHistory = () => {
     }
   };
 
-  // Icon mapping
   const iconMap = {
     history: <History sx={{ fontSize: 44, color: '#667eea' }} />,
     schedule: <Schedule sx={{ fontSize: 44, color: '#ed6c02'}} />,

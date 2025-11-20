@@ -21,7 +21,6 @@ import {
   LocalHospital, 
 } from '@mui/icons-material';
 
-// Import components from the components directory
 import {
   StatCard,
   StatTitle,
@@ -35,14 +34,12 @@ import {
   SubCaption
 } from '../components';
 
-// Import the usePatientQueue hook
 import { usePatientQueue } from '../hooks/usePatientQueue';
 
 const PatientQueue = () => {
   const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
   const isFilterOpen = Boolean(filterAnchorEl);
 
-  // Use the usePatientQueue hook
   const {
     displayPatients,
     searchTerm,
@@ -95,13 +92,13 @@ const PatientQueue = () => {
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            {/* Logo Icon with Blue Background - Made Bigger */}
+            {/* Logo Icon with Blue Background */}
             <LocalHospital sx={{ 
-              fontSize: 40, // Increased from 32 to 36
+              fontSize: 40, 
               color: 'white',
-              background: '#667eea', // Blue background
+              background: '#667eea', 
               borderRadius: '8px',
-              p: 1.3, // Increased padding to accommodate larger icon
+              p: 1.3,
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
             }} />
             <Box>
@@ -125,7 +122,6 @@ const PatientQueue = () => {
                 backgroundColor: 'white',
               }}
             />
-            <Avatar sx={{ width: 40, height: 40, background: '#667eea', fontWeight: 700 }}>AP</Avatar>
           </Box>
         </Box>
       </HeaderPaper>

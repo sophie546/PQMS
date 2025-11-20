@@ -39,7 +39,6 @@ import {
 } from "../lib";
 
 function PatientPage() {
-  // Use the useFilter hook with mockPatients
   const {
     filteredData: displayPatients,
     searchTerm,
@@ -72,7 +71,6 @@ function PatientPage() {
     { id: 3, title: 'Female Patients', stats: mockPatients.filter(p => p.gender === 'Female').length, gradient: '#ec4899', icon: 'female' },
   ];
 
-  // Icon mapping
   const iconMap = {
     people: <People sx={{ fontSize: 42, color: '#6366f1' }} />,
     male: <Male sx={{ fontSize: 44, color: '#3b82f6' }} />,

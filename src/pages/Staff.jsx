@@ -11,7 +11,6 @@ import {
   Menu,
   MenuItem
 } from "../lib";
-
 import {
   StatCard,
   StatTitle,
@@ -26,11 +25,7 @@ import {
   Caption,
   SubCaption
 } from "../components";
-
-// Import the existing useStaff hook
 import { useStaff } from "../hooks";
-
-// Import icons directly
 import {
   Add,
   People,
@@ -43,7 +38,6 @@ import {
 } from "../lib";
 
 const Staff = () => {
-  // Use the existing useStaff hook
   const {
     staffMembers,
     staffStats,
@@ -94,7 +88,6 @@ const Staff = () => {
     handleStatusMenuClose();
   };
 
-  // Icon mapping
   const iconMap = {
     people: <People sx={{ fontSize: 40, color: '#667eea' }} />,
     medical: <MedicalServices sx={{ fontSize: 40, color: '#764ba2' }} />,
