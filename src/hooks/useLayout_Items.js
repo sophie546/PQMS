@@ -19,7 +19,7 @@ export const useLayout = () => {
     { text: "Patients", icon: <FaUsers size={20} />, path: "/Patient" },
     { text: "Medical Staff", icon: <FaUserMd size={20} />, path: "/Staff" },
     { text: "Appointments", icon: <FaCalendarCheck size={20} />, path: "/Consultations" },
-    { text: "Medical History", icon: <FaClipboardList size={20} />, path: "/PatientHistory" }
+    { text: "Medical History", icon: <FaClipboardList size={20} />, path: "/PatientHistory" },
   ];
 
   return {
