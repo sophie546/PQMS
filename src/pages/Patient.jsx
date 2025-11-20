@@ -26,9 +26,9 @@ import {
   SubCaption
 } from "../components";
 
-import { usePatientManagement } from "../hooks";
+import { useFilter } from "../hooks";
+import { mockPatients } from "../data/mockPatients"; 
 
-// Import icons directly
 import { 
   Add,
   People,
@@ -41,18 +41,14 @@ import {
 } from "../lib";
 
 function PatientPage() {
+  // Use the useFilter hook with mockPatients
   const {
-    patientRecords,
-    managementStats,
-    searchQuery,
-    genderFilter,
-    hasActiveFilters,
-    handleAddPatient,
-    handleSearchPatients,
-    handleFilterRecords,
-    handlePatientMenuClick,
-    clearFilters,
-  } = usePatientManagement();
+    filteredData: displayPatients,
+    searchTerm,
+    setSearchTerm,
+    filters,
+    setFilters
+  } = useFilter(mockPatients, ['name', 'id', 'contact', 'address']);
 
   // Filter menu state
   const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
@@ -67,21 +63,37 @@ function PatientPage() {
   };
 
   const handleGenderFilter = (gender) => {
-    handleFilterRecords('gender', gender);
+    setFilters({ ...filters, gender: gender === 'all' ? null : gender });
     handleFilterClose();
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      console.log("Searching for:", searchQuery);
-    }
-  };
+  const hasActiveFilters = searchTerm || filters.gender;
+
+  const managementStats = [
+    { id: 1, title: 'Total Patients', stats: mockPatients.length, gradient: '#6366f1', icon: 'people' },
+    { id: 2, title: 'Male Patients', stats: mockPatients.filter(p => p.gender === 'Male').length, gradient: '#3b82f6', icon: 'male' },
+    { id: 3, title: 'Female Patients', stats: mockPatients.filter(p => p.gender === 'Female').length, gradient: '#ec4899', icon: 'female' },
+  ];
 
   // Icon mapping
   const iconMap = {
     people: <People sx={{ fontSize: 24, color: 'white' }} />,
     male: <Male sx={{ fontSize: 24, color: 'white' }} />,
     female: <Female sx={{ fontSize: 24, color: 'white' }} />
+  };
+
+  // Mock functions
+  const handleAddPatient = () => {
+    console.log('Add patient clicked');
+  };
+
+  const handlePatientMenuClick = (patientId) => {
+    console.log('Patient menu clicked:', patientId);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilters({});
   };
 
   return (
@@ -145,7 +157,7 @@ function PatientPage() {
                   Patient Records
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                  {patientRecords.length} patients found
+                  {displayPatients.length} patients found
                 </Typography>
               </Box>
               
@@ -154,11 +166,11 @@ function PatientPage() {
                 {/* Active Filters */}
                 {hasActiveFilters && (
                   <Box display="flex" alignItems="center" gap={1}>
-                    {searchQuery && (
+                    {searchTerm && (
                       <Chip 
-                        label={`Search: ${searchQuery}`} 
+                        label={`Search: ${searchTerm}`} 
                         size="small"
-                        onDelete={() => handleSearchPatients('')}
+                        onDelete={() => setSearchTerm('')}
                         sx={{
                           backgroundColor: '#f3f4f6',
                           color: '#374151',
@@ -168,11 +180,11 @@ function PatientPage() {
                         }}
                       />
                     )}
-                    {genderFilter !== 'all' && (
+                    {filters.gender && (
                       <Chip 
-                        label={`Gender: ${genderFilter}`} 
+                        label={`Gender: ${filters.gender}`} 
                         size="small"
-                        onDelete={() => handleGenderFilter('all')}
+                        onDelete={() => setFilters({ ...filters, gender: null })}
                         sx={{
                           backgroundColor: '#f3f4f6',
                           color: '#374151',
@@ -218,71 +230,44 @@ function PatientPage() {
                     }
                   }}
                 >
-                  Filter
+                  {filters.gender ? filters.gender : 'All Genders'}
                 </Button>
 
                 {/* Filter Menu */}
-                <Menu 
-                  anchorEl={filterAnchorEl} 
-                  open={isFilterOpen} 
+                <Menu
+                  anchorEl={filterAnchorEl}
+                  open={isFilterOpen}
                   onClose={handleFilterClose}
                   PaperProps={{
                     sx: {
-                      borderRadius: 2,
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-                      border: '1px solid #e5e7eb',
                       mt: 1,
-                      minWidth: 160
+                      minWidth: 150,
+                      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                      border: '1px solid #e5e7eb',
                     }
                   }}
                 >
-                  {['all', 'Male', 'Female'].map(gender => (
-                    <MenuItem 
-                      key={gender}
-                      onClick={() => handleGenderFilter(gender)}
-                      selected={genderFilter === gender}
-                      sx={{
-                        fontSize: '0.875rem',
-                        fontWeight: genderFilter === gender ? 600 : 400
-                      }}
-                    >
-                      {gender === 'all' ? 'All Genders' : gender}
-                    </MenuItem>
-                  ))}
+                  <MenuItem onClick={() => handleGenderFilter('all')}>All Genders</MenuItem>
+                  <MenuItem onClick={() => handleGenderFilter('Male')}>Male</MenuItem>
+                  <MenuItem onClick={() => handleGenderFilter('Female')}>Female</MenuItem>
                 </Menu>
 
                 {/* Search Input */}
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  backgroundColor: 'white',
-                  borderRadius: 2,
-                  border: '1px solid #e5e7eb',
-                  overflow: 'hidden',
-                  width: '280px',
-                  transition: 'border-color 0.2s',
-                  '&:focus-within': {
-                    borderColor: '#667eea',
-                  }
-                }}>
-                  <input
-                    type="text"
-                    placeholder="Search patients..."
-                    value={searchQuery}
-                    onChange={(e) => handleSearchPatients(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    style={{
-                      border: 'none',
-                      outline: 'none',
-                      padding: '8px 16px',
-                      fontSize: '0.875rem',
-                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                      width: '100%',
-                      backgroundColor: 'transparent',
-                      color: '#1f2937'
-                    }}
-                  />
-                </Box>
+                <input
+                  type="text"
+                  placeholder="Search patients..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    border: '1px solid #e5e7eb',
+                    outline: 'none',
+                    padding: '8px 16px',
+                    fontSize: '0.875rem',
+                    borderRadius: '8px',
+                    width: '280px',
+                    backgroundColor: 'white',
+                  }}
+                />
               </Box>
             </Box>
           </Box>
@@ -302,14 +287,14 @@ function PatientPage() {
 
           {/* Patient List - Table Format */}
           <Box>
-            {patientRecords.length > 0 ? (
-              patientRecords.map((patient, index) => (
+            {displayPatients.length > 0 ? (
+              displayPatients.map((patient, index) => (
                 <Box 
                   key={patient.id}
                   sx={{ 
                     px: 3, 
                     py: 2.5, 
-                    borderBottom: index < patientRecords.length - 1 ? '1px solid #f3f4f6' : 'none',
+                    borderBottom: index < displayPatients.length - 1 ? '1px solid #f3f4f6' : 'none',
                     '&:hover': { background: '#f9fafb' },
                     transition: 'background 0.2s'
                   }}

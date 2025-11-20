@@ -1,6 +1,4 @@
 import React from 'react';
-
-// All external imports from lib/index.js
 import {
   Box,
   Card,
@@ -9,21 +7,11 @@ import {
   Chip,
   Typography,
   Avatar,
-  Stack,
-  Add,
-  MoreVert,
-  People,
-  MedicalServices,
-  CheckCircle,
-  FaUserMd,
-  MenuItem,
-  FilterList,
   Button,
   Menu,
-  Clear
+  MenuItem
 } from "../lib";
 
-// All custom components from components/index.js
 import {
   StatCard,
   StatTitle,
@@ -39,10 +27,23 @@ import {
   SubCaption
 } from "../components";
 
-// Custom hook
+// Import the existing useStaff hook
 import { useStaff } from "../hooks";
 
+// Import icons directly
+import {
+  Add,
+  People,
+  MedicalServices,
+  CheckCircle,
+  FaUserMd,
+  FilterList,
+  Clear,
+  MoreVert
+} from "../lib";
+
 const Staff = () => {
+  // Use the existing useStaff hook
   const {
     staffMembers,
     staffStats,
@@ -93,230 +94,123 @@ const Staff = () => {
     handleStatusMenuClose();
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      console.log("Searching for:", searchQuery);
-    }
-  };
-
   // Icon mapping
   const iconMap = {
-    people: <People sx={{ fontSize: 28, color: 'white' }} />,
-    medical: <MedicalServices sx={{ fontSize: 28, color: 'white' }} />,
-    check: <CheckCircle sx={{ fontSize: 28, color: 'white' }} />
+    people: <People sx={{ fontSize: 24, color: 'white' }} />,
+    medical: <MedicalServices sx={{ fontSize: 24, color: 'white' }} />,
+    check: <CheckCircle sx={{ fontSize: 24, color: 'white' }} />
   };
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%)',
-      fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif'
-    }}>
-      {/* Professional Header */}
+    <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
+      {/* Header */}
       <HeaderPaper>
-        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" position="relative" zIndex={1}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            <HeaderIcon>
-              <FaUserMd size={24} color="white" />
+            <HeaderIcon sx={{ background: '#667eea' }}>
+              <FaUserMd size={20} color="white" />
             </HeaderIcon>
             <Box>
-              <HeaderTitle>
-                Staff Management
-              </HeaderTitle>
+              <HeaderTitle>Staff Management</HeaderTitle>
               <HeaderSubText>
                 Manage doctors and nurses
               </HeaderSubText>
             </Box>
           </Box>
 
-          <Stack direction="row" spacing={2}>
-            <HeaderButton startIcon={<Add />} onClick={handleAddStaff}>
-              Add Staff
-            </HeaderButton>
-          </Stack>
+          <HeaderButton 
+            variant="contained"
+            startIcon={<Add sx={{ fontSize: 18 }} />}
+            onClick={handleAddStaff}
+          >
+            Add Staff
+          </HeaderButton>
         </Box>
       </HeaderPaper>
 
-      {/* Main Content */}
       <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
-        {/* Active filters indicator */}
-        {hasActiveFilters && (
-          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-            <Chip 
-              label="Active Filters" 
-              size="small" 
-              color="primary" 
-              variant="outlined" 
-            />
-            {searchQuery && (
-              <Chip 
-                label={`Search: ${searchQuery}`} 
-                size="small" 
-                onDelete={() => handleSearch('')}
-              />
-            )}
-            {roleFilter !== 'all' && (
-              <Chip 
-                label={`Role: ${roleFilter}`} 
-                size="small" 
-                onDelete={() => handleRoleFilter('all')}
-              />
-            )}
-            {statusFilter !== 'all' && (
-              <Chip 
-                label={`Status: ${statusFilter}`} 
-                size="small" 
-                onDelete={() => handleStatusFilter('all')}
-              />
-            )}
-            <Button 
-              startIcon={<Clear />} 
-              onClick={clearFilters} 
-              size="small" 
-              sx={{ textTransform: 'none', color: '#667eea', fontWeight: 600 }}
-            >
-              Clear All
-            </Button>
-          </Box>
-        )}
-
-        {/* Professional Stats Cards */}
-        <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+        {/* Stats Grid */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 4 }}>
           {staffStats.map((stat) => (
-            <Box key={stat.id} sx={{ flex: 1 }}>
-              <StatCard 
-                color={stat.color}
-                borderColor={stat.borderColor}
-                hoverShadow={stat.hoverShadow}
-              >
-                <CardContent sx={{ p: 3, height: '100%' }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ height: '100%' }}>
-                    <Box sx={{ flex: 1, mr: 2 }}>
-                      <StatTitle>{stat.title}</StatTitle>
-                      <StatNumber color={stat.color}>{stat.value}</StatNumber>
-                      <SubText>{stat.subText}</SubText>
-                    </Box>
-                    <StatIcon background={stat.gradient}>
-                      {iconMap[stat.icon]}
-                    </StatIcon>
+            <StatCard key={stat.id}>
+              <CardContent sx={{ p: 3 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                  <Box>
+                    <StatTitle>{stat.title}</StatTitle>
+                    <StatNumber>{stat.value}</StatNumber>
+                    <SubText>{stat.subText}</SubText>
                   </Box>
-                </CardContent>
-              </StatCard>
-            </Box>
+                  <StatIcon background={stat.gradient}>
+                    {iconMap[stat.icon]}
+                  </StatIcon>
+                </Box>
+              </CardContent>
+            </StatCard>
           ))}
         </Box>
 
-        {/* Professional Staff List */}
-        <Card 
-          sx={{ 
-            borderRadius: 3,
-            boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-            border: '1px solid rgba(102, 126, 234, 0.1)',
-            overflow: 'hidden',
-            background: 'white'
-          }}
-        >
-          <Box sx={{ 
-            p: 3, 
-            borderBottom: "1px solid rgba(102, 126, 234, 0.1)", 
-            background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' 
-          }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+        {/* Main Staff Directory Card */}
+        <Card sx={{ 
+          borderRadius: 2, 
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)', 
+          border: '1px solid #e5e7eb' 
+        }}>
+          {/* Card Header */}
+          <Box sx={{ p: 3, borderBottom: "1px solid #e5e7eb" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
               <Box>
-                <Typography 
-                  variant="h5" 
-                  sx={{
-                    fontWeight: 700,
-                    color: '#667eea',
-                    mb: 0.5,
-                    fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                    fontSize: '1.25rem',
-                  }}
-                >
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937', mb: 0.5 }}>
                   Staff Directory
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{
-                    color: '#9ca3af',
-                    fontWeight: 400,
-                    fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                    fontSize: '0.875rem'
-                  }}
-                >
+                <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
                   {staffMembers.length} staff members found
                 </Typography>
               </Box>
-
-              {/* Search and Filter Section */}
+              
+              {/* Search and Filter Controls */}
               <Box display="flex" alignItems="center" gap={2}>
-                {/* Active Filters Display */}
-                {(searchQuery || roleFilter !== 'all' || statusFilter !== 'all') && (
-                  <Box display="flex" alignItems="center" gap={1}>
-                    {searchQuery && (
-                      <Chip 
-                        label={`Search: ${searchQuery}`} 
-                        size="small" 
-                        onDelete={() => handleSearch('')}
-                      />
-                    )}
-                    {roleFilter !== 'all' && (
-                      <Chip 
-                        label={`Role: ${roleFilter}`} 
-                        size="small" 
-                        onDelete={() => handleRoleFilter('all')}
-                      />
-                    )}
-                    {statusFilter !== 'all' && (
-                      <Chip 
-                        label={`Status: ${statusFilter}`} 
-                        size="small" 
-                        onDelete={() => handleStatusFilter('all')}
-                      />
-                    )}
-                  </Box>
-                )}
-                
                 {/* Role Filter Button */}
                 <Button
-                  startIcon={<FilterList />}
+                  startIcon={<FilterList sx={{ fontSize: 16 }} />}
                   variant="outlined"
                   onClick={handleRoleMenuClick}
+                  size="small"
                   sx={{
                     textTransform: 'none',
-                    borderRadius: 3,
-                    borderColor: roleFilter !== 'all' ? '#667eea' : 'rgba(102, 126, 234, 0.3)',
-                    color: '#667eea',
+                    borderRadius: 2,
+                    borderColor: '#e5e7eb',
+                    color: '#374151',
                     fontWeight: 600,
-                    background: roleFilter !== 'all' ? 'rgba(102, 126, 234, 0.08)' : 'transparent',
+                    fontSize: '0.875rem',
                     '&:hover': { 
-                      borderColor: '#667eea', 
-                      background: 'rgba(102, 126, 234, 0.04)' 
+                      borderColor: '#d1d5db', 
+                      background: '#f9fafb' 
                     }
                   }}
                 >
-                  Role {roleFilter !== 'all' && `(${roleFilter})`}
+                  {roleFilter !== 'all' ? roleFilter : 'All Roles'}
                 </Button>
 
                 {/* Status Filter Button */}
                 <Button
-                  startIcon={<FilterList />}
+                  startIcon={<FilterList sx={{ fontSize: 16 }} />}
                   variant="outlined"
                   onClick={handleStatusMenuClick}
+                  size="small"
                   sx={{
                     textTransform: 'none',
-                    borderRadius: 3,
-                    borderColor: statusFilter !== 'all' ? '#667eea' : 'rgba(102, 126, 234, 0.3)',
-                    color: '#667eea',
+                    borderRadius: 2,
+                    borderColor: '#e5e7eb',
+                    color: '#374151',
                     fontWeight: 600,
-                    background: statusFilter !== 'all' ? 'rgba(102, 126, 234, 0.08)' : 'transparent',
+                    fontSize: '0.875rem',
                     '&:hover': { 
-                      borderColor: '#667eea', 
-                      background: 'rgba(102, 126, 234, 0.04)' 
+                      borderColor: '#d1d5db', 
+                      background: '#f9fafb' 
                     }
                   }}
                 >
-                  Status {statusFilter !== 'all' && `(${statusFilter})`}
+                  {statusFilter !== 'all' ? statusFilter : 'All Status'}
                 </Button>
 
                 {/* Role Filter Menu */}
@@ -327,7 +221,8 @@ const Staff = () => {
                   PaperProps={{
                     sx: {
                       borderRadius: 2,
-                      boxShadow: '0 4px 25px rgba(0,0,0,0.1)',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                      border: '1px solid #e5e7eb',
                       mt: 1,
                       minWidth: 160
                     }
@@ -338,6 +233,10 @@ const Staff = () => {
                       key={role}
                       onClick={() => handleRoleSelect(role)}
                       selected={roleFilter === role}
+                      sx={{
+                        fontSize: '0.875rem',
+                        fontWeight: roleFilter === role ? 600 : 400
+                      }}
                     >
                       {role === 'all' ? 'All Roles' : role}
                     </MenuItem>
@@ -352,7 +251,8 @@ const Staff = () => {
                   PaperProps={{
                     sx: {
                       borderRadius: 2,
-                      boxShadow: '0 4px 25px rgba(0,0,0,0.1)',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                      border: '1px solid #e5e7eb',
                       mt: 1,
                       minWidth: 160
                     }
@@ -363,6 +263,10 @@ const Staff = () => {
                       key={status}
                       onClick={() => handleStatusSelect(status)}
                       selected={statusFilter === status}
+                      sx={{
+                        fontSize: '0.875rem',
+                        fontWeight: statusFilter === status ? 600 : 400
+                      }}
                     >
                       {status === 'all' ? 'All Status' : status}
                     </MenuItem>
@@ -370,184 +274,148 @@ const Staff = () => {
                 </Menu>
 
                 {/* Search Input */}
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  backgroundColor: 'white',
-                  borderRadius: 3,
-                  border: '1px solid rgba(102, 126, 234, 0.3)',
-                  overflow: 'hidden',
-                  width: '280px',
-                  '&:hover': {
-                    borderColor: '#667eea',
-                  }
-                }}>
-                  <input
-                    type="text"
-                    placeholder="Search name, ID, role..."
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    style={{
-                      border: 'none',
-                      outline: 'none',
-                      padding: '10px 16px',
-                      fontSize: '0.875rem',
-                      fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                      width: '100%',
-                      backgroundColor: 'transparent',
-                      color: '#1f2937'
-                    }}
-                  />
-                </Box>
+                <input
+                  type="text"
+                  placeholder="Search name, ID, role..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  style={{
+                    border: '1px solid #e5e7eb',
+                    outline: 'none',
+                    padding: '8px 16px',
+                    fontSize: '0.875rem',
+                    borderRadius: '8px',
+                    width: '280px',
+                    backgroundColor: 'white',
+                  }}
+                />
               </Box>
             </Box>
           </Box>
 
-          {/* Staff Cards */}
-          <Box sx={{ p: 3 }}>
-            <Stack spacing={2}>
-              {staffMembers.length > 0 ? (
-                staffMembers.map((staff) => (
-                  <Card 
-                    key={staff.id} 
-                    sx={{ 
-                      p: 3, 
-                      borderRadius: 2,
-                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
-                      border: '1px solid #e5e7eb',
-                      transition: 'all 0.2s ease',
-                      backgroundColor: 'white',
-                      '&:hover': {
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                      }
-                    }}
-                  >
-                    {/* Top Section: Avatar, Name, Role, Status */}
-                    <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
-                      <Box display="flex" alignItems="center" gap={2}>
-                        <Avatar 
-                          sx={{ 
-                            width: 48,
-                            height: 48,
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            fontWeight: 700,
-                            fontSize: '0.875rem',
-                            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                          }}
-                        >
-                          {staff.initials}
-                        </Avatar>
-                        <Box>
-                          <Box display="flex" alignItems="center" gap={1.5} mb={0.5}>
-                            <Typography 
-                              variant="h6" 
-                              sx={{
-                                fontWeight: 600,
-                                color: '#1f2937',
-                                fontSize: '1rem',
-                                fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-                              }}
-                            >
-                              {staff.name}
-                            </Typography>
-                            <Chip
-                              label={staff.role}
-                              size="small"
-                              sx={{ 
-                                backgroundColor: getRoleColor(staff.role) + '15',
-                                color: getRoleColor(staff.role),
-                                fontWeight: 600,
-                                fontSize: '0.688rem',
-                                height: '20px',
-                                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                                borderRadius: '4px',
-                              }}
-                            />
-                          </Box>
-                          <Typography 
-                            variant="body2"
-                            sx={{
-                              color: '#6b7280',
-                              fontWeight: 400,
-                              fontSize: '0.875rem',
-                              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                            }}
-                          >
-                            {staff.age} years • {staff.gender}
-                          </Typography>
-                        </Box>
-                      </Box>
+          {/* Table Header */}
+          <Box sx={{ px: 3, py: 2, background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+            <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 2fr 1.5fr 1.5fr 60px" gap={2} alignItems="center">
+              <SubCaption>#</SubCaption>
+              <SubCaption>STAFF</SubCaption>
+              <SubCaption>ROLE</SubCaption>
+              <SubCaption>SPECIALTY</SubCaption>
+              <SubCaption>EMAIL</SubCaption>
+              <SubCaption>CONTACT</SubCaption>
+              <SubCaption>AVAILABILITY</SubCaption>
+              <Box />
+            </Box>
+          </Box>
 
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Chip
-                          label={staff.status}
-                          sx={{
-                            backgroundColor: getStatusBgColor(staff.status),
-                            color: getStatusColor(staff.status),
-                            fontWeight: 600,
-                            fontSize: '0.75rem',
-                            height: '26px',
-                            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                            border: 'none',
-                            px: 1.5
-                          }}
-                        />
-                        <Chip
-                          label={`#${staff.id}`} 
-                          size="small"
-                          sx={{
-                            backgroundColor: '#667eea',
-                            color: 'white',
-                            fontWeight: 700,
-                            fontSize: '0.75rem',
-                            height: '26px',
-                            minWidth: '36px'
-                          }}
-                        />
-                        <IconButton 
-                          size="small" 
-                          sx={{ color: '#9ca3af' }}
-                          onClick={() => handleStaffMenuClick(staff.id)}
-                        >
-                          <MoreVert sx={{ fontSize: 20 }} />
-                        </IconButton>
+          {/* Staff List - Table Format */}
+          <Box>
+            {staffMembers.length > 0 ? (
+              staffMembers.map((staff, index) => (
+                <Box 
+                  key={staff.id}
+                  sx={{ 
+                    px: 3, 
+                    py: 2.5, 
+                    borderBottom: index < staffMembers.length - 1 ? '1px solid #f3f4f6' : 'none',
+                    '&:hover': { background: '#f9fafb' },
+                    transition: 'background 0.2s'
+                  }}
+                >
+                  <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 2fr 1.5fr 1.5fr 60px" gap={2} alignItems="center">
+                    {/* Number */}
+                    <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 600 }}>
+                      {index + 1}
+                    </Typography>
+                    
+                    {/* Staff Info */}
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Avatar sx={{ 
+                        width: 40, 
+                        height: 40, 
+                        background: '#667eea', 
+                        fontWeight: 700, 
+                        fontSize: '0.875rem' 
+                      }}>
+                        {staff.name.split(' ').map(n => n[0]).join('')}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1f2937', mb: 0.25 }}>
+                          {staff.name}
+                        </Typography>
+                        <Caption>#{staff.id}</Caption>
                       </Box>
                     </Box>
-
-                    {/* Bottom Section: Staff Details using Caption and SubCaption */}
-                    <Box display="flex" alignItems="center" flexWrap="wrap" gap={2}>
-                      {/* Specialization */}
-                      <Box display="flex" alignItems="center" gap={0.5}>
-                        <Caption>Specialization |</Caption>
-                        <SubCaption>{staff.specialization}</SubCaption>
-                      </Box>
-
-                      {/* Email */}
-                      <Box display="flex" alignItems="center" gap={0.5}>
-                        <Caption>Email |</Caption>
-                        <SubCaption>{staff.email}</SubCaption>
-                      </Box>
-
-                      {/* Schedule */}
-                      <Box display="flex" alignItems="center" gap={0.5}>
-                        <Caption>Schedule |</Caption>
-                        <SubCaption>{staff.schedule}</SubCaption>
-                      </Box>
+                    
+                    {/* Role */}
+                    <Box>
+                      <Chip
+                        label={staff.role}
+                        size="small"
+                        sx={{ 
+                          backgroundColor: getRoleColor(staff.role) + '15',
+                          color: getRoleColor(staff.role),
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          height: '24px',
+                          borderRadius: '6px',
+                        }}
+                      />
                     </Box>
-                  </Card>
-                ))
-              ) : (
-                <Box sx={{ textAlign: 'center', py: 4 }}>
-                  <Typography variant="h6" color="textSecondary">
-                    No staff members found
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Try adjusting your search or filters
-                  </Typography>
+                    
+                    {/* Specialty */}
+                    <Typography variant="body2" sx={{ color: '#374151', fontSize: '0.875rem' }}>
+                      {staff.specialty}
+                    </Typography>
+                    
+                    {/* Email */}
+                    <Typography variant="body2" sx={{ color: '#374151', fontSize: '0.875rem' }}>
+                      {staff.email}
+                    </Typography>
+                    
+                    {/* Contact */}
+                    <Typography variant="body2" sx={{ color: '#374151', fontSize: '0.875rem' }}>
+                      {staff.contact}
+                    </Typography>
+                    
+                    {/* Availability - Same style as STATUS in Patient Queue */}
+                    <Box>
+                      <Chip 
+                        label={staff.status} 
+                        size="small"
+                        sx={{ 
+                          backgroundColor: getStatusBgColor(staff.status), 
+                          color: getStatusColor(staff.status), 
+                          fontWeight: 600, 
+                          fontSize: '0.75rem',
+                          height: '24px',
+                          borderRadius: '6px',
+                        }} 
+                      />
+                    </Box>
+                    
+                    {/* Actions */}
+                    <Box display="flex" justifyContent="flex-end">
+                      <IconButton 
+                        size="small" 
+                        sx={{ color: '#9ca3af' }}
+                        onClick={() => handleStaffMenuClick(staff.id)}
+                      >
+                        <MoreVert sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Box>
+                  </Box>
                 </Box>
-              )}
-            </Stack>
+              ))
+            ) : (
+              <Box sx={{ textAlign: 'center', py: 8 }}>
+                <Typography variant="body1" sx={{ color: '#6b7280', mb: 1 }}>
+                  No staff members found
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+                  Try adjusting your search or filters
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Card>
       </Box>

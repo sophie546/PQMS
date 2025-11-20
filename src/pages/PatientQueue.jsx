@@ -8,20 +8,17 @@ import {
   Chip,
   Typography,
   Avatar,
-  Stack,
   MenuItem,
   Menu,
 } from '@mui/material';
 import {
-  Add,
-  MoreVert,
-  Refresh,
   FilterList,
   Clear,
   People,
   Schedule,
   MedicalServices,
   CheckCircle,
+  MoreVert,
 } from '@mui/icons-material';
 
 // Import components from the components directory
@@ -34,24 +31,27 @@ import {
   HeaderPaper,
   HeaderTitle,
   HeaderSubText,
-  HeaderButton,
   Caption,
   SubCaption
 } from '../components';
 
+// Import the usePatientQueue hook
+import { usePatientQueue } from '../hooks/usePatientQueue';
+
 const PatientQueue = () => {
   const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [filterStatus, setFilterStatus] = React.useState('all');
-  
   const isFilterOpen = Boolean(filterAnchorEl);
-  const hasActiveFilters = searchTerm || filterStatus !== 'all';
 
-  const patients = [
-    { id: 'K01', name: 'Sarah Johnson', initials: 'SJ', age: 28, gender: 'Female', status: 'Waiting', assignedTo: 'Dr. Smith', arrivalTime: '09:30 AM' },
-    { id: 'K02', name: 'Michael Chen', initials: 'MC', age: 45, gender: 'Male', status: 'Consulting', assignedTo: 'Dr. Wilson', arrivalTime: '09:15 AM' },
-    { id: 'K03', name: 'Emma Davis', initials: 'ED', age: 32, gender: 'Female', status: 'Completed', assignedTo: 'Dr. Brown', arrivalTime: '08:45 AM' },
-  ];
+  // Use the usePatientQueue hook
+  const {
+    displayPatients,
+    searchTerm,
+    filterStatus,
+    hasActiveFilters,
+    handleSearch,
+    handleFilter,
+    clearFilters,
+  } = usePatientQueue();
 
   const patientStats = [
     { id: 1, title: 'Total Patients', value: '24', subText: '+2 today', color: '#6366f1', icon: People },
@@ -59,13 +59,6 @@ const PatientQueue = () => {
     { id: 3, title: 'Consulting', value: '12', subText: 'In progress', color: '#8b5cf6', icon: MedicalServices },
     { id: 4, title: 'Completed', value: '4', subText: 'Today', color: '#10b981', icon: CheckCircle },
   ];
-
-  const displayPatients = patients.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         p.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
 
   const getStatusColor = (status) => {
     const colors = {
@@ -85,6 +78,19 @@ const PatientQueue = () => {
     return colors[status] || '#f3f4f6';
   };
 
+  const handleFilterClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleStatusFilter = (status) => {
+    handleFilter(status);
+    handleFilterClose();
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
       {/* Header */}
@@ -98,6 +104,8 @@ const PatientQueue = () => {
             <input
               type="text"
               placeholder="Search patients, doctors..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
               style={{
                 border: '1px solid #e5e7eb',
                 outline: 'none',
@@ -145,11 +153,30 @@ const PatientQueue = () => {
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937', mb: 0.5 }}>
                   Patient Queue
                 </Typography>
+                {hasActiveFilters && (
+                  <Box display="flex" alignItems="center" gap={1} mt={1}>
+                    {filterStatus !== 'all' && (
+                      <Chip 
+                        label={`Status: ${filterStatus}`} 
+                        size="small"
+                        onDelete={() => handleFilter('all')}
+                        sx={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          fontWeight: 500,
+                          fontSize: '0.75rem',
+                          height: '24px'
+                        }}
+                      />
+                    )}
+                  </Box>
+                )}
               </Box>
               <Button
                 startIcon={<FilterList />}
                 variant="outlined"
                 size="small"
+                onClick={handleFilterClick}
                 sx={{
                   textTransform: 'none',
                   borderRadius: 2,
@@ -160,10 +187,30 @@ const PatientQueue = () => {
                   '&:hover': { borderColor: '#d1d5db', background: '#f9fafb' }
                 }}
               >
-                All Status
+                {filterStatus !== 'all' ? filterStatus : 'All Status'}
               </Button>
             </Box>
           </Box>
+
+          {/* Filter Menu */}
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={isFilterOpen}
+            onClose={handleFilterClose}
+            PaperProps={{
+              sx: {
+                mt: 1,
+                minWidth: 150,
+                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                border: '1px solid #e5e7eb',
+              }
+            }}
+          >
+            <MenuItem onClick={() => handleStatusFilter('all')}>All Status</MenuItem>
+            <MenuItem onClick={() => handleStatusFilter('Waiting')}>Waiting</MenuItem>
+            <MenuItem onClick={() => handleStatusFilter('Consulting')}>Consulting</MenuItem>
+            <MenuItem onClick={() => handleStatusFilter('Completed')}>Completed</MenuItem>
+          </Menu>
 
           {/* Patient Table Header */}
           <Box sx={{ px: 3, py: 2, background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
@@ -202,7 +249,7 @@ const PatientQueue = () => {
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#1f2937', mb: 0.25 }}>
                         {patient.name}
                       </Typography>
-                      <Caption>{patient.id}</Caption>
+                      <Caption>ID: {patient.id}</Caption>
                     </Box>
                   </Box>
                   

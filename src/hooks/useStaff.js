@@ -16,34 +16,41 @@ export const useStaff = () => {
       
       if (searchQuery !== '') {
         if (isPureNumber) {
-          // Number search: search by staffId (e.g., "001" part of "STAFF-001")
-          matchesSearch = staff.staffId.toLowerCase().includes(searchQuery.toLowerCase());
+          // Number search: search by id (e.g., "001" part of "STAFF-001")
+          const staffId = staff.id || '';
+          matchesSearch = staffId.toLowerCase().includes(searchQuery.toLowerCase());
         } else {
-          // Text search: match by name, email, specialty, or role
+          // Text search: match by name, email, specialty, or role - safely handle undefined
+          const name = staff.name || '';
+          const email = staff.email || '';
+          const specialty = staff.specialty || '';
+          const role = staff.role || '';
+          
           matchesSearch = 
-            staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (staff.email && staff.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            staff.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            staff.role.toLowerCase().includes(searchQuery.toLowerCase());
+            name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            role.toLowerCase().includes(searchQuery.toLowerCase());
         }
       }
 
-      // Role filter
-      const matchesRole = roleFilter === 'all' || staff.role === roleFilter;
+      // Role filter - safely handle undefined
+      const staffRole = staff.role || '';
+      const matchesRole = roleFilter === 'all' || staffRole === roleFilter;
       
-      // Status filter
-      const matchesStatus = statusFilter === 'all' || staff.status === statusFilter;
+      // Status filter - safely handle undefined
+      const staffStatus = staff.status || '';
+      const matchesStatus = statusFilter === 'all' || staffStatus === statusFilter;
 
       return matchesSearch && matchesRole && matchesStatus;
     });
   }, [searchQuery, roleFilter, statusFilter]);
 
-  // ... rest of your existing hook code remains the same
   const staffStats = useMemo(() => {
     const totalStaff = filteredStaff.length;
-    const doctorCount = filteredStaff.filter(s => s.role === "Doctor").length;
-    const nurseCount = filteredStaff.filter(s => s.role === "Nurse").length;
-    const availableCount = filteredStaff.filter(s => s.status === "Available").length;
+    const doctorCount = filteredStaff.filter(s => (s.role || '') === "Doctor").length;
+    const nurseCount = filteredStaff.filter(s => (s.role || '') === "Nurse").length;
+    const availableCount = filteredStaff.filter(s => (s.status || '') === "Available").length;
 
     return [
       {
@@ -93,7 +100,6 @@ export const useStaff = () => {
     ];
   }, [filteredStaff]);
 
-  // ... rest of your functions remain the same
   const getStatusColor = (status = '') => {
     switch (status) {
       case 'Available': return '#2e7d32';
