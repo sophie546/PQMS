@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { ChevronLeft, Settings, Lock, User, Briefcase, LogOut } from 'lucide-react';
 
-import SettingSideBar from '../components/general_settings/SettingSideBar';
-import SettingHeader from '../components/general_settings/SettingHeader';
-import SettingsProfileView from '../components/general_settings/SettingsProfileView';
-import SettingsPasswordView from '../components/general_settings/SettingsPasswordView';
-import SettingsProfessionalView from '../components/general_settings/SettingsProfessionalView';
-import SettingsEditModal from '../components/general_settings/SettingsEditModal';
+import {
+  SettingSideBar,
+  SettingHeader,
+  SettingsProfileView,
+  SettingsPasswordView,
+  SettingsProfessionalView,
+  SettingsEditModal
+} from '../components';
 
 const GeneralSettings = () => {
   const [currentView, setCurrentView] = useState('profile');
