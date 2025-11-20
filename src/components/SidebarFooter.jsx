@@ -17,12 +17,12 @@ export const UserProfile = () => {
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    navigate('/profile-settings');
+    navigate('/general-settings');
   };
 
   const handleSettingsClick = (e) => {
     e.stopPropagation(); // Prevent triggering profile navigation
-    navigate('/profile-settings');
+    navigate('/general-settings');
   };
 
   return (
