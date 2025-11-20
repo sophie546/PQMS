@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Chip,
   IconButton,
   Card,
   CardContent,
@@ -37,7 +36,6 @@ import {
   MoreVert,
   FaUsers,
   FilterList,
-  Clear 
 } from "../lib";
 
 function PatientPage() {
@@ -67,7 +65,6 @@ function PatientPage() {
     handleFilterClose();
   };
 
-  const hasActiveFilters = searchTerm || filters.gender;
 
   const managementStats = [
     { id: 1, title: 'Total Patients', stats: mockPatients.length, gradient: '#6366f1', icon: 'people' },
@@ -89,11 +86,6 @@ function PatientPage() {
 
   const handlePatientMenuClick = (patientId) => {
     console.log('Patient menu clicked:', patientId);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setFilters({});
   };
 
   return (

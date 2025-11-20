@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Settings, Lock, User, Briefcase, LogOut } from 'lucide-react';
+import {  Lock, User, Briefcase } from 'lucide-react';
 
 import {
   SettingSideBar,

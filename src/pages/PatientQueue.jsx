@@ -13,12 +13,12 @@ import {
 } from '@mui/material';
 import {
   FilterList,
-  Clear,
   People,
   Schedule,
   MedicalServices,
   CheckCircle,
   MoreVert,
+  LocalHospital, 
 } from '@mui/icons-material';
 
 // Import components from the components directory
@@ -47,10 +47,8 @@ const PatientQueue = () => {
     displayPatients,
     searchTerm,
     filterStatus,
-    hasActiveFilters,
     handleSearch,
     handleFilter,
-    clearFilters,
   } = usePatientQueue();
 
   const patientStats = [
@@ -96,9 +94,20 @@ const PatientQueue = () => {
       {/* Header */}
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
-          <Box>
-            <HeaderTitle>Dashboard</HeaderTitle>
-            <HeaderSubText>Real-time patient monitoring</HeaderSubText>
+          <Box display="flex" alignItems="center" gap={2}>
+            {/* Logo Icon with Blue Background - Made Bigger */}
+            <LocalHospital sx={{ 
+              fontSize: 40, // Increased from 32 to 36
+              color: 'white',
+              background: '#667eea', // Blue background
+              borderRadius: '8px',
+              p: 1.3, // Increased padding to accommodate larger icon
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }} />
+            <Box>
+              <HeaderTitle>Patient Queue</HeaderTitle>
+              <HeaderSubText>Real-time patient monitoring</HeaderSubText>
+            </Box>
           </Box>
           <Box display="flex" gap={2}>
             <input

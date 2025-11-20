@@ -3,14 +3,11 @@ import {
   Box,
   Card,
   CardContent,
-  Button,
   IconButton,
   Chip,
   Typography,
   Avatar,
   Stack,
-  MenuItem, 
-  Add,
   MoreVert,
   Refresh,
   People,
@@ -18,9 +15,6 @@ import {
   MedicalServices,
   CheckCircle,
   MdQueue,
-  FilterList,
-  Menu,
-  Clear
 } from "../lib";
 
 import {
@@ -45,7 +39,6 @@ import {
   getStatusColor, 
   getStatusBgColor 
 } from "../hooks";
-import { Queue } from '@mui/icons-material';
 
 const QueueDashboard = () => {
   const {
