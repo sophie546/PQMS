@@ -58,9 +58,7 @@ export const useStaff = () => {
         title: 'Total Staff',
         value: totalStaff,
         subText: 'All medical staff',
-        color: '#EF6F02',
         icon: 'people',
-        gradient: 'linear-gradient(135deg, #EF6F02 0%, #FF9800 100%)',
         borderColor: 'rgba(243, 178, 0, 0.1)',
         hoverShadow: 'rgba(234, 188, 102, 0.15)'
       },
@@ -69,9 +67,7 @@ export const useStaff = () => {
         title: 'Doctors',
         value: doctorCount,
         subText: 'Medical physicians',
-        color: '#667eea',
         icon: 'medical',
-        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         borderColor: 'rgba(102, 126, 234, 0.1)',
         hoverShadow: 'rgba(102, 126, 234, 0.15)'
       },
@@ -80,9 +76,7 @@ export const useStaff = () => {
         title: 'Nurses',
         value: nurseCount,
         subText: 'Nursing staff',
-        color: '#764ba2',
         icon: 'people',
-        gradient: 'linear-gradient(135deg, #764ba2 0%, #9c7acd 100%)',
         borderColor: 'rgba(118, 75, 162, 0.1)',
         hoverShadow: 'rgba(118, 75, 162, 0.15)'
       },
@@ -91,9 +85,7 @@ export const useStaff = () => {
         title: 'Available Now',
         value: availableCount,
         subText: 'Currently active',
-        color: '#2e7d32',
         icon: 'check',
-        gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
         borderColor: 'rgba(46, 125, 50, 0.1)',
         hoverShadow: 'rgba(46, 125, 50, 0.15)'
       }

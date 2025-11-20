@@ -96,9 +96,9 @@ const Staff = () => {
 
   // Icon mapping
   const iconMap = {
-    people: <People sx={{ fontSize: 24, color: 'white' }} />,
-    medical: <MedicalServices sx={{ fontSize: 24, color: 'white' }} />,
-    check: <CheckCircle sx={{ fontSize: 24, color: 'white' }} />
+    people: <People sx={{ fontSize: 40, color: '#667eea' }} />,
+    medical: <MedicalServices sx={{ fontSize: 40, color: '#764ba2' }} />,
+    check: <CheckCircle sx={{ fontSize: 40, color: '#2e7d32' }} />
   };
 
   return (
@@ -134,13 +134,13 @@ const Staff = () => {
           {staffStats.map((stat) => (
             <StatCard key={stat.id}>
               <CardContent sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box>
                     <StatTitle>{stat.title}</StatTitle>
                     <StatNumber>{stat.value}</StatNumber>
                     <SubText>{stat.subText}</SubText>
                   </Box>
-                  <StatIcon background={stat.gradient}>
+                  <StatIcon sx={{ background: 'transparent' }}>
                     {iconMap[stat.icon]}
                   </StatIcon>
                 </Box>

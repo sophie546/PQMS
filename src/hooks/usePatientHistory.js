@@ -121,9 +121,7 @@ export const usePatientHistory = () => {
         title: 'Total Visits',
         value: totalVisits,
         subText: 'All consultations',
-        color: '#667eea',
         icon: 'history',
-        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         borderColor: 'rgba(102, 126, 234, 0.1)',
         hoverShadow: 'rgba(102, 126, 234, 0.15)'
       },
@@ -132,9 +130,7 @@ export const usePatientHistory = () => {
         title: 'This Week',
         value: thisWeek,
         subText: 'Recent consultations',
-        color: '#ed6c02',
         icon: 'schedule',
-        gradient: 'linear-gradient(135deg, #ed6c02 0%, #f57c00 100%)',
         borderColor: 'rgba(237, 108, 2, 0.1)',
         hoverShadow: 'rgba(237, 108, 2, 0.15)'
       },
@@ -143,9 +139,7 @@ export const usePatientHistory = () => {
         title: 'Unique Patients',
         value: uniquePatients,
         subText: 'Individual patients',
-        color: '#2e7d32',
         icon: 'people',
-        gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)',
         borderColor: 'rgba(46, 125, 50, 0.1)',
         hoverShadow: 'rgba(46, 125, 50, 0.15)'
       }

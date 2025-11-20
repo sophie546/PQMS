@@ -74,9 +74,9 @@ function PatientPage() {
 
   // Icon mapping
   const iconMap = {
-    people: <People sx={{ fontSize: 24, color: 'white' }} />,
-    male: <Male sx={{ fontSize: 24, color: 'white' }} />,
-    female: <Female sx={{ fontSize: 24, color: 'white' }} />
+    people: <People sx={{ fontSize: 42, color: '#6366f1' }} />,
+    male: <Male sx={{ fontSize: 44, color: '#3b82f6' }} />,
+    female: <Female sx={{ fontSize: 44, color: '#ec4899' }} />
   };
 
   // Mock functions
@@ -121,12 +121,12 @@ function PatientPage() {
           {managementStats.map((stat) => (
             <StatCard key={stat.id}>
               <CardContent sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box>
                     <StatTitle>{stat.title}</StatTitle>
                     <StatNumber>{stat.stats}</StatNumber>
                   </Box>
-                  <StatIcon background={stat.gradient}>
+                  <StatIcon sx={{ background: 'transparent' }}>
                     {iconMap[stat.icon]}
                   </StatIcon>
                 </Box>

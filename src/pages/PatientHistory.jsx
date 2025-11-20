@@ -95,9 +95,9 @@ const PatientHistory = () => {
 
   // Icon mapping
   const iconMap = {
-    history: <History sx={{ fontSize: 24, color: 'white' }} />,
-    schedule: <Schedule sx={{ fontSize: 24, color: 'white' }} />,
-    people: <People sx={{ fontSize: 24, color: 'white' }} />
+    history: <History sx={{ fontSize: 44, color: '#667eea' }} />,
+    schedule: <Schedule sx={{ fontSize: 44, color: '#ed6c02'}} />,
+    people: <People sx={{ fontSize: 44, color: '#2e7d32'}} />
   };
 
   return (
@@ -132,13 +132,13 @@ const PatientHistory = () => {
           {patientStats.map((stat) => (
             <StatCard key={stat.id}>
               <CardContent sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box>
                     <StatTitle>{stat.title}</StatTitle>
                     <StatNumber>{stat.value}</StatNumber>
                     <SubText>{stat.subText}</SubText>
                   </Box>
-                  <StatIcon background={stat.gradient}>
+                  <StatIcon sx={{ background: 'transparent' }}>
                     {iconMap[stat.icon]}
                   </StatIcon>
                 </Box>

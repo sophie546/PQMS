@@ -138,14 +138,14 @@ const PatientQueue = () => {
             return (
               <StatCard key={stat.id}>
                 <CardContent sx={{ p: 3 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                  <Box display="flex" justifyContent="space-between" alignItems= 'center'>
                     <Box>
                       <StatTitle>{stat.title}</StatTitle>
                       <StatNumber>{stat.value}</StatNumber>
                       <SubText>{stat.subText}</SubText>
                     </Box>
-                    <StatIcon background={stat.color}>
-                      <IconComponent sx={{ fontSize: 24, color: 'white' }} />
+                    <StatIcon sx={{ background: 'transparent' }}>
+                      <IconComponent sx={{ fontSize: 38, color: stat.color }} />
                     </StatIcon>
                   </Box>
                 </CardContent>
