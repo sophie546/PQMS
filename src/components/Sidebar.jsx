@@ -163,12 +163,12 @@ const UserProfile = () => {
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    navigate('/profile-settings');
+    navigate('/general-settings');
   };
 
   const handleSettingsClick = (e) => {
     e.stopPropagation();
-    navigate('/profile-settings');
+    navigate('/general-settings');
   };
 
   return (

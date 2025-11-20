@@ -10,7 +10,8 @@ import LoginPage from './pages/Login.jsx';
 import PatientHistory from './pages/PatientHistory.jsx';
 import PatientQueue from './pages/PatientQueue.jsx';
 import Staff from './pages/Staff.jsx';
-import SettingProfile from './pages/SettingsProfile.jsx';import QueueDashboard from './pages/QueueDashboard.jsx';
+import GeneralSettings from './pages/GeneralSettings.jsx';
+import QueueDashboard from './pages/QueueDashboard.jsx';
 
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
         <Route path="PatientHistory" element={<PatientHistory />} />
         <Route path="PatientQueue" element={<PatientQueue />} />
         <Route path="Staff" element={<Staff />} /> 
-        <Route path="profile-settings" element={<SettingProfile />} />
+        <Route path="general-settings" element={<GeneralSettings />} />
       </Route>
 
       <Route index element={<LandingPage />} />
