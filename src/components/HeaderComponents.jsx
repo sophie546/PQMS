@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 
 // Header Components
 export const HeaderPaper = ({ children, sx = {}, ...props }) => (
@@ -67,31 +67,43 @@ export const HeaderSubText = ({ children, sx = {}, ...props }) => (
   </Typography>
 );
 
-export const HeaderButton = ({ children, variant = 'outlined', sx = {}, ...props }) => (
-  <Box
-    component="button"
+export const HeaderButton = ({ 
+  children,
+  variant = "contained",
+  startIcon,
+  background = '#667eea',
+  color = 'rgba(255, 255, 255, 0.9)',
+  textTransform = 'none',
+  fontWeight = 700,
+  borderRadius = 3,
+  px = 4,
+  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+  fontSize = '0.875rem',
+  boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)',
+  sx = {},
+  ...props 
+}) => (
+  <Button 
+    variant={variant}
+    startIcon={startIcon}
     sx={{
-      background: variant === 'contained' ? '#667eea' : 'white',
-      border: '1px solid #e5e7eb',
-      color: variant === 'contained' ? 'white' : '#374151',
-      px: 2.5,
-      py: 1,
-      borderRadius: 2,
-      cursor: 'pointer',
-      fontWeight: 600,
-      fontSize: '0.875rem',
-      transition: 'all 0.2s',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 1,
+      background,
+      color,
+      textTransform,
+      fontWeight,
+      borderRadius,
+      px,
+      fontFamily,
+      fontSize,
+      boxShadow,
       '&:hover': {
-        background: variant === 'contained' ? '#5568d3' : '#f9fafb',
-        borderColor: variant === 'contained' ? '#5568d3' : '#d1d5db',
+        background: 'white',
+        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
       },
       ...sx
     }}
     {...props}
   >
     {children}
-  </Box>
+  </Button>
 );
