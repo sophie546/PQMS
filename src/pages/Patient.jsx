@@ -163,54 +163,6 @@ function PatientPage() {
               
               {/* Search and Filter Controls */}
               <Box display="flex" alignItems="center" gap={2}>
-                {/* Active Filters */}
-                {hasActiveFilters && (
-                  <Box display="flex" alignItems="center" gap={1}>
-                    {searchTerm && (
-                      <Chip 
-                        label={`Search: ${searchTerm}`} 
-                        size="small"
-                        onDelete={() => setSearchTerm('')}
-                        sx={{
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
-                          fontWeight: 500,
-                          fontSize: '0.75rem',
-                          height: '24px'
-                        }}
-                      />
-                    )}
-                    {filters.gender && (
-                      <Chip 
-                        label={`Gender: ${filters.gender}`} 
-                        size="small"
-                        onDelete={() => setFilters({ ...filters, gender: null })}
-                        sx={{
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
-                          fontWeight: 500,
-                          fontSize: '0.75rem',
-                          height: '24px'
-                        }}
-                      />
-                    )}
-                    <Button 
-                      startIcon={<Clear sx={{ fontSize: 16 }} />} 
-                      onClick={clearFilters} 
-                      size="small" 
-                      sx={{ 
-                        textTransform: 'none', 
-                        color: '#6b7280',
-                        fontWeight: 500,
-                        fontSize: '0.75rem',
-                        minWidth: 'auto'
-                      }}
-                    >
-                      Clear
-                    </Button>
-                  </Box>
-                )}
-                
                 {/* Filter Button */}
                 <Button
                   startIcon={<FilterList sx={{ fontSize: 16 }} />}

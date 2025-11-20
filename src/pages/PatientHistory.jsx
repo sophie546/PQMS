@@ -174,68 +174,6 @@ const PatientHistory = () => {
               
               {/* Search and Filter Controls */}
               <Box display="flex" alignItems="center" gap={2}>
-                {/* Active Filters */}
-                {hasActiveFilters && (
-                  <Box display="flex" alignItems="center" gap={1}>
-                    {searchQuery && (
-                      <Chip 
-                        label={`Search: ${searchQuery}`} 
-                        size="small"
-                        onDelete={() => handleSearch('')}
-                        sx={{
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
-                          fontWeight: 500,
-                          fontSize: '0.75rem',
-                          height: '24px'
-                        }}
-                      />
-                    )}
-                    {doctorFilter !== 'all' && (
-                      <Chip 
-                        label={`Doctor: ${doctorFilter}`} 
-                        size="small"
-                        onDelete={() => handleDoctorFilter('all')}
-                        sx={{
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
-                          fontWeight: 500,
-                          fontSize: '0.75rem',
-                          height: '24px'
-                        }}
-                      />
-                    )}
-                    {dateFilter && (
-                      <Chip 
-                        label={`Date: ${dateFilter}`} 
-                        size="small"
-                        onDelete={() => handleDateFilter('')}
-                        sx={{
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
-                          fontWeight: 500,
-                          fontSize: '0.75rem',
-                          height: '24px'
-                        }}
-                      />
-                    )}
-                    <Button 
-                      startIcon={<Clear sx={{ fontSize: 16 }} />} 
-                      onClick={clearFilters} 
-                      size="small" 
-                      sx={{ 
-                        textTransform: 'none', 
-                        color: '#6b7280',
-                        fontWeight: 500,
-                        fontSize: '0.75rem',
-                        minWidth: 'auto'
-                      }}
-                    >
-                      Clear
-                    </Button>
-                  </Box>
-                )}
-                
                 {/* Doctor Filter Button */}
                 <Button
                   startIcon={<FilterList sx={{ fontSize: 16 }} />}

@@ -153,24 +153,6 @@ const PatientQueue = () => {
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937', mb: 0.5 }}>
                   Patient Queue
                 </Typography>
-                {hasActiveFilters && (
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    {filterStatus !== 'all' && (
-                      <Chip 
-                        label={`Status: ${filterStatus}`} 
-                        size="small"
-                        onDelete={() => handleFilter('all')}
-                        sx={{
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
-                          fontWeight: 500,
-                          fontSize: '0.75rem',
-                          height: '24px'
-                        }}
-                      />
-                    )}
-                  </Box>
-                )}
               </Box>
               <Button
                 startIcon={<FilterList />}
