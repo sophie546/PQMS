@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
 import { ArrowForward, Menu as MenuIcon, Close } from '@mui/icons-material';
+import { QueueModal } from "../components/QueueModal.jsx";
 
 // Animations
 const fadeInUp = keyframes`
@@ -139,6 +140,16 @@ const AnimatedBox = styled(Box)(({ delay = 0 }) => ({
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [queueModalOpen, setQueueModalOpen] = useState(false);
+
+  const handleOpenQueueModal = () => setQueueModalOpen(true);
+  const handleCloseQueueModal = () => setQueueModalOpen(false);
+
+  const handleQueueSubmit = (formData) => {
+    // Handle form submission specific to landing page
+    console.log('Queue form submitted from landing page:', formData);
+    // Add any landing-page-specific logic here
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -204,6 +215,8 @@ export default function LandingPage() {
   );
 
   return (
+    
+
     <Box sx={{ minHeight: '100vh', fontFamily: 'sans-serif' }}>
       {/* Navbar / Header */}
       <AppBar
@@ -780,11 +793,15 @@ export default function LandingPage() {
                 py: 1.5,
                 fontSize: "1rem"
               }} 
-              component={Link}
-              to="/Register"
+              onClick={handleOpenQueueModal}
             >
               Join Queue Now
             </GradientButton>
+            <QueueModal 
+              open={queueModalOpen}
+              onClose={handleCloseQueueModal}
+              onSubmit={handleQueueSubmit} 
+            />
             <Typography 
               variant="body2" 
               color="#999" 

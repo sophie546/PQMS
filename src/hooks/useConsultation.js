@@ -1,25 +1,18 @@
 import { useState, useMemo } from "react";
+import { mockMedicalStaff } from '../data/mockMedicalStaff.js';
+import { mockConsultations } from '../data/mockConsultations.js';
+
+// Use data from your structured files
+const doctors = mockMedicalStaff
+  .filter(staff => staff.role === 'Doctor')
+  .map(doctor => ({
+    value: doctor.staffId,
+    label: doctor.name
+  }));
 
 const gender = [
-  {
-    value: 'female',
-    label: 'Female',
-  },
-  {
-    value: 'male',  
-    label: 'Male',
-  }
-];
-
-const doctors = [
-  {
-    value: 1,
-    label: 'Dr. Maria Cruz',
-  },
-  {
-    value: 2,
-    label: 'Dr. Roberto Santos',
-  }
+  { value: 'female', label: 'Female' },
+  { value: 'male', label: 'Male' }
 ];
 
 const quickTemplates = [
@@ -65,7 +58,7 @@ export const useConsultation = () => {
     remarks: ''
   });
 
-  const [todayConsultations, setTodayConsultations] = useState(0);
+  const [todayConsultations, setTodayConsultations] = useState(mockConsultations.length);
   const [errors, setErrors] = useState({});
 
   // Validate name (letters only)
@@ -168,13 +161,23 @@ export const useConsultation = () => {
       return;
     }
 
-    // Save logic here (would typically be an API call)
-    console.log("Saving consultation:", {
-      patientInfo,
-      consultationDetails
-    });
+    // Create new consultation using your entity structure
+    const newConsultation = {
+      consultationId: `CONS-${mockConsultations.length + 1}`,
+      symptoms: consultationDetails.symptoms,
+      diagnosis: consultationDetails.diagnosis,
+      medicinePrescribed: consultationDetails.prescription,
+      remarks: consultationDetails.remarks,
+      consultationDate: new Date().toISOString().split('T')[0], // Today's date
+      patientId: "PAT-TEMP", // You'd get this from patient search
+      staffId: patientInfo.doctor
+    };
 
-    // Increment today's consultations count
+    console.log("Saving consultation:", newConsultation);
+    
+    // In a real app, you'd add to mockConsultations or send to API
+    // mockConsultations.push(newConsultation);
+    
     setTodayConsultations(prev => prev + 1);
     
     // Reset form
@@ -203,7 +206,7 @@ export const useConsultation = () => {
     const doctorValue = patientInfo.doctor;
     
     if (doctorValue === undefined || doctorValue === null || doctorValue === "") {
-      return "Not selected";
+      return "";
     }
     
     const doctorValueStr = String(doctorValue);

@@ -1,41 +1,5 @@
 import { useState, useMemo } from "react";
-
-// Mock data for patient records
-const patientRecords = [
-  {
-    id: 1,
-    name: "Maria Santos",
-    gender: "Female",
-    age: 45,
-    address: "123 Main St, Barangay Centro",
-    lastVisit: "2025-01-03",
-    contact: "09123456789",
-    visits: 12,
-    history: "Hypertension, Diabetes Type 2",
-  },
-  {
-    id: 2,
-    name: "Juan Dela Cruz",
-    gender: "Male",
-    age: 32,
-    address: "456 Oak Ave, Barangay San Jose",
-    lastVisit: "2025-01-04",
-    contact: "09234567890",
-    visits: 8,
-    history: "Asthma",
-  },
-  {
-    id: 3,
-    name: "Ana Reyes",
-    gender: "Female",
-    age: 28,
-    address: "789 Pine Rd, Barangay Poblacion",
-    lastVisit: "2025-01-05",
-    contact: "09345678901",
-    visits: 5,
-    history: "Allergy",
-  }
-];
+import { mockPatients } from '../data/mockPatients.js';
 
 export const usePatientManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,23 +7,22 @@ export const usePatientManagement = () => {
 
   // Filter patients based on search and filter criteria
   const filteredPatients = useMemo(() => {
-    return patientRecords.filter(patient => {
-      // If search query is a number, search ONLY by patient ID
+    return mockPatients.filter((patient) => {
+      // If search query is a number, search by patient ID
       const isNumberSearch = !isNaN(searchQuery) && searchQuery !== '';
       
       let matchesSearch = searchQuery === '';
       
       if (searchQuery !== '') {
         if (isNumberSearch) {
-          // Number search: only match by exact patient ID
-          matchesSearch = patient.id.toString() === searchQuery;
+          // Number search: search by patientId (e.g., "001" part of "PAT-001")
+          matchesSearch = patient.patientId.toLowerCase().includes(searchQuery.toLowerCase());
         } else {
-          // Text search: match by name, address, contact, history
+          // Text search: match by name, address, contact
           matchesSearch = 
             patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             patient.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            patient.contact.includes(searchQuery) ||
-            patient.history.toLowerCase().includes(searchQuery.toLowerCase());
+            patient.contactNo.includes(searchQuery);
         }
       }
 
@@ -70,7 +33,7 @@ export const usePatientManagement = () => {
     });
   }, [searchQuery, genderFilter]);
 
-  // Update stats based on filtered patients
+  // ... rest of your existing hook code remains the same
   const currentStats = useMemo(() => {
     const totalPatients = filteredPatients.length;
     const malePatients = filteredPatients.filter(p => p.gender === 'Male').length;
