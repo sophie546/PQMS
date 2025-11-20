@@ -4,8 +4,6 @@ import React from 'react';
 import {
   Box,
   Card,
-  IconButton,
-  Chip,
   Typography,
   Avatar,
   Button,
@@ -41,7 +39,6 @@ import {
   People,
   FaClipboardList,
   FilterList,
-  Clear,
   Visibility
 } from "../lib";
 
@@ -51,14 +48,10 @@ const PatientHistory = () => {
     patientStats,
     searchQuery,
     doctorFilter,
-    dateFilter,
-    hasActiveFilters,
     handleSearch,
     handleDoctorFilter,
-    handleDateFilter,
     handleRefresh,
     handleViewDetails,
-    clearFilters
   } = usePatientHistory();
 
   // Filter menu states

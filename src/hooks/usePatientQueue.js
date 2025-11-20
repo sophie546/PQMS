@@ -60,7 +60,8 @@ export const usePatientQueue = () => {
       arrivalTime: "09:30 AM",
       status: "Consulting",
       priority: "high"
-    }
+    },
+    
   ], []);
 
   const displayPatients = useMemo(() => {

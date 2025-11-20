@@ -19,12 +19,8 @@ import {
   HeaderTitle,
   HeaderButton,
   StatCard,
-  StatTitle,
   StatNumber,
   SubText,
-  StatIcon,
-  Caption,
-  SubCaption
 } from "../components";
 
 // Custom hook
