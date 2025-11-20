@@ -1,4 +1,13 @@
-import { Patient } from '../types/entities.js';
+class Patient {
+  constructor(id, name, gender, age, contact, address) {
+    this.id = id;
+    this.name = name;
+    this.gender = gender;
+    this.age = age;
+    this.contact = contact;
+    this.address = address;
+  }
+}
 
 export const mockPatients = [
   new Patient("PAT-001", "Maria Santos", "Female", 45, "09123456789", "123 Main St, Barangay Centro"),

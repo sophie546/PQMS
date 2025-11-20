@@ -31,7 +31,7 @@ const GeneralSettings = () => {
     { id: 'password', icon: <Lock size={20} />, text: 'Password and Security' },
     { id: 'professional', icon: <Briefcase size={20} />, text: 'Professional Information' }
   ];
-
+ 
   const days = ['S', 'M', 'T', 'W', 'TH', 'F', 'S'];
 
   const toggleDay = (day) => {
