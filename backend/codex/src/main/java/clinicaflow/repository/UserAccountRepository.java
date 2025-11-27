@@ -1,6 +1,6 @@
-package com.example.codex.aloriag4.repository;
+package clinicaflow.repository;
 
-import com.example.codex.aloriag4.entity.UserAccountEntity;
+import clinicaflow.entity.UserAccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
