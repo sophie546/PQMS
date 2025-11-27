@@ -1,4 +1,4 @@
-package com.example.codex.aloriag4.entity;
+package clinicaflow.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

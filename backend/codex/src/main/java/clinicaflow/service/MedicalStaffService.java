@@ -1,9 +1,9 @@
-package com.example.codex.aloriag4.service;
+package clinicaflow.service;
 
-import com.example.codex.aloriag4.entity.MedicalStaffEntity;
-import com.example.codex.aloriag4.entity.UserAccountEntity;
-import com.example.codex.aloriag4.repository.MedicalStaffRepository;
-import com.example.codex.aloriag4.repository.UserAccountRepository;
+import clinicaflow.entity.MedicalStaffEntity;
+import clinicaflow.entity.UserAccountEntity;
+import clinicaflow.repository.MedicalStaffRepository;
+import clinicaflow.repository.UserAccountRepository;
 
 import jakarta.transaction.Transactional;
 

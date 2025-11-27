@@ -1,7 +1,8 @@
-package com.example.codex.aloriag4.service;
-import com.example.codex.aloriag4.entity.UserAccountEntity;
-import com.example.codex.aloriag4.entity.MedicalStaffEntity;
-import com.example.codex.aloriag4.repository.UserAccountRepository;
+package clinicaflow.service;
+
+import clinicaflow.entity.UserAccountEntity;
+import clinicaflow.entity.MedicalStaffEntity;
+import clinicaflow.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

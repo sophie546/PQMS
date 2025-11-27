@@ -1,4 +1,4 @@
-package com.appdev.codex.rabeg4.service;
+package clinicaflow.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -6,8 +6,8 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.appdev.codex.rabeg4.entity.PatientEntity;
-import com.appdev.codex.rabeg4.repository.PatientRepository;
+import clinicaflow.entity.PatientEntity;
+import clinicaflow.repository.PatientRepository;
 
 @Service
 public class PatientService {

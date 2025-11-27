@@ -1,4 +1,4 @@
-package com.appdev.codex.rabeg4.entity;
+package clinicaflow.entity;
 
 import java.time.LocalDate;
 import jakarta.persistence.Entity;
