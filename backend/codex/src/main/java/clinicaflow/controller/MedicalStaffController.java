@@ -1,4 +1,4 @@
-package com.example.codex.aloriag4.controller;
+package clinicaflow.controller;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.codex.aloriag4.entity.MedicalStaffEntity;
-import com.example.codex.aloriag4.service.MedicalStaffService;
+import clinicaflow.entity.MedicalStaffEntity;
+import clinicaflow.service.MedicalStaffService;
 
 @RestController
 @RequestMapping("/api/medicalstaff")

@@ -1,7 +1,7 @@
-package com.example.codex.aloriag4.controller;
+package clinicaflow.controller;
 
-import com.example.codex.aloriag4.entity.UserAccountEntity;
-import com.example.codex.aloriag4.service.UserAccountService;
+import clinicaflow.entity.UserAccountEntity;
+import clinicaflow.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
