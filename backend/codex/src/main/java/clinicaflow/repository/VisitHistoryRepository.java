@@ -5,3 +5,37 @@ import clinicaflow.entity.VisitHistory;
 
 public interface VisitHistoryRepository extends JpaRepository<VisitHistory, Long> {
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
