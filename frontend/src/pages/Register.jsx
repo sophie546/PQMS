@@ -110,7 +110,7 @@ const PasswordTextField = ({ error, helperText, showPassword, onToggleVisibility
       sx={{
         position: 'absolute',
         right: '6px',
-        top: '12px', // Fixed position from top instead of percentage
+        top: '12px',
         color: '#667eea',
         zIndex: 1,
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -221,8 +221,8 @@ const PasswordRequirementsTooltip = () => {
   );
 };
 
-// Enhanced validation with letters-only for names - FIXED PASSWORD MATCHING
-const enhancedRegisterValidation = (values) => {
+// Enhanced validation with letters-only for names - NOW WITH EMAIL CHECK
+const enhancedRegisterValidation = async (values, checkEmailExists) => {
   const errors = {};
 
   // First Name validation
@@ -248,6 +248,17 @@ const enhancedRegisterValidation = (values) => {
     errors.email = 'Email is required';
   } else if (!/\S+@\S+\.\S+/.test(values.email)) {
     errors.email = 'Email is invalid';
+  } else {
+    // ✅ Check if email already exists in database
+    try {
+      const emailExists = await checkEmailExists(values.email);
+      if (emailExists) {
+        errors.email = 'Email is already registered. Please use a different email.';
+      }
+    } catch (error) {
+      console.log('Email check failed, will be checked by backend');
+      // Silently fail - backend will catch it
+    }
   }
 
   // Role validation
@@ -282,9 +293,11 @@ const enhancedRegisterValidation = (values) => {
 };
 
 export default function RegisterPage() {
-  const { register, loading, error: authError } = useAuth();
+  const { register, loading, error: authError, checkEmailExists } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const formRef = useRef(null);
   
   const {
@@ -293,7 +306,8 @@ export default function RegisterPage() {
     touched,
     handleChange,
     handleBlur,
-    validateForm
+    validateForm,
+    setErrors
   } = useForm(
     { 
       firstName: '',
@@ -303,13 +317,51 @@ export default function RegisterPage() {
       password: '',
       confirmPassword: ''
     },
-    enhancedRegisterValidation
+    (values) => enhancedRegisterValidation(values, checkEmailExists)
   );
+
+  // Real-time email check on blur
+  const handleEmailBlur = async () => {
+    handleBlur('email');
+    
+    if (values.email && /\S+@\S+\.\S+/.test(values.email)) {
+      setCheckingEmail(true);
+      setEmailError('');
+      
+      try {
+        const emailExists = await checkEmailExists(values.email);
+        if (emailExists) {
+          setEmailError('Email is already registered. Please use a different email.');
+          setErrors(prev => ({
+            ...prev,
+            email: 'Email is already registered. Please use a different email.'
+          }));
+        }
+      } catch (error) {
+        console.log('Email check failed:', error);
+      } finally {
+        setCheckingEmail(false);
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    // Validate form with async validation
+    const formErrors = await enhancedRegisterValidation(values, checkEmailExists);
+    setErrors(formErrors);
+    
+    // Mark all fields as touched
+    const allTouched = Object.keys(values).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {});
+    
+    // Check if there are errors
+    const hasErrors = Object.keys(formErrors).length > 0;
+    
+    if (hasErrors) {
       setTimeout(() => {
         const firstError = document.querySelector('.Mui-error');
         if (firstError) {
@@ -328,6 +380,7 @@ export default function RegisterPage() {
       await register(values);
     } catch (error) {
       console.error('Registration error:', error);
+      // Error is already handled in useAuth
     }
   };
 
@@ -484,10 +537,14 @@ export default function RegisterPage() {
                 backgroundColor: '#fee',
                 border: '1px solid #fcc',
                 color: '#c33',
-                fontSize: '0.875rem'
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
               }}
             >
-              {authError}
+              <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+              <span>{authError}</span>
             </Box>
           )}
 
@@ -522,19 +579,36 @@ export default function RegisterPage() {
               </Box>  
             </Box>
 
-            {/* Email */}
+            {/* Email with real-time check */}
             <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
               Email
             </Typography>
-            <CustomTextField 
-              placeholder="Enter your email"
-              type="email"
-              value={values.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              onBlur={() => handleBlur('email')}
-              error={touched.email && !!errors.email}
-              helperText={touched.email && errors.email}
-            />
+            <Box sx={{ position: 'relative' }}>
+              <CustomTextField 
+                placeholder="Enter your email"
+                type="email"
+                value={values.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                onBlur={handleEmailBlur}
+                error={(touched.email && !!errors.email) || !!emailError}
+                helperText={(touched.email && errors.email) || emailError}
+              />
+              {checkingEmail && (
+                <Box 
+                  sx={{ 
+                    position: 'absolute', 
+                    right: '12px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    color: '#667eea',
+                    fontSize: '0.75rem',
+                    fontWeight: 600
+                  }}
+                >
+                  Checking...
+                </Box>
+              )}
+            </Box>
 
             {/* Role */}
             <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
@@ -643,7 +717,7 @@ export default function RegisterPage() {
               type="submit"
               variant="contained" 
               fullWidth
-              disabled={loading}
+              disabled={loading || checkingEmail}
               sx={{
                 boxShadow: 'none',
                 textTransform: 'none',
@@ -660,10 +734,12 @@ export default function RegisterPage() {
                 },
                 '&:disabled': {
                   background: '#ccc',
+                  color: '#999'
                 }
               }}
             >
               {loading ? 'Creating Account...' : 'Sign Up'}
+              {loading && ' ...'}
             </Button>
           </form>
 

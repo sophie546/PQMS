@@ -63,6 +63,8 @@ export const useForm = (initialValues, validate) => {
     handleBlur,
     validateForm,
     resetForm,
-    setValues
+    setValues,
+    setErrors,  
+    setTouched 
   };
 };
