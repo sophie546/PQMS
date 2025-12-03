@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/useraccount")
+@CrossOrigin(origins = "http://localhost:3000") // Add this line
 public class UserAccountController {
 
     @Autowired
