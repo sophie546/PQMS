@@ -32,6 +32,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { FormTextField, FormSelectField } from "../components/FormFields";
 
 import { patientService } from "../services/patientService";
 import { 
@@ -42,9 +43,36 @@ import {
   MoreVert,
   FaUsers,
   FilterList,
-  Edit,
-  Delete,
 } from "../lib";
+
+// CustomTextField from QueueModal
+const CustomTextField = ({ sx, ...props }) => (
+  <TextField
+    fullWidth
+    variant="standard"
+    sx={{
+      '& .MuiInput-underline': {
+        '&:before': {
+          borderBottomColor: 'rgba(102, 126, 234, 0.3)',
+        },
+        '&:hover:before': {
+          borderBottomColor: '#667eea',
+        },
+        '&:after': {
+          borderBottomColor: '#667eea',
+        },
+      },
+      '& .MuiInputBase-input': {
+        fontSize: 14,
+        padding: '10px 0', 
+        fontWeight: 600,
+      },
+      mb: 2,
+      ...sx,
+    }}
+    {...props}
+  />
+);
 
 function PatientPage() {
   const [patients, setPatients] = useState([]);
@@ -60,7 +88,7 @@ function PatientPage() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   
-  // Form state
+  // Form state - using QueueModal structure but without 'reason'
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -183,6 +211,13 @@ function PatientPage() {
     setIsEditing(false);
   };
 
+  const handleInputChange = (field) => (event) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: event.target.value
+    }));
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     
@@ -200,19 +235,33 @@ function PatientPage() {
         fetchPatients();
         handleDialogClose();
         setSelectedPatientId(null); 
+      } else {
+        // Add new patient logic
+        console.log("Adding new patient:", formData);
+        await patientService.addPatient(formData);
+        setSnackbar({ 
+          open: true, 
+          message: 'Patient added successfully', 
+          severity: 'success' 
+        });
+        fetchPatients();
+        handleDialogClose();
       }
     } catch (error) {
-      // ...
+      console.error("Error:", error);
+      setSnackbar({ 
+        open: true, 
+        message: `Failed to ${isEditing ? 'update' : 'add'} patient`, 
+        severity: 'error' 
+      });
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Gender options for dropdown
+  const genderOptions = [
+    { value: 'Male', label: 'Male' },
+    { value: 'Female', label: 'Female' },
+  ];
 
   // Calculate stats from real data
   const managementStats = [
@@ -399,7 +448,7 @@ function PatientPage() {
             {displayPatients.length > 0 ? (
               displayPatients.map((patient, index) => (
                 <Box 
-                  key={patient.id}
+                  key={patient.patientId}  // Fixed: use patientId instead of id
                   sx={{ 
                     px: 3, 
                     py: 2.5, 
@@ -429,7 +478,7 @@ function PatientPage() {
                         <Typography variant="body2" sx={{ fontWeight: 600, color: '#1f2937', mb: 0.25 }}>
                           {patient.firstName} {patient.lastName}
                         </Typography>
-                        <Caption>#{patient.id}</Caption>
+                        <Caption>#{patient.patientId}</Caption> {/* Fixed: use patientId */}
                       </Box>
                     </Box>
                     
@@ -499,93 +548,181 @@ function PatientPage() {
           Edit
         </MenuItem>
         <MenuItem onClick={handleDeletePatient} sx={{ color: '#ef4444' }}>
-          <DeleteIcon sx={{ fontSize: 18, mr: 1 }} /> {/* Using Clear icon as delete */}
+          <DeleteIcon sx={{ fontSize: 18, mr: 1 }} />
           Delete
         </MenuItem>
       </Menu>
-      {/* Add/Edit Patient Dialog */}
-      <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {isEditing ? 'Edit Patient' : 'Add New Patient'}
+      
+      <Dialog 
+        open={openDialog} 
+        onClose={handleDialogClose} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          pb: 1,
+          borderBottom: '1px solid #e5e7eb'
+        }}>
+          <Typography 
+            fontSize="22px"
+            component="h2" 
+            fontWeight="bold" 
+            sx={{ 
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              color: '#1a237e',
+            }}
+          >
+            {isEditing ? 'Edit Patient' : 'Add New Patient'}
+          </Typography>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              color: '#666',
+              mt: 0.5
+            }}
+          >
+            {isEditing ? 'Update patient information' : 'Fill in patient details to add to records'}
+          </Typography>
         </DialogTitle>
+        
         <form onSubmit={handleFormSubmit}>
-          <DialogContent>
-            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 1 }}>
-              <TextField
-                label="First Name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                required
-                fullWidth
-                size="small"
-              />
-              <TextField
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-                fullWidth
-                size="small"
-              />
-              <TextField
-                label="Age"
-                name="age"
-                type="number"
-                value={formData.age}
-                onChange={handleInputChange}
-                required
-                fullWidth
-                size="small"
-              />
-              <TextField
-                label="Gender"
-                name="gender"
-                select
-                value={formData.gender}
-                onChange={handleInputChange}
-                required
-                fullWidth
-                size="small"
-                SelectProps={{ native: true }}
-              >
-                <option value=""></option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </TextField>
-              <TextField
-                label="Contact Number"
-                name="contactNo"
-                value={formData.contactNo}
-                onChange={handleInputChange}
-                required
-                fullWidth
-                size="small"
-              />
-              <TextField
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                required
-                fullWidth
-                size="small"
-                sx={{ gridColumn: 'span 2' }}
-              />
+          <DialogContent sx={{ pt: 3 }}>
+            <Box sx={{ 
+              width: '100%', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 1 
+            }}>
+              {/* First Name & Last Name Row */}
+              <Box sx={{ 
+                display: 'flex', 
+                gap: 2, 
+                width: '100%',
+                flexDirection: { xs: 'column', sm: 'row' } 
+              }}>
+                <Box sx={{ flex: 1 }}>
+                  <CustomTextField
+                    label="First Name"
+                    value={formData.firstName}
+                    onChange={handleInputChange('firstName')}
+                    required
+                    fullWidth
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <CustomTextField
+                    label="Last Name"
+                    value={formData.lastName}
+                    onChange={handleInputChange('lastName')}
+                    required
+                    fullWidth
+                  />
+                </Box>
+              </Box>
+
+              {/* Age, Gender & Contact Number Row */}
+              <Box sx={{ 
+                display: 'flex', 
+                gap: 2, 
+                width: '100%',
+                flexDirection: { xs: 'column', sm: 'row' }, 
+                mt: 1
+              }}>
+                <Box sx={{ flex: 1 }}>
+                  <FormTextField
+                    label="Age*"
+                    value={formData.age}
+                    onChange={handleInputChange('age')}
+                    type="number"
+                    required
+                    fullWidth
+                    labelSx={{ fontSize: '14px' }}
+                    inputProps={{
+                      maxLength: 3,
+                      min: 0,
+                      max: 150
+                    }}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <FormSelectField
+                    label="Gender*"
+                    value={formData.gender}
+                    onChange={handleInputChange('gender')}
+                    options={genderOptions}
+                    required
+                    fullWidth
+                    labelSx={{ fontSize: '14px' }}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <FormTextField
+                    label="Contact Number*"
+                    value={formData.contactNo}
+                    onChange={handleInputChange('contactNo')}
+                    type="text"
+                    required
+                    fullWidth
+                    labelSx={{ fontSize: '14px' }}
+                    inputProps={{
+                      maxLength: 11,
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Address */}
+              <Box sx={{ width: '100%', mt: 1 }}>
+                <CustomTextField
+                  label="Address"
+                  value={formData.address}
+                  onChange={handleInputChange('address')}
+                  required
+                  fullWidth
+                />
+              </Box>
             </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleDialogClose}>Cancel</Button>
+          
+          <DialogActions sx={{ 
+            px: 3, 
+            pb: 3, 
+            pt: 1,
+          }}>
             <Button 
-              type="submit" 
-              variant="contained"
-              onClick={(e) => {
-                e.preventDefault(); // Prevent default just in case
-                handleFormSubmit(e);
+              onClick={handleDialogClose}
+              sx={{ 
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: 1,
+                px: 3,
+                py: 1
               }}
             >
-              {isEditing ? 'Update' : 'Add'} Patient
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              variant="contained"
+              sx={{ 
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: 1,
+                px: 3,
+                py: 1,
+                background: '#667eea',
+                '&:hover': {
+                  background: '#556cd6',
+                }
+              }}
+            >
+              {isEditing ? 'Update Patient' : 'Add Patient'}
             </Button>
           </DialogActions>
         </form>
