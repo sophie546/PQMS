@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
+
 @RestController
 @RequestMapping("/patients")
-@CrossOrigin(origins = "http://localhost:3001")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PatientController {
     @Autowired
     private PatientService pservice;
