@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";  
 import { 
   Typography, 
@@ -110,7 +110,7 @@ const PasswordTextField = ({ error, helperText, showPassword, onToggleVisibility
       sx={{
         position: 'absolute',
         right: '6px',
-        top: '12px', // Fixed position from top instead of percentage
+        top: '12px',
         color: '#667eea',
         zIndex: 1,
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -221,8 +221,8 @@ const PasswordRequirementsTooltip = () => {
   );
 };
 
-// Enhanced validation with letters-only for names - FIXED PASSWORD MATCHING
-const enhancedRegisterValidation = (values) => {
+// BASIC validation (without email existence check)
+const basicValidation = (values) => {
   const errors = {};
 
   // First Name validation
@@ -243,7 +243,7 @@ const enhancedRegisterValidation = (values) => {
     errors.lastName = 'Last name must be at least 2 characters';
   }
 
-  // Email validation
+  // Email validation (format only)
   if (!values.email) {
     errors.email = 'Email is required';
   } else if (!/\S+@\S+\.\S+/.test(values.email)) {
@@ -255,7 +255,7 @@ const enhancedRegisterValidation = (values) => {
     errors.role = 'Role is required';
   }
 
-  // Password validation with requirements
+  // Password validation
   if (!values.password) {
     errors.password = 'Password is required';
   } else {
@@ -271,7 +271,7 @@ const enhancedRegisterValidation = (values) => {
     }
   }
 
-  // Confirm Password validation - FIXED LOGIC
+  // Confirm Password validation
   if (!values.confirmPassword) {
     errors.confirmPassword = 'Please confirm your password';
   } else if (values.password && values.confirmPassword && values.password !== values.confirmPassword) {
@@ -282,18 +282,26 @@ const enhancedRegisterValidation = (values) => {
 };
 
 export default function RegisterPage() {
-  const { register, loading, error: authError } = useAuth();
+  const { register, loading, error: authError, checkEmailExists } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [emailExistsError, setEmailExistsError] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const [formTouched, setFormTouched] = useState({});
   const formRef = useRef(null);
   
+  // Initialize with useForm
   const {
     values,
-    errors,
-    touched,
+    errors: hookErrors,
+    touched: hookTouched,
     handleChange,
     handleBlur,
-    validateForm
+    validateForm,
+    setErrors: setHookErrors,
+    setTouched: setHookTouched,
+    setFieldError
   } = useForm(
     { 
       firstName: '',
@@ -303,27 +311,145 @@ export default function RegisterPage() {
       password: '',
       confirmPassword: ''
     },
-    enhancedRegisterValidation
+    basicValidation
   );
+
+  // Sync hook errors with local state
+  useEffect(() => {
+    setFormErrors(hookErrors);
+  }, [hookErrors]);
+
+  useEffect(() => {
+    setFormTouched(hookTouched);
+  }, [hookTouched]);
+
+  // Real-time email check on blur
+  const handleEmailBlur = async (e) => {
+    // First run basic validation
+    handleBlur('email');
+    
+    // Clear any existing email error
+    setEmailExistsError('');
+    
+    // Only check if email has valid format
+    if (values.email && /\S+@\S+\.\S+/.test(values.email)) {
+      setCheckingEmail(true);
+      
+      try {
+        const emailExists = await checkEmailExists(values.email);
+        
+        if (emailExists) {
+          setEmailExistsError('Email is already registered. Please use a different email.');
+          setFieldError('email', 'Email is already registered. Please use a different email.');
+        }
+      } catch (error) {
+        console.log('Email check failed:', error);
+      } finally {
+        setCheckingEmail(false);
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    console.log('=== SUBMITTING FORM ===');
+    console.log('Form values:', values);
+    
+    // First, mark all fields as touched
+    const allTouched = Object.keys(values).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {});
+    setHookTouched(allTouched);
+    setFormTouched(allTouched);
+    
+    // Run basic validation
+    const basicErrors = basicValidation(values);
+    let hasErrors = Object.keys(basicErrors).length > 0;
+    
+    console.log('Basic validation errors:', basicErrors);
+    console.log('Has basic errors?', hasErrors);
+    
+    // If email format is valid, check for duplicates
+    if (!basicErrors.email && values.email && /\S+@\S+\.\S+/.test(values.email)) {
+      try {
+        setCheckingEmail(true);
+        console.log('Checking email before submit:', values.email);
+        
+        const emailExists = await checkEmailExists(values.email);
+        console.log('Email exists result before submit:', emailExists);
+        
+        if (emailExists) {
+          basicErrors.email = 'Email is already registered. Please use a different email.';
+          setEmailExistsError('Email is already registered. Please use a different email.');
+          hasErrors = true;
+          console.log('Email already exists! Setting error.');
+        } else {
+          console.log('Email is available.');
+        }
+      } catch (error) {
+        console.log('Email check failed during submit:', error);
+      } finally {
+        setCheckingEmail(false);
+      }
+    }
+    
+    // Set all errors
+    setHookErrors(basicErrors);
+    setFormErrors(basicErrors);
+    
+    console.log('Final errors to display:', basicErrors);
+    console.log('Has errors after all checks?', hasErrors);
+    
+    if (hasErrors) {
+      console.log('Form has errors, preventing submission');
+      
+      // Force re-render to show errors
       setTimeout(() => {
-        const firstError = document.querySelector('.Mui-error');
+        // Try multiple ways to find the error
+        const errorSelectors = [
+          '.Mui-error',
+          '.Mui-error input',
+          '[class*="Mui-error"]',
+          'input[aria-invalid="true"]'
+        ];
+        
+        let firstError = null;
+        for (const selector of errorSelectors) {
+          firstError = document.querySelector(selector);
+          if (firstError) break;
+        }
+        
+        console.log('First error element found:', firstError);
+        
         if (firstError) {
+          // Scroll to error
           firstError.scrollIntoView({ 
             behavior: 'smooth', 
             block: 'center' 
           });
-          const input = firstError.querySelector('input') || firstError;
-          input.focus();
+          
+          // Try to focus the input
+          const input = firstError.tagName === 'INPUT' 
+            ? firstError 
+            : firstError.querySelector('input');
+            
+          if (input && input.focus) {
+            setTimeout(() => input.focus(), 300);
+          }
+        } else {
+          // If no error element found, just scroll to top of form
+          if (formRef.current) {
+            formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         }
-      }, 100);
+      }, 300);
+      
       return;
     }
 
+    console.log('No errors, proceeding with registration');
     try {
       await register(values);
     } catch (error) {
@@ -335,6 +461,12 @@ export default function RegisterPage() {
   const handleNameChange = (field, value) => {
     const lettersOnly = value.replace(/[^A-Za-z\s]/g, '');
     handleChange(field, lettersOnly);
+    
+    // Clear error when user types
+    if (formErrors[field]) {
+      setHookErrors(prev => ({ ...prev, [field]: '' }));
+      setFormErrors(prev => ({ ...prev, [field]: '' }));
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -344,6 +476,21 @@ export default function RegisterPage() {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  // Use local state for display
+  const displayErrors = emailExistsError 
+    ? { ...formErrors, email: emailExistsError } 
+    : formErrors;
+  
+  const displayTouched = formTouched;
+
+  // Debug: Add console logs to see what's happening
+  console.log('=== FORM STATE ===');
+  console.log('Values:', values);
+  console.log('Display Errors:', displayErrors);
+  console.log('Display Touched:', displayTouched);
+  console.log('Email exists error:', emailExistsError);
+  console.log('Checking email:', checkingEmail);
 
   return (
     <Box sx={{ 
@@ -355,7 +502,7 @@ export default function RegisterPage() {
       fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif',
       overflow: 'hidden'
     }}>
-      {/* Left Section - unchanged */}
+      {/* Left Section */}
       <Box sx={{ 
         width: "50%", 
         height: "100vh", 
@@ -484,10 +631,14 @@ export default function RegisterPage() {
                 backgroundColor: '#fee',
                 border: '1px solid #fcc',
                 color: '#c33',
-                fontSize: '0.875rem'
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
               }}
             >
-              {authError}
+              <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+              <span>{authError}</span>
             </Box>
           )}
 
@@ -503,8 +654,8 @@ export default function RegisterPage() {
                   value={values.firstName}
                   onChange={(e) => handleNameChange('firstName', e.target.value)}
                   onBlur={() => handleBlur('firstName')}
-                  error={touched.firstName && !!errors.firstName}
-                  helperText={touched.firstName && errors.firstName}
+                  error={displayTouched.firstName && !!displayErrors.firstName}
+                  helperText={displayTouched.firstName && displayErrors.firstName}
                 />
               </Box>  
               <Box sx={{ flex: 1 }}>
@@ -516,25 +667,50 @@ export default function RegisterPage() {
                   value={values.lastName}
                   onChange={(e) => handleNameChange('lastName', e.target.value)}
                   onBlur={() => handleBlur('lastName')}
-                  error={touched.lastName && !!errors.lastName}
-                  helperText={touched.lastName && errors.lastName}
+                  error={displayTouched.lastName && !!displayErrors.lastName}
+                  helperText={displayTouched.lastName && displayErrors.lastName}
                 />
               </Box>  
             </Box>
 
-            {/* Email */}
+            {/* Email with real-time check */}
             <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
               Email
             </Typography>
-            <CustomTextField 
-              placeholder="Enter your email"
-              type="email"
-              value={values.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              onBlur={() => handleBlur('email')}
-              error={touched.email && !!errors.email}
-              helperText={touched.email && errors.email}
-            />
+            <Box sx={{ position: 'relative' }}>
+              <CustomTextField 
+                placeholder="Enter your email"
+                type="email"
+                value={values.email}
+                onChange={(e) => {
+                  handleChange('email', e.target.value);
+                  // Clear errors when typing
+                  if (displayErrors.email || emailExistsError) {
+                    setHookErrors(prev => ({ ...prev, email: '' }));
+                    setFormErrors(prev => ({ ...prev, email: '' }));
+                    setEmailExistsError('');
+                  }
+                }}
+                onBlur={handleEmailBlur}
+                error={displayTouched.email && (!!displayErrors.email || !!emailExistsError)}
+                helperText={displayTouched.email ? (displayErrors.email || emailExistsError) : ''}
+              />
+              {checkingEmail && (
+                <Box 
+                  sx={{ 
+                    position: 'absolute', 
+                    right: '12px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    color: '#667eea',
+                    fontSize: '0.75rem',
+                    fontWeight: 600
+                  }}
+                >
+                  Checking...
+                </Box>
+              )}
+            </Box>
 
             {/* Role */}
             <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a237e', mb: 1 }}>
@@ -548,14 +724,14 @@ export default function RegisterPage() {
               value={values.role}
               onChange={(e) => handleChange('role', e.target.value)}
               onBlur={() => handleBlur('role')}
-              error={touched.role && !!errors.role}
-              helperText={touched.role && errors.role}
+              error={displayTouched.role && !!displayErrors.role}
+              helperText={displayTouched.role && displayErrors.role}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 3,
                   fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
                   '& fieldset': { 
-                    borderColor: (touched.role && errors.role) ? '#f44336' : 'rgba(102, 126, 234, 0.3)',
+                    borderColor: (displayTouched.role && displayErrors.role) ? '#f44336' : 'rgba(102, 126, 234, 0.3)',
                   },
                 },
                 '& .MuiInputBase-input': {
@@ -616,8 +792,8 @@ export default function RegisterPage() {
               value={values.password}
               onChange={(e) => handleChange('password', e.target.value)}
               onBlur={() => handleBlur('password')}
-              error={touched.password && !!errors.password}
-              helperText={touched.password && errors.password}
+              error={displayTouched.password && !!displayErrors.password}
+              helperText={displayTouched.password && displayErrors.password}
               showPassword={showPassword}
               onToggleVisibility={togglePasswordVisibility}
             />
@@ -632,8 +808,8 @@ export default function RegisterPage() {
               value={values.confirmPassword}
               onChange={(e) => handleChange('confirmPassword', e.target.value)}
               onBlur={() => handleBlur('confirmPassword')}
-              error={touched.confirmPassword && !!errors.confirmPassword}
-              helperText={touched.confirmPassword && errors.confirmPassword}
+              error={displayTouched.confirmPassword && !!displayErrors.confirmPassword}
+              helperText={displayTouched.confirmPassword && displayErrors.confirmPassword}
               showPassword={showConfirmPassword}
               onToggleVisibility={toggleConfirmPasswordVisibility}
             />
@@ -643,7 +819,7 @@ export default function RegisterPage() {
               type="submit"
               variant="contained" 
               fullWidth
-              disabled={loading}
+              disabled={loading || checkingEmail}
               sx={{
                 boxShadow: 'none',
                 textTransform: 'none',
@@ -660,10 +836,12 @@ export default function RegisterPage() {
                 },
                 '&:disabled': {
                   background: '#ccc',
+                  color: '#999'
                 }
               }}
             >
               {loading ? 'Creating Account...' : 'Sign Up'}
+              {loading && ' ...'}
             </Button>
           </form>
 

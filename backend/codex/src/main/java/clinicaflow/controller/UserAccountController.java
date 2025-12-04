@@ -4,12 +4,15 @@ import clinicaflow.entity.UserAccountEntity;
 import clinicaflow.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/useraccount")
+@CrossOrigin(origins = "http://localhost:3000") // Add this line
 public class UserAccountController {
 
     @Autowired
