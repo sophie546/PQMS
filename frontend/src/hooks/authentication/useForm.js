@@ -1,3 +1,4 @@
+// useForm.js - FIXED VERSION
 import { useState } from 'react';
 
 export const useForm = (initialValues, validate) => {
@@ -6,16 +7,30 @@ export const useForm = (initialValues, validate) => {
   const [touched, setTouched] = useState({});
 
   const handleChange = (field, value) => {
-    setValues(prev => ({
-      ...prev,
+    const newValues = {
+      ...values,
       [field]: value
-    }));
+    };
+    
+    setValues(newValues);
 
+    // Clear error for this field when user types
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
         [field]: ''
       }));
+    }
+
+    // Validate this field immediately if validate function exists
+    if (validate && touched[field]) {
+      const fieldErrors = validate(newValues);
+      if (fieldErrors[field]) {
+        setErrors(prev => ({
+          ...prev,
+          [field]: fieldErrors[field]
+        }));
+      }
     }
   };
 
@@ -25,12 +40,21 @@ export const useForm = (initialValues, validate) => {
       [field]: true
     }));
 
+    // Validate this field on blur
     if (validate) {
-      const fieldErrors = validate({ [field]: values[field] });
-      setErrors(prev => ({
-        ...prev,
-        [field]: fieldErrors[field] || ''
-      }));
+      const fieldErrors = validate(values);
+      if (fieldErrors[field]) {
+        setErrors(prev => ({
+          ...prev,
+          [field]: fieldErrors[field]
+        }));
+      } else {
+        // Clear error if validation passes
+        setErrors(prev => ({
+          ...prev,
+          [field]: ''
+        }));
+      }
     }
   };
 
@@ -40,6 +64,7 @@ export const useForm = (initialValues, validate) => {
     const formErrors = validate(values);
     setErrors(formErrors);
     
+    // Mark all fields as touched when form is submitted
     const allTouched = Object.keys(values).reduce((acc, key) => {
       acc[key] = true;
       return acc;
@@ -55,6 +80,13 @@ export const useForm = (initialValues, validate) => {
     setTouched({});
   };
 
+  const setFieldError = (field, error) => {
+    setErrors(prev => ({
+      ...prev,
+      [field]: error
+    }));
+  };
+
   return {
     values,
     errors,
@@ -65,6 +97,7 @@ export const useForm = (initialValues, validate) => {
     resetForm,
     setValues,
     setErrors,  
-    setTouched 
+    setTouched,
+    setFieldError
   };
 };
