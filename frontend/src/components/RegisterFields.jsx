@@ -56,8 +56,8 @@ export const InputField = ({
           },
         },
         '& .MuiOutlinedInput-input': {
-          paddingLeft: '10px',
-          paddingRight: '10px',
+          py: '12px',
+          px: '10px',
           fontSize: '0.85rem',
         },
         '& .MuiInputLabel-root': {
@@ -228,8 +228,8 @@ export const NameFieldsRow = ({
               },
             },
             '& .MuiOutlinedInput-input': {
-              paddingLeft: '10px',
-              paddingRight: '10px',
+              py: '12px',
+              px: '10px',
               fontSize: '0.85rem',
             },
             '& .MuiInputLabel-root': {
@@ -279,8 +279,8 @@ export const NameFieldsRow = ({
               },
             },
             '& .MuiOutlinedInput-input': {
-              paddingLeft: '10px',
-              paddingRight: '10px',
+              py: '12px',
+              px: '10px',
               fontSize: '0.85rem',
             },
             '& .MuiInputLabel-root': {
