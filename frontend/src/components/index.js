@@ -2,7 +2,7 @@ export { Sidebar } from './Sidebar';
 export { default as Layout } from './Layout';
 
 export { FormSelectField, FormTextField } from './FormFields';
-export { InputField, PasswordField, RoleSelectField, NameFieldsRow, EmailField, GradientButton, ErrorAlert } from './RegisterFields';
+export { InputField, PasswordField, RoleSelectField, NameFieldsRow, EmailField, GradientButton, ErrorAlert,  } from './RegisterFields';
 
 
 export { PatientCard } from './PatientCard';

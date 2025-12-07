@@ -1,325 +1,405 @@
-  import React from "react";
-  import { Link } from "react-router-dom";  
-  import { Typography, Box, TextField, Button } from "../lib";
-  import { useAuth, useForm, loginValidation } from "../hooks";
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";  
+import { 
+  Typography, 
+  Box,
+  Fade
+} from "@mui/material";
+import { useAuth } from "../hooks"; 
+import {
+  EmailField,
+  PasswordField,
+  GradientButton,
+  ErrorAlert
+} from "../components/RegisterFields";
 
-const CustomTextField = ({ error, helperText, sx, ...props }) => (
-  <TextField
-    fullWidth
-    variant="outlined" 
-    size="small"
-    error={error}
-    helperText={helperText}
-    sx={{
-      '& .MuiOutlinedInput-root': {
-        borderRadius: 3,
-        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-        '& fieldset': { 
-          borderColor: error ? '#f44336' : 'rgba(102, 126, 234, 0.3)',
-        },
-        '&:hover fieldset': { 
-          borderColor: error ? '#f44336' : '#667eea',
-        },
-        '&.Mui-focused fieldset': { 
-          borderColor: error ? '#f44336' : '#667eea',
-        },
-      },
-      '& .MuiInputBase-input': {
-        fontSize: '0.875rem',
-        fontWeight: 500,
-        fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-        padding: '12px 16px',
-      },
-      mb: 3,
-      ...sx,
-    }}
-    {...props} 
-  />
-);
+// Login validation
+const loginValidation = (values) => {
+  const errors = {};
+
+  if (!values.email) {
+    errors.email = 'Email is required';
+  } else if (!/\S+@\S+\.\S+/.test(values.email)) {
+    errors.email = 'Email is invalid';
+  }
+
+  if (!values.password) {
+    errors.password = 'Password is required';
+  }
+
+  return errors;
+};
 
 export default function LoginPage() {
   const { login, loading, error: authError } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [formTouched, setFormTouched] = useState({});
+  // State to trigger the slide animation
+  const [isActive, setIsActive] = useState(false);
+  const formRef = useRef(null);
   
-  const {
-    values,
-    errors,
-    touched,
-    handleChange,
-    handleBlur,
-    validateForm
-  } = useForm(
-    { email: '', password: '' },
-    loginValidation
-  );
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const navigate = useNavigate();
+
+  const handleChange = (field) => (e) => {
+    const value = e.target.value;
+    setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Clear error when user types
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleBlur = (field) => {
+    setFormTouched(prev => ({ ...prev, [field]: true }));
+    
+    // Run validation for this field
+    const errors = loginValidation(formData);
+    if (errors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: errors[field] }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    // Mark all fields as touched
+    const allTouched = Object.keys(formData).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {});
+    setFormTouched(allTouched);
+    
+    // Run validation
+    const errors = loginValidation(formData);
+    const hasErrors = Object.keys(errors).length > 0;
+    setFormErrors(errors);
+    
+    if (hasErrors) {
+      // Scroll to first error logic...
+      setTimeout(() => {
+        const firstError = document.querySelector('.Mui-error');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 300);
       return;
     }
 
     try {
-      await login(values.email, values.password);
+      await login(formData.email, formData.password);
     } catch (error) {
       console.error('Login error:', error);
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  // Handle navigation with Source Code Animation
+  const handleNavigateToRegister = (e) => {
+    e.preventDefault();
+    
+    // 1. Trigger the CSS animation state
+    setIsActive(true);
+    
+    // 2. Navigate after the animation time (approx 0.6s - 1s)
+    setTimeout(() => {
+      navigate('/register');
+    }, 900);
+  };
+
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
+    <Box className={`container ${isActive ? 'active' : ''}`} sx={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%)',
-      fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif'
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(90deg, #e2e2e2, #c9d6ff)',
+      // Override body/root styles for this page
+      position: 'relative',
+      overflow: 'hidden'
     }}>
-      <Box sx={{ 
-        width: "50%", 
-        height: "100vh", 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <Box
-          sx={{
-            width: '100%',
-            height: '100%', 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        />
-        <Typography 
-          variant="h3" 
-          sx={{
-            position: 'absolute',
-            top: '15%',
-            fontWeight: 700,
-            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-            backgroundClip: 'text',
-            textFillColor: 'transparent',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          ClinicaFlow
-        </Typography>
-        <Box
-          component="img"
-          src="/rightSection.png"
-          alt="Healthcare Management"
-          sx={{
-            width: 'auto',      
-            height: 'auto',     
-            maxWidth: '80%',   
-            maxHeight: '60%',  
-            objectFit: 'contain', 
-            position: 'absolute',
-          }}
-        />
-        <Typography 
-          variant="h5" 
-          sx={{
-            position: 'absolute',
-            bottom: '20%',
-            fontWeight: 600,
-            fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-            color: 'white',
-            textAlign: 'center',
-            px: 4
-          }}
-        >
-          Digital Health Management Made Simple
-        </Typography>    
-        <Typography 
-          variant="body1" 
-          sx={{
-            position: 'absolute',
-            bottom: '15%',
-            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-            color: 'rgba(255, 255, 255, 0.9)',
-            textAlign: 'center',
-            px: 4,
-            fontSize: '0.875rem',
-            fontWeight: 400
-          }}
-        >
-          Easily manage patient records, queues, and consultations — all in one place.
-        </Typography>    
-      </Box>
-
-      <Box sx={{
-        width: '50%', 
-        height: "100vh", 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        background: 'white'
-      }}>
-        <Box
-          sx={{
-            width: 400,
-            alignContent: "center",
-          }}
-        >
-          <Typography 
-            variant="h4"
-            sx={{ 
-              textAlign: "center",
-              fontWeight: 700,
-              fontFamily: '"SF Pro Display", "Inter", "Segoe UI", sans-serif',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              backgroundClip: 'text',
-              textFillColor: 'transparent',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 1
-            }}
-          >
-            Welcome back
-          </Typography>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              textAlign: "center", 
-              mb: 4, 
-              color: '#6b7280',
-              fontWeight: 500,
-              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif'
-            }}
-          >
-            Sign in to your ClinicaFlow account
-          </Typography>
-
-          {authError && (
-            <Box 
+      
+      {/* --- FORM SECTION (Sign In) --- */}
+      {/* Positioned Left initially */}
+      <div className="form-box login">
+        <Box sx={{ width: '100%', maxWidth: '400px' }} ref={formRef}>
+          {/* Header */}
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography 
+              variant="h3"
               sx={{ 
-                mb: 3, 
-                p: 2, 
-                borderRadius: 2,
-                backgroundColor: '#fee',
-                border: '1px solid #fcc',
-                color: '#c33'
+                fontWeight: 700,
+                fontSize: '2rem',
+                color: '#4B0082',
+                mb: 1
               }}
             >
-              {authError}
-            </Box>
-          )}
-          
+              Welcome Back
+            </Typography>
+            
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: '#6b7280',
+                fontSize: '0.95rem',
+                mb: 3
+              }}
+            >
+              Sign in to your ClinicaFlow account
+            </Typography>
+          </Box>
+
+          <ErrorAlert message={authError} />
+
           <form onSubmit={handleSubmit}>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                color: '#1a237e',
-                mb: 1
-              }}
-            >
-              Email
-            </Typography>
-            <CustomTextField 
-              placeholder="Enter your email"
-              type="email"
-              value={values.email}
-              onChange={(e) => handleChange('email', e.target.value)}
+            <EmailField
+              value={formData.email}
+              onChange={handleChange('email')}
               onBlur={() => handleBlur('email')}
-              error={touched.email && !!errors.email}
-              helperText={touched.email && errors.email}
+              error={formTouched.email && !!formErrors.email}
+              helperText={formTouched.email && formErrors.email}
+              touched={formTouched.email}
+              checkingEmail={false}
             />
-            
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                color: '#1a237e',
-                mb: 1
-              }}
-            >
-              Password
-            </Typography>
-            <CustomTextField 
-              type="password"
+
+            <PasswordField
+              label="Password"
               placeholder="Enter your password"
-              value={values.password}
-              onChange={(e) => handleChange('password', e.target.value)}
+              value={formData.password}
+              onChange={handleChange('password')}
               onBlur={() => handleBlur('password')}
-              error={touched.password && !!errors.password}
-              helperText={touched.password && errors.password}
+              showPassword={showPassword}
+              onToggleVisibility={togglePasswordVisibility}
+              error={formTouched.password && !!formErrors.password}
+              helperText={formTouched.password && formErrors.password}
+              touched={formTouched.password}
             />
-            
-            <Button 
-              type="submit"
-              variant="contained" 
-              fullWidth
-              disabled={loading}
-              sx={{
-                boxShadow: 'none',
-                textTransform: 'none',
-                fontSize: '0.875rem',
-                borderRadius: 3,
-                mt: 1,
-                py: 1.5,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                fontWeight: 600,
-                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #7d93ff 0%, #8a6cbb 100%)',
-                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-                },
-                '&:disabled': {
-                  background: '#ccc',
-                }
-              }}
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </Button>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <GradientButton
+                type="submit"
+                disabled={loading}
+                loading={loading}
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </GradientButton>
+            </Box>
           </form>
 
-          <Box display="flex" alignItems="center" gap={1} mt={3} justifyContent={"center"}>
-            <Typography 
-              variant="body2" 
-              sx={{
-                fontSize: '0.875rem',
-                fontWeight: 400,
-                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                color: '#6b7280'
-              }}
-            >
-              Don't have an account yet?
+          {/* Mobile Register Link (only visible on small screens handled by media query) */}
+          <Box className="mobile-link" sx={{ textAlign: 'center', mt: 3, display: { md: 'none' } }}>
+             <Typography variant="body2" sx={{ color: '#6b7280' }}>
+               Don't have an account?{' '}
+               <span onClick={handleNavigateToRegister} style={{ color: '#667eea', fontWeight: 600, cursor: 'pointer' }}>
+                 Sign up
+               </span>
+             </Typography>
+          </Box>
+        </Box>
+      </div>
+
+      {/* --- TOGGLE OVERLAY SECTION --- */}
+      {/* Positioned Right initially */}
+      <div className="toggle-container">
+        <div className="toggle">
+          {/* Left Panel (Hidden Initially - revealed after animation) */}
+          <div className="toggle-panel toggle-left">
+            <Typography variant="h2" sx={{ fontWeight: 700, fontSize: '2rem', mb: 2 }}>
+               Join Us!
             </Typography>
-            <Button 
-              variant="text" 
-              component={Link}
-              to="/Register"
+            <Typography sx={{ mb: 4 }}>
+               Register to start managing your health records.
+            </Typography>
+          </div>
+
+          {/* Right Panel (Visible Initially - "Welcome Section") */}
+          <div className="toggle-panel toggle-right">
+            <Typography 
+              variant="h2" 
+              sx={{ fontWeight: 700, fontSize: '2.5rem', mb: 2 }}
+            >
+              ClinicaFlow
+            </Typography>
+            <Typography sx={{ mb: 4, fontSize: '1.1rem' }}>
+              Digital Health Management Made Simple.
+              Easily manage patient records, queues, and consultations.
+            </Typography>
+            
+            <Fade in={true} timeout={1000}>
+                <Box sx={{
+                  width: '80%',
+                  height: '150px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: 3,
+                  backdropFilter: 'blur(5px)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mb: 4
+                }}>
+                  <Typography variant="h5" sx={{ opacity: 0.8 }}>
+                    Secure Portal
+                  </Typography>
+                </Box>
+            </Fade>
+
+            <GradientButton
+              onClick={handleNavigateToRegister}
+              variant="outlined"
               sx={{
-                textTransform: 'none',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-                color: '#667eea',
-                minWidth: 'auto',
-                p: 1,
+                color: 'white',
+                borderColor: 'white',
+                background: 'transparent',
                 '&:hover': {
-                  background: 'rgba(102, 126, 234, 0.04)',
+                  borderColor: 'rgba(255,255,255,0.8)',
+                  backgroundColor: 'rgba(255,255,255,0.1)'
                 }
               }}
             >
-              Sign up
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+              Create Account
+            </GradientButton>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        /* --- MAIN CONTAINER --- */
+        .container {
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 1000px; /* Adapted size */
+            min-height: 600px;
+        }
+
+        /* --- FORM BOXES --- */
+        .form-box {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+        }
+
+        /* Login is on the LEFT initially */
+        .form-box.login {
+            left: 0;
+            width: 50%;
+            z-index: 2;
+        }
+
+        /* Animation: When active, Login Form moves to the RIGHT and fades/hides behind overlay */
+        .container.active .form-box.login {
+            transform: translateX(100%);
+            opacity: 0; 
+        }
+
+        /* --- TOGGLE CONTAINER (The Overlay) --- */
+        .toggle-container {
+            position: absolute;
+            top: 0;
+            left: 50%; /* Starts on the RIGHT */
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: all 0.6s ease-in-out;
+            border-radius: 150px 0 0 100px; /* Initial curve */
+            z-index: 1000;
+        }
+
+        /* Animation: Move Overlay to the LEFT */
+        .container.active .toggle-container {
+            transform: translateX(-100%);
+            border-radius: 0 150px 100px 0; /* Flip curve */
+        }
+
+        /* --- TOGGLE BACKGROUND (The Gradient Blob) --- */
+        .toggle {
+            background: linear-gradient(to right, #6A0DAD, #4B0082); /* Purple Theme */
+            height: 100%;
+            background: linear-gradient(to right, #6A0DAD, #4B0082);
+            color: #fff;
+            position: relative;
+            left: -100%; /* Compensate for parent container width */
+            height: 100%;
+            width: 200%; /* Double width for parallax */
+            transform: translateX(0);
+            transition: all 0.6s ease-in-out;
+        }
+
+        /* Animation: Slide the background gradient */
+        .container.active .toggle {
+            transform: translateX(50%);
+        }
+
+        /* --- TOGGLE PANELS (Content inside Overlay) --- */
+        .toggle-panel {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 30px;
+            text-align: center;
+            top: 0;
+            transform: translateX(0);
+            transition: all 0.6s ease-in-out;
+        }
+
+        /* RIGHT PANEL (Welcome) - Visible Initially */
+        .toggle-panel.toggle-right {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        /* LEFT PANEL (Join Us) - Hidden Initially */
+        .toggle-panel.toggle-left {
+            transform: translateX(-200%);
+        }
+
+        /* Animation: Move Right Panel Out, Move Left Panel In */
+        .container.active .toggle-panel.toggle-right {
+            transform: translateX(200%);
+        }
+
+        .container.active .toggle-panel.toggle-left {
+            transform: translateX(0);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .container {
+                min-height: 100vh;
+                border-radius: 0;
+            }
+            .form-box {
+                width: 100%;
+                left: 0 !important;
+            }
+            .toggle-container {
+                display: none; /* Hide overlay on mobile, standard practice for this layout */
+            }
+        }
+      `}</style>
     </Box>
   );
 }

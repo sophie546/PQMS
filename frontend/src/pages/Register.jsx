@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";  
+import { Link, useNavigate } from "react-router-dom";  
 import { 
   Typography, 
   Box,
@@ -228,10 +228,33 @@ export default function RegisterPage() {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  const navigate = useNavigate();
+
   // Use local state for display
   const displayErrors = emailExistsError 
     ? { ...formErrors, email: emailExistsError } 
     : formErrors;
+
+  
+  // Handle navigation with animation (Register -> Login)
+  const handleNavigateToLogin = (e) => {
+    e.preventDefault();
+    const container = document.querySelector('.auth-container');
+    const welcomeSection = document.querySelector('.welcome-section');
+    const formBox = document.querySelector('.register-form-box');
+    
+    if (container && welcomeSection && formBox) {
+      // Remove active class to trigger slide animation
+      container.classList.remove('active');
+      
+      // Navigate after animation completes
+      setTimeout(() => {
+        navigate('/login');
+      }, 600);
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
     <Box sx={{
@@ -240,8 +263,8 @@ export default function RegisterPage() {
       fontFamily: '"Inter", -apple-system, sans-serif',
       position: 'relative',
       overflow: 'hidden',
-      backgroundColor: '#ffffff', // Add white background for the whole page
-    }}>
+      backgroundColor: '#ffffff',
+    }} className="auth-container">
       {/* Left Panel - Welcome Section */}
       <Box sx={{
         width: { xs: '100%', md: '50%' },
@@ -258,14 +281,15 @@ export default function RegisterPage() {
         borderTopRightRadius: '220px',
         borderBottomRightRadius: '220px',
         boxShadow: '4px 0 20px rgba(0, 0, 0, 0.1)',
-      }}>
-        <Box sx={{
+        animation: 'slideInFromLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+      }} className="welcome-section">
+        <Box className="welcome-content" sx={{
           maxWidth: 500,
-          animation: 'fadeIn 0.8s ease-out',
-          width: '100%', // Make container full width
+          animation: 'fadeIn 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) both',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center', // Center horizontally
+          alignItems: 'center',
         }}>
           <Typography 
             variant="h2" 
@@ -273,7 +297,7 @@ export default function RegisterPage() {
               fontWeight: 700,
               fontSize: '2.5rem',
               mb: 3,
-              opacity: 0.9,
+              opacity: 0.95,
               textAlign: 'center',
               width: '100%',
             }}
@@ -286,7 +310,7 @@ export default function RegisterPage() {
             sx={{
               fontSize: '1.1rem',
               fontWeight: 400,
-              opacity: 0.8,
+              opacity: 0.88,
               mb: 4,
               lineHeight: 1.6,
               textAlign: 'center',
@@ -323,8 +347,7 @@ export default function RegisterPage() {
             mt: 2
           }}>
             <GradientButton
-              component={Link}
-              to="/login"
+              onClick={handleNavigateToLogin}
               variant="outlined"
               sx={{
                 color: 'white',
@@ -332,7 +355,7 @@ export default function RegisterPage() {
                 background: 'transparent',
                 boxShadow: 'none',
                 '&:hover': {
-                  borderColor: ' rgba(255, 255, 255, 0.64)',
+                  borderColor: 'rgba(255, 255, 255, 0.64)',
                   backgroundColor: 'rgba(255,255,255,0.1)',
                   background: 'transparent',
                   boxShadow: 'none',
@@ -365,9 +388,10 @@ export default function RegisterPage() {
           height: 300,
           borderRadius: '50%',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          opacity: 0.1
+          opacity: 0.1,
+          animation: 'float 6s ease-in-out infinite',
         }} />
-        
+
         <Box sx={{
           position: 'absolute',
           bottom: -50,
@@ -376,14 +400,15 @@ export default function RegisterPage() {
           height: 200,
           borderRadius: '50%',
           background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
-          opacity: 0.1
+          opacity: 0.1,
+          animation: 'float 8s ease-in-out infinite 1s',
         }} />
 
         <Box sx={{ 
           width: '100%', 
           maxWidth: 450, 
-          animation: 'slideInRight 0.6s ease-out' 
-        }} ref={formRef}>
+          animation: 'slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards'
+        }} ref={formRef} className="register-form-box">
           {/* Header */}
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography 
@@ -504,16 +529,17 @@ export default function RegisterPage() {
           <Box sx={{ textAlign: 'center', mt: 3 }}>
             <Typography variant="body2" sx={{ color: '#6b7280' }}>
               Already have an account?{' '}
-              <Link 
-                to="/login" 
+              <span 
+                onClick={handleNavigateToLogin}
                 style={{ 
                   color: '#667eea', 
                   textDecoration: 'none',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  cursor: 'pointer'
                 }}
               >
                 Sign in
-              </Link>
+              </span>
             </Typography>
           </Box>
         </Box>
@@ -523,11 +549,12 @@ export default function RegisterPage() {
       <Box sx={{
         display: { xs: 'flex', md: 'none' },
         position: 'absolute',
+        top: 20,
+        right: 20,
         zIndex: 2
       }}>
         <GradientButton
-          component={Link}
-          to="/login"
+          onClick={handleNavigateToLogin}
           variant="outlined"
           sx={{
             color: 'white',
@@ -548,21 +575,111 @@ export default function RegisterPage() {
 
       {/* Add CSS animations */}
       <style jsx global>{`
+        /* Base container animation */
+        .auth-container {
+          position: relative;
+          transition: transform 0.6s ease-in-out;
+        }
+
+        /* Form panel animations */
+        .login-form-box, .register-form-box {
+          position: relative;
+          transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+          z-index: 1;
+        }
+
+        /* Welcome section animations */
+        .welcome-section {
+          position: relative;
+          transition: transform 0.6s ease-in-out;
+          z-index: 2;
+        }
+
+        /* Login to Register transition */
+        .auth-container.active .welcome-section {
+          transform: translateX(-100%);
+        }
+
+        .auth-container.active .login-form-box {
+          transform: translateX(-100%);
+          opacity: 0;
+        }
+
+        .auth-container.active .register-form-box {
+          transform: translateX(0);
+          opacity: 1;
+        }
+
+        /* Register to Login transition */
+        .auth-container:not(.active) .welcome-section {
+          transform: translateX(0);
+        }
+
+        .auth-container:not(.active) .login-form-box {
+          transform: translateX(0);
+          opacity: 1;
+        }
+
+        .auth-container:not(.active) .register-form-box {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+
+        /* Initial states */
+        .login-form-box {
+          transform: translateX(0);
+          opacity: 1;
+        }
+
+        .register-form-box {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+
+        /* Decorative animations */
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-18px); }
+        }
+
+        @keyframes slideInFromLeft {
+          0% { transform: translateX(-30px); opacity: 0; }
+          100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInFromRight {
+          0% { transform: translateX(30px); opacity: 0; }
+          100% { transform: translateX(0); opacity: 1; }
+        }
+
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
-        
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(30px); }
-          to { opacity: 1; transform: translateX(0); }
+
+        /* Content spring animation */
+        @keyframes contentSpringIn {
+          0% { opacity: 0; transform: translateY(16px) scale(0.997); }
+          60% { opacity: 1; transform: translateY(-6px) scale(1.006); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        
-        .MuiBox-root {
-          animation-duration: 0.6s;
-          animation-fill-mode: both;
+
+        /* Stagger children animation */
+        .welcome-content > * {
+          animation: contentSpringIn 0.82s cubic-bezier(0.2,0.9,0.25,1) both;
         }
-      `}</style>
+        .welcome-content > *:nth-child(1) { animation-delay: 0.04s; }
+        .welcome-content > *:nth-child(2) { animation-delay: 0.12s; }
+        .welcome-content > *:nth-child(3) { animation-delay: 0.20s; }
+        .welcome-content > *:nth-child(4) { animation-delay: 0.28s; }
+
+        /* Performance optimizations */
+        .welcome-section, .login-form-box, .register-form-box {
+          will-change: transform, opacity;
+          backface-visibility: hidden;
+          perspective: 1000px;
+        }
+      `}</style>      
     </Box>
   );
 }
