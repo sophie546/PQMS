@@ -121,7 +121,7 @@ export default function LandingPage() {
   );
 
   return (
-    <Box sx={{ minHeight: '100vh', fontFamily: 'sans-serif', overflow: 'hidden' }}>
+    <Box sx={{ minHeight: '100vh', fontFamily: '"Arimo", "Poppins", sans-serif', overflow: 'hidden' }}>
       {/* Navbar / Header */}
       <AppBar
         position="fixed"

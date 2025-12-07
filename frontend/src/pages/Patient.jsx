@@ -570,12 +570,12 @@ function PatientPage() {
           pb: 1,
           borderBottom: '1px solid #e5e7eb'
         }}>
-          <Typography 
+            <Typography
             fontSize="22px"
             component="h2" 
             fontWeight="bold" 
             sx={{ 
-              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
               color: '#1a237e',
             }}
           >
@@ -584,7 +584,7 @@ function PatientPage() {
           <Typography 
             variant="body2" 
             sx={{ 
-              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
               color: '#666',
               mt: 0.5
             }}

@@ -93,7 +93,7 @@ const SidebarHeader = ({ collapsed }) => (
       whiteSpace: 'nowrap'
     }}>
       <Typography variant="h6" sx={{ 
-        fontWeight: 700, color: colors.white, fontFamily: '"Inter", sans-serif', lineHeight: 1.2
+        fontWeight: 700, color: colors.white, fontFamily: '"Arimo", "Poppins", "Inter", sans-serif', lineHeight: 1.2
       }}>
         ClinicaFlow
       </Typography>
@@ -195,10 +195,10 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
 
         <ListItemText 
           primary={item.text}
-          primaryTypographyProps={{
+            primaryTypographyProps={{
             fontSize: '0.95rem',
             fontWeight: isSelected ? 700 : 500,
-            fontFamily: '"Inter", sans-serif',
+            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
             color: isSelected ? colors.activeText : colors.inactiveText,
           }}
         />

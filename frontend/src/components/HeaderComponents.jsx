@@ -42,7 +42,7 @@ export const HeaderTitle = ({ children, sx = {}, ...props }) => (
     sx={{
       color: '#1f2937',
       fontWeight: 700,
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       fontSize: '1.5rem',
       ...sx
     }}
@@ -57,7 +57,7 @@ export const HeaderSubText = ({ children, sx = {}, ...props }) => (
     variant="body2"
     sx={{
       color: '#6b7280',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       fontSize: '0.875rem',
       ...sx
     }}
@@ -77,7 +77,7 @@ export const HeaderButton = ({
   fontWeight = 700,
   borderRadius = 3,
   px = 4,
-  fontFamily = '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+    fontFamily = '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
   fontSize = '0.875rem',
   boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)',
   sx = {},

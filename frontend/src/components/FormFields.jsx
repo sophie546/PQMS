@@ -15,7 +15,7 @@ export const FormTextField = ({
       fontWeight={600} 
       mb={1} 
       sx={{ 
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+        fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
         color: '#1f2937',
         fontSize: '0.875rem',
         display: 'flex',
@@ -39,7 +39,7 @@ export const FormTextField = ({
       sx={{
         '& .MuiOutlinedInput-root': {
           borderRadius: 2,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           backgroundColor: 'white',
           transition: 'all 0.2s ease',
           '& fieldset': { 
@@ -72,7 +72,7 @@ export const FormTextField = ({
           marginLeft: 0,
           marginTop: 1,
           color: error ? '#ef4444' : '#6b7280',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         }
       }}
       {...props}
@@ -94,7 +94,7 @@ export const FormSelectField = ({
       fontWeight={600} 
       mb={1} 
       sx={{ 
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+        fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
         color: '#1f2937',
         fontSize: '0.875rem',
         display: 'flex',
@@ -118,7 +118,7 @@ export const FormSelectField = ({
       sx={{
         '& .MuiOutlinedInput-root': {
           borderRadius: 2,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           backgroundColor: 'white',
           transition: 'all 0.2s ease',
           '& fieldset': { 
@@ -149,7 +149,7 @@ export const FormSelectField = ({
           marginLeft: 0,
           marginTop: 1,
           color: error ? '#ef4444' : '#6b7280',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         }
       }}
       {...props}
@@ -160,7 +160,7 @@ export const FormSelectField = ({
           value={option.value}
           sx={{
             fontSize: '0.875rem',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             fontWeight: 500,
             color: '#1f2937',
             '&:hover': {

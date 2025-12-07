@@ -114,7 +114,7 @@ const GeneralSettings = () => {
     <div style={{
       display: 'flex',
       minHeight: '100vh',
-      fontFamily: '"Inter", "Segoe UI", sans-serif',
+      fontFamily: '"Arimo", "Poppins", "Inter", "Segoe UI", sans-serif',
       background: 'linear-gradient(135deg, #667eea0d 0%, #764ba20d 100%)'
     }}>
       {showSidebar && (

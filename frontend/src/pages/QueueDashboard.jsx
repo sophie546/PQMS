@@ -53,7 +53,7 @@ const QueueDashboard = () => {
     <Box sx={{ 
       minHeight: '100vh', 
       background: 'linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%)',
-      fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif',
+      fontFamily: '"Arimo", "Poppins", "Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif',
     }}>
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" pl={15} pr={15} >

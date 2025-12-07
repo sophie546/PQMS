@@ -152,8 +152,8 @@ export function QueueModal({ open, onClose }) {
           component="h2" 
           fontWeight="bold" 
           mb={1}
-          sx={{ 
-            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+            sx={{ 
+            fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
             color: '#4B0082',
           }}
         >
@@ -164,7 +164,7 @@ export function QueueModal({ open, onClose }) {
           variant="body2" 
           mb={3}
           sx={{ 
-            fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+            fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
             color: '#666',
           }}
         >

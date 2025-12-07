@@ -30,7 +30,7 @@ export const StatTitle = ({ children, sx = {}, ...props }) => (
       fontWeight: 600,
       mb: 1,
       fontSize: '0.875rem',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       ...sx
     }}
     {...props}
@@ -47,7 +47,7 @@ export const StatNumber = ({ children, sx = {}, ...props }) => (
       fontWeight: 700,
       fontSize: '2.25rem',
       lineHeight: 1,
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       mb: 0.5,
       ...sx
     }}

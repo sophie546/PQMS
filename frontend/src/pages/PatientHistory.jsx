@@ -297,7 +297,7 @@ const PatientHistory = () => {
                       outline: 'none',
                       padding: '8px 16px',
                       fontSize: '0.875rem',
-                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                       width: '100%',
                       backgroundColor: 'transparent',
                       color: '#1f2937'
