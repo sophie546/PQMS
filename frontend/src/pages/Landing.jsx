@@ -7,7 +7,6 @@ import {
   Button,
   Container,
   Box,
-  Grid,
   Paper,
   Chip,
   Stack,
@@ -20,6 +19,7 @@ import {
 import { styled, keyframes } from "@mui/system";
 import { ArrowForward, Menu as MenuIcon, Close } from '@mui/icons-material';
 import { QueueModal } from "../components/QueueModal.jsx";
+import { GradientButton, OutlineButton, NavButton, NavSideButton } from "../components/ButtonComponents.jsx";
 
 // Animations
 const fadeInUp = keyframes`
@@ -51,72 +51,7 @@ const float = keyframes`
   }
 `;
 
-const pulse = keyframes`
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-`;
-
-const GradientButton = styled(Button)(({ theme }) => ({
-  background: "linear-gradient(135deg, #5F67EA 0%, #8178F9 100%)",
-  color: "#fff",
-  fontWeight: 600,
-  textTransform: "none",
-  padding: "12px 32px",
-  borderRadius: 12,
-  fontSize: "1rem",
-  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  boxShadow: "0 8px 32px rgba(95, 103, 234, 0.3)",
-  "&:hover": {
-    background: "linear-gradient(135deg, #8178F9 0%, #5F67EA 100%)",
-    transform: "translateY(-3px)",
-    boxShadow: "0 12px 48px rgba(95, 103, 234, 0.5)",
-  },
-}));
-
-const OutlineButton = styled(Button)(({ theme }) => ({
-  color: "#5F67EA",
-  fontWeight: 600,
-  textTransform: "none",
-  padding: "12px 32px",
-  borderRadius: 12,
-  border: "2px solid #5F67EA",
-  backgroundColor: "transparent",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    backgroundColor: "rgba(95, 103, 234, 0.1)",
-    borderColor: "#5F67EA",
-    transform: "translateY(-3px)",
-  },
-}));
-
-const NavButton = styled(Button)(({ theme }) => ({
-  color: "inherit",
-  textTransform: "none",
-  fontWeight: 500,
-  fontSize: "1rem",
-  position: "relative",
-  padding: "8px 16px",
-  "&::after": {
-    content: '""',
-    position: "absolute",
-    bottom: 0,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "0%",
-    height: "2px",
-    backgroundColor: "white",
-    transition: "width 0.3s ease",
-  },
-  "&:hover::after": {
-    width: "80%",
-  },
-}));
-
+// Styled Components
 const AnimatedBox = styled(Box)(({ delay = 0 }) => ({
   animation: `${fadeInUp} 0.8s ease-out ${delay}s both`,
 }));
@@ -154,7 +89,7 @@ export default function LandingPage() {
   };
 
   const drawer = (
-    <Box sx={{ width: 250, pt: 2, bgcolor: "#1a1a2e" }}>
+    <Box sx={{ width: 250, pt: 2, bgcolor: "#2E004F", height: "100%" }}>
       <Box sx={{ display: "flex", justifyContent: "flex-end", px: 2 }}>
         <IconButton onClick={handleDrawerToggle} sx={{ color: "white" }}>
           <Close />
@@ -176,21 +111,10 @@ export default function LandingPage() {
             <Typography color="white">Benefits</Typography>
           </ListItemButton>
         </ListItem>
-        <ListItem sx={{ px: 2, pt: 2 }}>
-          <Button
-            fullWidth
-            variant="outlined"
-            component={Link}
-            to="/Login"
-            sx={{ mb: 1, borderColor: "white", color: "white" }}
-          >
-            Log in
-          </Button>
-        </ListItem>
-        <ListItem sx={{ px: 2 }}>
-          <GradientButton fullWidth component={Link} to="/Register">
-            Get Started
-          </GradientButton>
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => scrollToSection("cta")}>
+            <Typography color="white">Join Queue</Typography>
+          </ListItemButton>
         </ListItem>
       </List>
     </Box>
@@ -203,12 +127,12 @@ export default function LandingPage() {
         position="fixed"
         elevation={0}
         sx={{
-          background: "linear-gradient(135deg, #5F67EA 0%, #8178F9 100%)",
+          background: "linear-gradient(135deg, #6A0DAD 0%, #4B0082 100%)",
           backdropFilter: "blur(20px)",
           borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
           color: "white",
           transition: "all 0.3s ease",
-          boxShadow: "0 4px 20px rgba(95, 103, 234, 0.3)",
+          boxShadow: "0 4px 20px rgba(106, 13, 173, 0.3)",
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between", minHeight: { xs: 64, sm: 80 }, py: 1 }}>
@@ -237,7 +161,7 @@ export default function LandingPage() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                boxShadow: "0 4px 16px rgba(95, 103, 234, 0.4)",
+                boxShadow: "0 4px 16px rgba(75, 0, 130, 0.4)",
               }}
             >
               <img 
@@ -255,37 +179,26 @@ export default function LandingPage() {
             </Typography>
           </Stack>
 
-          <Stack direction="row" spacing={4} sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Stack direction="row" spacing={3} sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             <NavButton onClick={() => scrollToSection("about")}>About us</NavButton>
             <NavButton onClick={() => scrollToSection("features")}>Key features</NavButton>
             <NavButton onClick={() => scrollToSection("benefits")}>Benefits</NavButton>
+            <NavButton onClick={() => scrollToSection("cta")}>Join Queue</NavButton>
           </Stack>
 
           <Stack direction="row" spacing={2} sx={{ display: { xs: 'none', sm: 'flex' } }}>
-            <Button
-              variant="outlined"
-              sx={{
-                borderColor: "rgba(255, 255, 255, 0.3)",
-                color: "white",
-                fontWeight: 600,
-                textTransform: "none",
-                padding: "10px 24px",
-                borderRadius: 12,
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  borderColor: "white",
-                  transform: "translateY(-2px)",
-                },
-              }}
+            <NavSideButton
               component={Link}
               to="/Login"
             >
               Log in
-            </Button>
-            <GradientButton variant="contained" component={Link} to="/Register">
+            </NavSideButton>
+            <NavSideButton
+              component={Link}
+              to="/Register"
+            >
               Get Started
-            </GradientButton>
+            </NavSideButton>
           </Stack>
 
           <IconButton
@@ -313,22 +226,29 @@ export default function LandingPage() {
         {drawer}
       </Drawer>
 
-          {/* Hero Section matching the image - WITH INCREASED SPACING */}
+      {/* Hero Section */}
       <Box sx={{ 
         position: "relative",
-        background: "linear-gradient(135deg, #E6E8FF 0%, #D4D6FF 50%, #C8CAFF 100%)",
-        py: { xs: 8, md: 12 },
+        background: "#F8F0FF", 
+        py: { xs: 8, md: 14 },
         overflow: "hidden",
       }}>
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-          <Grid container spacing={12} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Box sx={{ pr: { md: 6 } }}>
+          <Box 
+            sx={{ 
+              display: "flex", 
+              flexDirection: { xs: "column", md: "row" }, 
+              alignItems: "center", 
+              gap: 8 
+            }}
+          >
+            <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+              <Box>
                 <AnimatedBox delay={0}>
                   <Typography
                     variant="overline"
                     sx={{
-                      color: "#5F67EA",
+                      color: "#6A0DAD",
                       fontWeight: 700,
                       letterSpacing: 2,
                       mb: 3,
@@ -343,7 +263,7 @@ export default function LandingPage() {
                   <Typography
                     variant="h1"
                     fontWeight={800}
-                    color="#1A237E"
+                    color="#4B0082"
                     gutterBottom
                     lineHeight={1.1}
                     sx={{ 
@@ -355,38 +275,38 @@ export default function LandingPage() {
                   </Typography>
                 </AnimatedBox>
                 <AnimatedBox delay={0.4}>
-                 <Typography variant="h6" sx={{ color: "#4B4B74", mb: 6, lineHeight: 1.7, fontWeight: 400 }}>
+                  <Typography variant="h6" sx={{ color: "#4A148C", mb: 6, lineHeight: 1.7, fontWeight: 400 }}>
                     A complete web-based system for small clinics and<br/>
                     barangay health centers. Manage patient registration,<br/>
                     queues, and consultations in a fast, organized, and digital<br/>
                     way.
-                </Typography>
+                  </Typography>
                 </AnimatedBox>
                 <AnimatedBox delay={0.6}>
-                  <Stack direction="row" spacing={3} flexWrap="wrap" gap={2}>
-                    <GradientButton variant="contained" component={Link} to="/Register">
+                  <Stack direction="row" spacing={2} flexWrap="wrap" gap={1}>
+                    <GradientButton component={Link} to="/Register">
                       Get Started
                     </GradientButton>
-                    <OutlineButton variant="outlined" component={Link} to="/features">
+                    <OutlineButton component={Link} to="/features">
                       Learn More
                     </OutlineButton>
                   </Stack>
                 </AnimatedBox>
               </Box>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} md={6}>
-              <Box sx={{ pl: { md: 6 } }}>
+            <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+              <Box>
                 <AnimatedBox delay={0.8}>
                   <Box
                     sx={{
-                      background: "linear-gradient(145deg, #2a2a8a 0%, #1a237e 100%)",
+                      background: "linear-gradient(145deg, #6A0DAD 0%, #4B0082 100%)",
                       border: "2px solid rgba(255, 255, 255, 0.3)",
-                      borderRadius: 20,
-                      boxShadow: "0 20px 60px rgba(26, 31, 126, 0.6)",
+                      borderRadius: 6,
+                      boxShadow: "0 20px 60px rgba(75, 0, 130, 0.4)",
                       padding: { xs: 3, md: 4 },
                       width: "100%",
-                      maxWidth: { xs: '100%', md: 480 },
+                      maxWidth: { xs: '100%', md: 570 }, 
                       mx: 'auto',
                       animation: `${float} 3s ease-in-out infinite`,
                     }}
@@ -408,7 +328,7 @@ export default function LandingPage() {
                             alignItems: "center",
                             justifyContent: "space-between",
                             p: 2.5,
-                            borderRadius: 11,
+                            borderRadius: 4,
                             background: "rgba(255, 255, 255, 0.95)",
                             border: "2px solid rgba(255, 255, 255, 1)",
                             borderLeft: `6px solid ${item.color}`,
@@ -438,7 +358,7 @@ export default function LandingPage() {
                             >
                               {item.num}
                             </Box>
-                            <Typography variant="h6" fontWeight={700} color="#1a237e">
+                            <Typography variant="h6" fontWeight={700} color="#4B0082">
                               Patient {item.num}
                             </Typography>
                           </Stack>
@@ -462,17 +382,21 @@ export default function LandingPage() {
                   </Box>
                 </AnimatedBox>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
       {/* Why ClinicaFlow Section */}
-      <Box sx={{ 
-        py: 12, 
-        background: "linear-gradient(135deg, #5F67EA 0%, #8178F9 100%)",
-        position: "relative",
-      }} id="about">
+      <Box 
+        id="about"
+        sx={{ 
+          py: 12, 
+          background: "linear-gradient(135deg, #6A0DAD 0%, #4B0082 100%)",
+          position: "relative",
+          scrollMarginTop: "50px", 
+        }} 
+      >
         <Container maxWidth="lg">
           <Paper
             elevation={0}
@@ -494,10 +418,10 @@ export default function LandingPage() {
             }}
           >
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h4" fontWeight={700} color="#1A237E" mb={3}>
+              <Typography variant="h4" fontWeight={700} color="#4B0082" mb={3}>
                 Why ClinicaFlow?
               </Typography>
-              <Typography sx={{ color: "#4B4B74", lineHeight: 1.8 }} variant="body1">
+              <Typography sx={{ color: "#4A148C", lineHeight: 1.8 }} variant="body1">
                 We are dedicated to helping clinics operate more efficiently through
                 modern, streamlined digital tools. Our system simplifies patient
                 registration, queue management, and consultation tracking—making daily
@@ -515,7 +439,7 @@ export default function LandingPage() {
                   maxWidth: "100%", 
                   height: "auto", 
                   borderRadius: 16,
-                  filter: "drop-shadow(0 10px 30px rgba(95, 103, 234, 0.2))",
+                  filter: "drop-shadow(0 10px 30px rgba(106, 13, 173, 0.2))",
                 }}
                 loading="lazy"
               />
@@ -525,15 +449,19 @@ export default function LandingPage() {
       </Box>
 
       {/* Features Section */}
-      <Box sx={{ 
-        py: 12,
-        background: "#ffffff",
-      }} id="features">
+      <Box 
+        id="features"
+        sx={{ 
+          py: 12,
+          background: "#ffffff",
+          scrollMarginTop: "40px", 
+        }} 
+      >
         <Container maxWidth="lg">
           <Typography
             variant="h3"
             fontWeight={700}
-            color="#1A237E"
+            color="#4B0082"
             textAlign="center"
             mb={10}
           >
@@ -555,16 +483,16 @@ export default function LandingPage() {
                 transition: "all 0.3s ease",
                 "&:hover": {
                   transform: "translateY(-8px)",
-                  boxShadow: "0 16px 48px rgba(95, 103, 234, 0.12)",
-                  borderColor: "#5F67EA",
+                  boxShadow: "0 16px 48px rgba(106, 13, 173, 0.12)",
+                  borderColor: "#6A0DAD",
                 },
               }}
             >
               <Box sx={{ flex: 1}}>
-                <Typography variant="h5" fontWeight={700} color="#1A237E" mb={2}>
+                <Typography variant="h5" fontWeight={700} color="#4B0082" mb={2}>
                   Patient Management
                 </Typography>
-                <Typography sx={{ color: "#4B4B74", lineHeight: 1.8 }} variant="body1" mb={3}>
+                <Typography sx={{ color: "#4A148C", lineHeight: 1.8 }} variant="body1" mb={3}>
                   Easily add, update, and view patient records in one centralized system.
                   Maintain complete and accurate information about each patient — including
                   contact details, medical history, and visit logs. This feature eliminates
@@ -577,7 +505,7 @@ export default function LandingPage() {
                   to="/patient-management"
                   endIcon={<ArrowForward />}
                   sx={{ 
-                    color: '#5F67EA', 
+                    color: '#6A0DAD', 
                     fontWeight: 600, 
                     textTransform: 'none',
                   }}
@@ -613,16 +541,16 @@ export default function LandingPage() {
                 transition: "all 0.3s ease",
                 "&:hover": {
                   transform: "translateY(-8px)",
-                  boxShadow: "0 16px 48px rgba(95, 103, 234, 0.12)",
-                  borderColor: "#5F67EA",
+                  boxShadow: "0 16px 48px rgba(106, 13, 173, 0.12)",
+                  borderColor: "#6A0DAD",
                 },
               }}
             >
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h5" fontWeight={700} color="#1A237E" mb={2}>
+                <Typography variant="h5" fontWeight={700} color="#4B0082" mb={2}>
                   Queue Tracking
                 </Typography>
-                <Typography sx={{ color: "#4B4B74", lineHeight: 1.8 }} variant="body1" mb={3}>
+                <Typography sx={{ color: "#4A148C", lineHeight: 1.8 }} variant="body1" mb={3}>
                   Monitor and manage active patient queues efficiently in real time. The system
                   automatically updates queue status, allowing staff to see who's next and how
                   long each patient has been waiting. This ensures a smoother clinic flow,
@@ -634,7 +562,7 @@ export default function LandingPage() {
                   to="/queue-tracking"
                   endIcon={<ArrowForward />}
                   sx={{ 
-                    color: '#5F67EA', 
+                    color: '#6A0DAD', 
                     fontWeight: 600, 
                     textTransform: 'none',
                   }}
@@ -670,16 +598,16 @@ export default function LandingPage() {
                 transition: "all 0.3s ease",
                 "&:hover": {
                   transform: "translateY(-8px)",
-                  boxShadow: "0 16px 48px rgba(95, 103, 234, 0.12)",
-                  borderColor: "#5F67EA",
+                  boxShadow: "0 16px 48px rgba(106, 13, 173, 0.12)",
+                  borderColor: "#6A0DAD",
                 },
               }}
             >
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h5" fontWeight={700} color="#1A237E" mb={2}>
+                <Typography variant="h5" fontWeight={700} color="#4B0082" mb={2}>
                   Consultation Records
                 </Typography>
-                <Typography sx={{ color: "#4B4B74", lineHeight: 1.8 }} variant="body1" mb={3}>
+                <Typography sx={{ color: "#4A148C", lineHeight: 1.8 }} variant="body1" mb={3}>
                   Keep a digital history of patient consultations securely stored and easy to retrieve.
                   Doctors can record diagnoses, treatments, and prescriptions with just a few clicks.
                   This makes it simple to review past visits, support better decision-making, and provide
@@ -691,7 +619,7 @@ export default function LandingPage() {
                   to="/consultation"
                   endIcon={<ArrowForward />}
                   sx={{ 
-                    color: '#5F67EA', 
+                    color: '#6A0DAD', 
                     fontWeight: 600, 
                     textTransform: 'none',
                   }}
@@ -717,16 +645,20 @@ export default function LandingPage() {
       </Box>
 
       {/* Benefits Section */}
-      <Box sx={{ 
-        py: 10,
-        bgcolor: "#F5F6FF",
-      }} id="benefits">
+      <Box 
+        id="benefits"
+        sx={{ 
+          py: 20,
+          bgcolor: "#F3E5F5",
+          scrollMarginTop: "40px", 
+        }} 
+      >
         <Container maxWidth="md">
-          <Box textAlign="center">
+          <Box textAlign="center" sx={{ px: 2 , border: "2px solid rgba(106, 13, 173, 0.2)", py: 10, borderRadius: 4, background: "rgba(255, 255, 255, 0.8)" }}>
             <Typography
               variant="h6"
               fontWeight={700}
-              color="#1A237E"
+              color="#6A0DAD"
               gutterBottom
               textAlign="center"
             >
@@ -735,7 +667,7 @@ export default function LandingPage() {
             <Typography
               variant="h4"
               fontWeight={700}
-              color="#1A237E"
+              color="#4B0082"
               textAlign="center"
               mb={4}
             >
@@ -743,7 +675,7 @@ export default function LandingPage() {
             </Typography>
             <Typography
               variant="body1"
-              color="#4B4B74"
+              color="#4A148C"
               textAlign="center"
               sx={{ maxWidth: 600, mx: "auto", lineHeight: 1.8 }}
             >
@@ -757,28 +689,37 @@ export default function LandingPage() {
         </Container>
       </Box>
 
-      {/* CTA Section */}
-      <Box sx={{ 
-        py: 12, 
-        background: "linear-gradient(135deg, #5F67EA 0%, #8178F9 100%)",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
-      }}>
-        <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
+      <Box 
+        id="cta" 
+        sx={{ 
+          py: 20, 
+          background: "linear-gradient(135deg, #6A0DAD 0%, #4B0082 100%)", 
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+          scrollMarginTop: "20px", 
+        }}
+      >
+        <Container maxWidth="md" sx={{ 
+          position: "relative", 
+          zIndex: 1, 
+          background: "#ffffff",
+          borderRadius: 4, 
+          p: 6, 
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)"
+        }}>
           <Typography 
             variant="h3" 
             fontWeight={700} 
-            color="white"
-            gutterBottom
-            sx={{ mb: 2 }}
+            color="#6A0DAD"
+            sx={{ py: 5, }}
           >
             Skip the Line. Join Us Online
           </Typography>
           <Typography 
             variant="body1" 
             sx={{ 
-              color: "rgba(255, 255, 255, 0.95)", 
+              color: "#6A0DAD",
               mb: 4, 
               maxWidth: 600, 
               mx: "auto",
@@ -788,33 +729,33 @@ export default function LandingPage() {
             Register yourself in the patient queue from the comfort of your home. No need to wait at
             the clinic - we'll notify you when it's your turn.
           </Typography>
+          
           <GradientButton 
             sx={{ 
               width: "100%", 
-              maxWidth: 500,
-              py: 1.5,
-              fontSize: "1rem",
-              background: "rgba(255, 255, 255, 0.2)",
-              border: "1px solid rgba(255, 255, 255, 0.4)",
-              "&:hover": {
-                background: "rgba(255, 255, 255, 0.3)",
-                transform: "translateY(-3px)",
-              }
+              maxWidth: 400,
+              mx: "auto", 
+              display: "block",
+              my: 5,
             }} 
             onClick={handleOpenQueueModal}
           >
             Join Queue Now
           </GradientButton>
+
           <QueueModal 
             open={queueModalOpen}
             onClose={handleCloseQueueModal}
             onSubmit={handleQueueSubmit} 
           />
+          
           <Typography 
             variant="body2" 
             sx={{ 
               mt: 2,
-              color: "rgba(255, 255, 255, 0.8)",
+              color: "#6A0DAD",
+              opacity: 0.8,
+              pb: 5
             }}
           >
             You'll receive a queue number immediately after registration
@@ -822,8 +763,8 @@ export default function LandingPage() {
         </Container>
       </Box>
 
-      {/* Footer - Simplified with only copyright */}
-      <Box sx={{ bgcolor: "#1A237E", py: 6, color: "white" }}>
+      {/* Footer */}
+      <Box sx={{ bgcolor: "#2E004F", py: 6, color: "white" }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center", pt: 2 }}>
             <Typography variant="body2" sx={{ opacity: 0.7 }}>
