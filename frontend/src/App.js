@@ -23,8 +23,9 @@ function App() {
         <Route path="PatientHistory" element={<PatientHistory />} />
         <Route path="PatientQueue" element={<PatientQueue />} />
         <Route path="Staff" element={<Staff />} /> 
-        <Route path="general-settings" element={<GeneralSettings />} />
       </Route>
+
+      <Route path="general-settings" element={<GeneralSettings />} />
 
       <Route index element={<LandingPage />} />
       <Route path="/Register" element={<RegisterPage />} />
