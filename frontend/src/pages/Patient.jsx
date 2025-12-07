@@ -21,10 +21,12 @@ import {
   HeaderIcon,
   HeaderSubText,
   HeaderTitle,
-  HeaderButton,
   Caption,
-  SubCaption
+  SubCaption,
+  GradientButton
 } from "../components";
+
+
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -319,13 +321,13 @@ function PatientPage() {
             </Box>
           </Box>
 
-          <HeaderButton 
-            variant="contained"
-            startIcon={<Add sx={{ fontSize: 18 }} />}
+          <GradientButton 
+            startIcon={<Add fontSize="small" />}
+            sx={{ fontSize: 14 }} 
             onClick={handleAddPatient}
           >
             Add Patient
-          </HeaderButton>
+          </GradientButton>
         </Box>
       </HeaderPaper>
 

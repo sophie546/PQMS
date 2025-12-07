@@ -4,11 +4,11 @@ import { styled } from '@mui/system';
 
 // Gradient Button Component
 const StyledGradientButton = styled(Button)(({ theme }) => ({
-  background: "linear-gradient(135deg, #6A0DAD 0%, #4B0082 100%)",
+  background: '#6A0DAD',
   color: "#fff",
   fontWeight: 600,
   textTransform: "none",
-  padding: "8px 32px",
+  padding: "6px",
   borderRadius: 8,
   fontSize: "1rem",
   transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",

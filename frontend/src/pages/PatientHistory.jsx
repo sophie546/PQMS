@@ -22,7 +22,8 @@ import {
   HeaderTitle,
   HeaderButton,
   Caption,
-  SubCaption
+  SubCaption,
+  GradientButton
 } from "../components";
 
 import { usePatientHistory } from "../hooks";
@@ -110,12 +111,14 @@ const PatientHistory = () => {
             </Box>
           </Box>
 
-          <HeaderButton 
+          <GradientButton 
             startIcon={<Refresh sx={{ fontSize: 18 }} />}
             onClick={handleRefresh}
+            sx={{ fontSize: 15, width: 80}}
+            
           >
             Refresh
-          </HeaderButton>
+          </GradientButton  >
         </Box>
       </HeaderPaper>
 

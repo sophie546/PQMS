@@ -12,9 +12,9 @@ import {
   EmailField,
   RoleSelectField,
   PasswordField,
-  GradientButton,
   ErrorAlert
 } from "../components/RegisterFields";
+import { NavSideButton, GradientButton } from "../components/ButtonComponents";
 
 const basicValidation = (values) => {
   const errors = {};
@@ -214,7 +214,7 @@ export default function RegisterPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(90deg, #e2e2e2, #c9d6ff)',
+      background: '#e2e2e2',
       overflow: 'hidden',
       position: 'relative'
     }}>
@@ -386,21 +386,18 @@ export default function RegisterPage() {
                   </Box>
               </Fade>
 
-              <GradientButton
+              <Typography variant="body2" sx={{ color: 'white', mb: 2, fontStyle: 'italic' }}>
+                 Already have an account?
+               </Typography>              
+              <NavSideButton
                 onClick={handleNavigateToLogin}
-                variant="outlined"
                 sx={{
-                  color: 'white',
-                  borderColor: 'white',
-                  background: 'transparent',
-                  '&:hover': {
-                    borderColor: 'rgba(255,255,255,0.8)',
-                    backgroundColor: 'rgba(255,255,255,0.1)'
-                  }
-                }}
-              >
+                    width: "150px",
+                    fontSize: "16px",
+                  }}
+                >
                 Sign In
-              </GradientButton>
+              </NavSideButton>
             </div>
 
             {/* Right Panel (Hidden when Active) */}
@@ -436,7 +433,7 @@ export default function RegisterPage() {
             right: -5%;
             width: 500px;
             height: 500px;
-            background: #667eea;
+            background: #764ba2;
             animation-delay: 5s;
         }
         
