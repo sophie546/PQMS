@@ -224,7 +224,7 @@ const UserProfile = () => {
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    navigate('/profile');
+    navigate('/general-settings');
   };
 
   const handleSettingsClick = (e) => {
