@@ -1,8 +1,10 @@
-
 export { Sidebar } from './Sidebar';
 export { default as Layout } from './Layout';
 
-export { FormTextField, FormSelectField } from './FormFields';
+export { FormSelectField, FormTextField } from './FormFields';
+export { InputField, PasswordField, RoleSelectField, NameFieldsRow, EmailField, GradientButton, ErrorAlert } from './RegisterFields';
+
+
 export { PatientCard } from './PatientCard';
 export { SearchFilterBar } from './SearchFilterBar';
 export { StatCard, StatTitle, StatNumber, StatIcon, SubText } from './StatComponents';
