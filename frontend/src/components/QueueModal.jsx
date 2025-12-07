@@ -4,9 +4,9 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { FormTextField, FormSelectField } from './FormFields';
-import { HeaderButton } from './HeaderComponents';
 import { useNumericInput, useFormValidation } from '../hooks';
 import { useNavigate } from 'react-router-dom';
+import { GradientButton } from './ButtonComponents';
 
 const style = {
   position: 'absolute',
@@ -28,13 +28,13 @@ const CustomTextField = ({ sx, ...props }) => (
     sx={{
       '& .MuiInput-underline': {
         '&:before': {
-          borderBottomColor: 'rgba(102, 126, 234, 0.3)',
+          borderBottomColor: '#4B0082',
         },
         '&:hover:before': {
-          borderBottomColor: '#667eea',
+          borderBottomColor: '#4B0082',
         },
         '&:after': {
-          borderBottomColor: '#667eea',
+          borderBottomColor: '#4B0082',
         },
       },
       '& .MuiInputBase-input': {
@@ -154,7 +154,7 @@ export function QueueModal({ open, onClose }) {
           mb={1}
           sx={{ 
             fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
-            color: '#1a237e',
+            color: '#4B0082',
           }}
         >
           Join Queue
@@ -270,45 +270,30 @@ export function QueueModal({ open, onClose }) {
                 fullWidth
                 />
             </Box>
-
-            {/* Reason for Visit */}
-            <Box sx={{ width: '100%', mt:2 }}>
-                <FormTextField
-                label="Reason for Visit*"
-                value={formData.reason}
-                onChange={handleInputChange('reason')}
-                multiline
-                rows={2}
-                required
-                fullWidth
-                labelSx={{ fontSize: '14px' }}
-                sx={{ 
-                    '& .MuiOutlinedInput-root': { 
-                    borderRadius: 3,
-                    fontWeight: 600,
-                    },
-                    '& .MuiInputBase-input': { 
-                    padding: '2px', 
-                    fontSize: "14px" 
-                    }
-                }}
-                />
-            </Box>
             </Box>
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 4 }}>
-            <HeaderButton onClick={onClose}>
-                Cancel
-            </HeaderButton>
-            <HeaderButton 
-                color="white"
-                background="#667eea"
+            <GradientButton 
+              onClick={onClose}
+              sx={{ 
+                padding: "5px 24px !important",
+                minWidth: "auto",
+                fontSize: "14px",
+              }}
+            >
+              Cancel
+            </GradientButton>
+            <GradientButton 
                 type="submit"
-                hoverBackground="#556cd6"
+                sx={{ 
+                  padding: "5px 24px !important",
+                  minWidth: "auto",
+                  fontSize: "14px"
+                }}
                 >
                 Submit & Join Queue
-            </HeaderButton>
+            </GradientButton>
           </Box>
         </form>
       </Box>
