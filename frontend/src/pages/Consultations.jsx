@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Box, Typography, Button, TextField, Card, styled,
@@ -15,15 +15,14 @@ import {
   HeaderIcon,
   HeaderSubText, 
   HeaderTitle,
-  HeaderButton,
   StatCard,
   StatNumber,
   SubText,
   GradientButton,
+  FeedbackModal 
 } from "../components";
 
 import { useConsultation } from "../hooks";
-
 
 const SectionHeader = ({ 
   children, icon, color = '#1f2937', fontWeight = 600, mb = 1, fontFamily = '"Poppins", sans-serif', sx = {}, ...props 
@@ -61,12 +60,43 @@ function ConsultationPage() {
     errors,
     handlePatientInfoChange,
     handleConsultationChange,
-    handlePatientIdSearch, // <--- NEW FUNCTION IMPORTED FROM HOOK
+    handlePatientIdSearch, 
     applyTemplate,
     saveConsultation,
     getDoctorLabel,
     isFormValid
   } = useConsultation();
+
+  const [feedback, setFeedback] = useState({
+    open: false,
+    type: 'success', 
+    title: '',
+    message: ''
+  });
+
+  const handleCloseFeedback = () => {
+    setFeedback(prev => ({ ...prev, open: false }));
+  };
+
+  const handleSaveWithFeedback = async () => {
+    const result = await saveConsultation();
+
+    if (result && result.success) {
+        setFeedback({
+            open: true,
+            type: 'success',
+            title: 'Consultation Saved',
+            message: 'The consultation record has been successfully saved to the database.'
+        });
+    } else if (result && !result.success) {
+        setFeedback({
+            open: true,
+            type: 'error',
+            title: 'Submission Failed',
+            message: result.message || 'Please check the form for errors.'
+        });
+    }
+  };
 
   return (
     <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
@@ -88,7 +118,7 @@ function ConsultationPage() {
           <GradientButton 
             variant="contained"
             startIcon={<AddIcon sx={{ fontSize: 18 }} />}
-            onClick={saveConsultation}
+            onClick={handleSaveWithFeedback} 
             disabled={!isFormValid}
           >
             Save Consultation
@@ -277,7 +307,7 @@ function ConsultationPage() {
             </Card>
           </Box>
 
-          {/* Right Column (Summary & Templates) - Code Unchanged but included for context */}
+          {/* Right Column (Summary & Templates) */}
           <Box width="33%" pl={0}>
             {/* Consultation Summary Card */}
             <StatCard sx={{ mb: 4 }}>
@@ -336,6 +366,15 @@ function ConsultationPage() {
           </Box>
         </Box>
       </Box>
+
+      <FeedbackModal 
+        open={feedback.open}
+        onClose={handleCloseFeedback}
+        type={feedback.type}
+        title={feedback.title}
+        message={feedback.message}
+      />
+      
     </Box>
   );
 }

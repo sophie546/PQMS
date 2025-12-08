@@ -4,6 +4,6 @@ import clinicaflow.entity.MedicalStaffEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
-public interface MedicalStaffRepository extends JpaRepository<MedicalStaffEntity, Long> {
-    Optional<MedicalStaffEntity> findByUserAccountAccountID(Long accountId);
+public interface MedicalStaffRepository extends JpaRepository<MedicalStaffEntity, Integer> {
+    Optional<MedicalStaffEntity> findByUserAccountAccountID(int accountId);
 }

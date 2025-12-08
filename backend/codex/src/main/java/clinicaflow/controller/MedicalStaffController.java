@@ -37,19 +37,19 @@ public class MedicalStaffController {
 
     // READ ONE
     @GetMapping("/{id}")
-    public Optional<MedicalStaffEntity> getStaffById(@PathVariable Long id) {
+    public Optional<MedicalStaffEntity> getStaffById(@PathVariable int id) {
         return service.getStaffById(id);
     }
 
     // UPDATE
     @PutMapping("/update/{id}")
-    public MedicalStaffEntity updateStaff(@PathVariable Long id, @RequestBody MedicalStaffEntity staff) {
+    public MedicalStaffEntity updateStaff(@PathVariable int id, @RequestBody MedicalStaffEntity staff) {
         return service.updateStaff(id, staff);
     }
 
     // DELETE
     @DeleteMapping("/delete/{id}")
-    public String deleteStaff(@PathVariable Long id) {
+    public String deleteStaff(@PathVariable int id) {
         service.deleteStaff(id);
         return "Medical staff with ID " + id + " has been deleted.";
     }

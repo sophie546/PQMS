@@ -8,7 +8,7 @@ public class MedicalStaffEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long staffID;
+    private int staffID;
 
     private String name;
     private String role;
@@ -19,11 +19,11 @@ public class MedicalStaffEntity {
     @JoinColumn(name = "account_id", referencedColumnName = "accountID", unique = true)
     private UserAccountEntity userAccount;
 
-    public Long getStaffID() {
+    public int getStaffID() {
         return staffID;
     }
 
-    public void setStaffID(Long staffID) {
+    public void setStaffID(int staffID) {
         this.staffID = staffID;
     }
 

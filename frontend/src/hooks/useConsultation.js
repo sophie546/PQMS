@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { mockMedicalStaff } from '../data/mockMedicalStaff.js';
 import { mockConsultations } from '../data/mockConsultations.js';
 import { patientService } from "../services/patientService";
+import { consultationService } from "../services/consultationService";
 
 const safeMedicalStaff = mockMedicalStaff || [];
 
@@ -120,7 +121,7 @@ export const useConsultation = () => {
     }
   };
 
-  const saveConsultation = () => {
+  const saveConsultation = async () => {
     setErrors({});
     const newErrors = {};
     
@@ -134,42 +135,55 @@ export const useConsultation = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      alert("Please fix the validation errors before saving");
-      return;
+      return { success: false, message: "Please fix the highlighted errors in the form." };
     }
 
-    const newConsultation = {
-      consultationId: `CONS-${mockConsultations.length + 1}`,
+    const pId = parseInt(patientInfo.patientId);
+    
+    if (isNaN(pId)) {
+       return { success: false, message: "Invalid Patient ID." };
+    }
+
+    const consultationPayload = {
+      patientId: pId,
+      // staffId: parseInt(patientInfo.doctor), 
       symptoms: consultationDetails.symptoms,
       diagnosis: consultationDetails.diagnosis,
-      medicinePrescribed: consultationDetails.prescription,
+      medicinePrescribed: consultationDetails.prescription, 
       remarks: consultationDetails.remarks,
-      consultationDate: new Date().toISOString().split('T')[0],
-      patientId: patientInfo.patientId || "PAT-TEMP", 
-      staffId: patientInfo.doctor
+      consultationDate: new Date().toISOString().split('T')[0]
     };
 
-    console.log("Saving consultation:", newConsultation);
-    setTodayConsultations(prev => prev + 1);
-    
-    setPatientInfo({
-      patientId: '',
-      name: '',
-      age: '',
-      gender: '',
-      doctor: '',
-      date: null
-    });
-    
-    setConsultationDetails({
-      symptoms: '',
-      diagnosis: '',
-      prescription: '',
-      remarks: ''
-    });
-
-    setErrors({});
-    alert("Consultation saved successfully!");
+    try {
+      console.log("Sending to Backend:", consultationPayload);
+      
+      // 4. Call Backend
+      await consultationService.addConsultation(consultationPayload);
+      
+      setPatientInfo({
+        patientId: '',
+        name: '',
+        age: '',
+        gender: '',
+        doctor: '',
+        date: null
+      });
+      setConsultationDetails({
+        symptoms: '',
+        diagnosis: '',
+        prescription: '',
+        remarks: ''
+      });
+      setErrors({});
+      setTodayConsultations(prev => prev + 1);
+      
+      return { success: true };
+      
+    } catch (error) {
+      console.error("Save Error:", error);
+      
+      return { success: false, message: "Server Error: Failed to save consultation." };
+    }
   };
 
   const getDoctorLabel = () => {

@@ -769,6 +769,7 @@ export default function LandingPage() {
               mx: "auto", 
               display: "block",
               my: 5,
+              py: 1,
             }} 
             onClick={handleOpenPatientFormModal}
           >

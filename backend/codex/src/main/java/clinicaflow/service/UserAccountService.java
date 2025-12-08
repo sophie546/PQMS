@@ -145,7 +145,7 @@ public class UserAccountService {
     }
 
     // READ ONE
-    public Optional<UserAccountEntity> getAccountById(Long id) {
+    public Optional<UserAccountEntity> getAccountById(int id) {
         return userAccountRepository.findById(id);
     }
 
@@ -155,7 +155,7 @@ public class UserAccountService {
     }
 
     // UPDATE
-    public UserAccountEntity updateAccount(Long id, UserAccountEntity updatedAccount) {
+    public UserAccountEntity updateAccount(int id, UserAccountEntity updatedAccount) {
         return userAccountRepository.findById(id).map(account -> {
             account.setUsername(updatedAccount.getUsername());
             
@@ -174,7 +174,7 @@ public class UserAccountService {
     }
 
     // DELETE
-    public void deleteAccount(Long id) {
+    public void deleteAccount(int id) {
         userAccountRepository.deleteById(id);
     }
 }
