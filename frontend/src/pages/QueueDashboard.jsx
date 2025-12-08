@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -8,15 +9,24 @@ import {
   Typography,
   Avatar,
   Stack,
-  MoreVert,
-  Refresh,
+  Button,
+  Menu,
+  MenuItem,
+} from '@mui/material';
+
+import {
   People,
   Schedule,
   MedicalServices,
   CheckCircle,
-  MdQueue,
-} from "../lib";
+  MoreVert,
+  Refresh,
+  LocalHospital,
+  FilterList
+} from '@mui/icons-material';
 
+// Assuming your custom components are in a folder named 'components'
+// Adjust the path if they are in '../lib' or elsewhere based on your project structure
 import {
   StatCard,
   StatTitle,
@@ -24,137 +34,287 @@ import {
   SubText,
   StatIcon,
   HeaderPaper,
-  HeaderIcon,
-  HeaderSubText,
   HeaderTitle,
-  HeaderButton,
+  HeaderSubText,
   Caption,
   SubCaption
 } from "../components";
 
-import { 
-  usePatientQueue, 
-  useQueueStats, 
-  usePatientCard, 
-  getStatusColor, 
-  getStatusBgColor 
-} from "../hooks";
+// --- HELPER FUNCTIONS ---
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'WAITING': return '#f59e0b';
+    case 'SERVING': return '#8b5cf6'; // Purple for consulting/serving
+    case 'COMPLETED': return '#10b981';
+    default: return '#6b7280';
+  }
+};
 
+const getStatusBgColor = (status) => {
+  switch (status) {
+    case 'WAITING': return '#fef3c7';
+    case 'SERVING': return '#ede9fe';
+    case 'COMPLETED': return '#d1fae5';
+    default: return '#f3f4f6';
+  }
+};
+
+// --- MAIN COMPONENT ---
 const QueueDashboard = () => {
-  const {
-    displayPatients,
-    patients,  
-    handleRefresh,
-  } = usePatientQueue();
+  const location = useLocation();
+  const [queueList, setQueueList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Search & Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const isFilterOpen = Boolean(filterAnchorEl);
 
-  const { patientStats } = useQueueStats(patients);
+  // Data passed from the QueueModal
+  const myQueueData = location.state || {}; 
+
+  const fetchQueueData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8080/api/queue');
+      if (response.ok) {
+        const data = await response.json();
+        setQueueList(data);
+      }
+    } catch (error) {
+      console.error("Error fetching queue:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQueueData();
+    const interval = setInterval(fetchQueueData, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // --- FILTERING LOGIC ---
+  const handleFilterClick = (event) => setFilterAnchorEl(event.currentTarget);
+  const handleFilterClose = () => setFilterAnchorEl(null);
+  const handleStatusFilter = (status) => {
+    setFilterStatus(status);
+    handleFilterClose();
+  };
+
+  // Filter the list based on Search Term AND Status
+  const filteredQueue = queueList.filter((item) => {
+    const fullName = `${item.patient?.firstName} ${item.patient?.lastName}`.toLowerCase();
+    const matchesSearch = fullName.includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || item.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  // --- STATS CALCULATION ---
+  const stats = {
+    total: queueList.length,
+    waiting: queueList.filter(q => q.status === 'WAITING').length,
+    serving: queueList.filter(q => q.status === 'SERVING').length,
+    completed: queueList.filter(q => q.status === 'COMPLETED').length,
+  };
+
+  const patientStats = [
+    { id: 1, title: 'Total Patients', value: stats.total, subText: 'Registered today', color: '#6366f1', icon: People },
+    { id: 2, title: 'Waiting', value: stats.waiting, subText: 'In queue', color: '#f59e0b', icon: Schedule },
+    { id: 3, title: 'Consulting', value: stats.serving, subText: 'In progress', color: '#8b5cf6', icon: MedicalServices },
+    { id: 4, title: 'Completed', value: stats.completed, subText: 'Discharged', color: '#10b981', icon: CheckCircle },
+  ];
+
+  // Logic for "Now Serving"
+  const currentServing = queueList.find(q => q.status === 'SERVING') || queueList.find(q => q.status === 'WAITING');
+  const servingNumber = currentServing ? currentServing.queueNumber : '--';
+
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%)',
-      fontFamily: '"Inter", "Segoe UI", "SF Pro Display", -apple-system, sans-serif',
-    }}>
+    <Box sx={{ minHeight: '100vh', background: '#f9fafb', fontFamily: '"Arimo", sans-serif' }}>
+      
+      {/* --- HEADER --- */}
       <HeaderPaper>
-        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto" pl={15} pr={15} >
+        <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            <HeaderIcon><MdQueue size={24} color="white" /></HeaderIcon>
+            <LocalHospital sx={{ 
+              fontSize: 40, 
+              color: 'white',
+              background: '#667eea', 
+              borderRadius: '8px',
+              p: 1.3,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }} />
             <Box>
               <HeaderTitle>Patient Queue</HeaderTitle>
-              <HeaderSubText>
-                Real-time patient tracking | {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-              </HeaderSubText>
+              <HeaderSubText>Real-time patient monitoring | {new Date().toLocaleDateString()}</HeaderSubText>
             </Box>
           </Box>
-
-          <Stack direction="row" spacing={2}>
-            <HeaderButton startIcon={<Refresh />} onClick={handleRefresh}>
+          
+          <Box display="flex" gap={2}>
+            {/* Search Input */}
+            <input
+              type="text"
+              placeholder="Search patients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                border: '1px solid #e5e7eb',
+                outline: 'none',
+                padding: '8px 16px',
+                fontSize: '0.875rem',
+                borderRadius: '8px',
+                width: '280px',
+                backgroundColor: 'white',
+              }}
+            />
+             <Button 
+                variant="contained" 
+                startIcon={<Refresh />} 
+                onClick={fetchQueueData}
+                sx={{ background: '#667eea', '&:hover': { background: '#5a67d8' }, textTransform: 'none' }}
+             >
               Refresh
-            </HeaderButton>
-          </Stack>
+            </Button>
+          </Box>
         </Box>
       </HeaderPaper>
 
-      <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4, pl: 15, pr: 15 }}>
-        <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
+        
+        {/* --- STATS GRID --- */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 4 }}>
           {patientStats.map((stat) => (
             <StatCardItem key={stat.id} stat={stat} />
           ))}
         </Box>
 
-        <QueueNumber />
-       
-        <QueueCard 
-          displayPatients={displayPatients}
+        {/* --- YOUR NUMBER & SERVING (Custom Requirement) --- */}
+        <QueueNumber 
+            myNumber={myQueueData.queueNumber || "N/A"} 
+            servingNumber={servingNumber} 
         />
+        
+        {/* --- PATIENT LIST CARD (New Layout) --- */}
+        <Card sx={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', border: '1px solid #e5e7eb' }}>
+          
+          {/* Card Header & Filter */}
+          <Box sx={{ p: 3, borderBottom: "1px solid #e5e7eb" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937' }}>
+                Patient List
+              </Typography>
+              <Button
+                startIcon={<FilterList />}
+                variant="outlined"
+                size="small"
+                onClick={handleFilterClick}
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  borderColor: '#e5e7eb',
+                  color: '#374151',
+                  fontWeight: 600,
+                  '&:hover': { borderColor: '#d1d5db', background: '#f9fafb' }
+                }}
+              >
+                {filterStatus !== 'all' ? filterStatus : 'All Status'}
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Filter Menu Dropdown */}
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={isFilterOpen}
+            onClose={handleFilterClose}
+            PaperProps={{ sx: { mt: 1, minWidth: 150 } }}
+          >
+            <MenuItem onClick={() => handleStatusFilter('all')}>All Status</MenuItem>
+            <MenuItem onClick={() => handleStatusFilter('WAITING')}>Waiting</MenuItem>
+            <MenuItem onClick={() => handleStatusFilter('SERVING')}>Consulting</MenuItem>
+            <MenuItem onClick={() => handleStatusFilter('COMPLETED')}>Completed</MenuItem>
+          </Menu>
+
+          {/* Table Header Row */}
+          <Box sx={{ px: 3, py: 2, background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+            <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 1.5fr 1fr 60px" gap={2} alignItems="center">
+              <SubCaption>#</SubCaption>
+              <SubCaption>PATIENT</SubCaption>
+              <SubCaption>AGE</SubCaption>
+              <SubCaption>STATUS</SubCaption>
+              <SubCaption>DOCTOR</SubCaption>
+              <SubCaption>TIME</SubCaption>
+              <Box />
+            </Box>
+          </Box>
+
+          {/* Table Rows (Mapped Data) */}
+          <Box>
+            {filteredQueue.length > 0 ? (
+              filteredQueue.map((queueItem, index) => (
+                <PatientRow key={queueItem.id} queueItem={queueItem} index={index} />
+              ))
+            ) : (
+               <Box sx={{ textAlign: 'center', py: 8 }}>
+                 <Typography variant="body1" sx={{ color: '#6b7280' }}>
+                   No patients found
+                 </Typography>
+               </Box>
+            )}
+          </Box>
+        </Card>
+
       </Box>
     </Box>
   );
 };
 
-const StatCardItem = ({ stat }) => {
-  const getStatIcon = (title) => {
-    const icons = {
-      'Total Patients': <People sx={{ fontSize: 28, color: 'white' }} />,
-      'Waiting': <Schedule sx={{ fontSize: 28, color: 'white' }} />,
-      'Consulting': <MedicalServices sx={{ fontSize: 28, color: 'white' }} />,
-      'Completed': <CheckCircle sx={{ fontSize: 28, color: 'white' }} />,
-    };
-    return icons[title] || <People sx={{ fontSize: 28, color: 'white' }} />;
-  };
+// --- SUB-COMPONENTS ---
 
-  return (
-    <Box sx={{ flex: 1 }}>
-      <StatCard color={stat.color}>
-        <CardContent sx={{ p: 3, height: '100%' }}>
+const StatCardItem = ({ stat }) => {
+    const IconComponent = stat.icon;
+    return (
+      <StatCard>
+        <CardContent sx={{ p: 3 }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box sx={{ flex: 1, mr: 2 }}>
+            <Box>
               <StatTitle>{stat.title}</StatTitle>
-              <StatNumber color={stat.color}>{stat.value}</StatNumber>
+              <StatNumber sx={{color: stat.color}}>{stat.value}</StatNumber>
               <SubText>{stat.subText}</SubText>
             </Box>
-            <StatIcon background={stat.gradient}>
-              {getStatIcon(stat.title)}
+            <StatIcon sx={{ background: 'transparent' }}>
+              <IconComponent sx={{ fontSize: 38, color: stat.color }} />
             </StatIcon>
           </Box>
         </CardContent>
       </StatCard>
-    </Box>
-
-    
-
-    
-  );
+    );
 };
 
-const QueueNumber = ({ stat }) => {
+const QueueNumber = ({ myNumber, servingNumber }) => {
   return (
     <Box sx={{ 
-      flex: 1,
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       borderRadius: 3,
       boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
-      border: '1px solid rgba(102, 126, 234, 0.1)',
-      p: 1.5,
+      p: 0,
       mb: 4,
+      overflow: 'hidden'
       }}>
-        <CardContent sx={{ p: 2, height: '100%' }}>
+        <CardContent sx={{ p: 3 }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box sx={{ flex: 1, mr: 2, alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-              <StatNumber sx={{ fontSize: "44px", color:"white"}}>5</StatNumber>
-              <StatTitle sx={{ mt:1, color:"white"}}>Your Number</StatTitle>
+            <Box sx={{ flex: 1, textAlign: 'center' }}>
+              <StatNumber sx={{ fontSize: "44px", color:"white"}}>{myNumber}</StatNumber>
+              <StatTitle sx={{ mt:1, color:"white", opacity: 0.9}}>Your Number</StatTitle>
             </Box>
 
-            <Box sx={{ 
-              width: '2px', 
-              height: '90px', 
-              background: 'rgba(255,255,255,0.3)',
-              mx: 2 
-            }} />
+            <Box sx={{ width: '1px', height: '80px', background: 'rgba(255,255,255,0.2)' }} />
 
-            <Box sx={{ flex: 1, mr: 2, alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-              <StatNumber sx={{ fontSize: "44px", color:"white" }}>2</StatNumber>
-              <StatTitle sx={{ mt:1, color:"white" }}>Now Serving</StatTitle>
+            <Box sx={{ flex: 1, textAlign: 'center' }}>
+              <StatNumber sx={{ fontSize: "44px", color:"white" }}>{servingNumber}</StatNumber>
+              <StatTitle sx={{ mt:1, color:"white", opacity: 0.9 }}>Now Serving</StatTitle>
             </Box>
           </Box>
         </CardContent>
@@ -162,96 +322,72 @@ const QueueNumber = ({ stat }) => {
   );
 };
 
-const QueueCard = ({ 
-  displayPatients, 
-}) => (
-  <Card sx={{ borderRadius: 3, boxShadow: '0 4px 25px rgba(0,0,0,0.08)', border: '1px solid rgba(102, 126, 234, 0.1)' }}>
-    <Box sx={{ p: 3, borderBottom: "1px solid rgba(102, 126, 234, 0.1)", background: 'linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%)' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a237e', mb: 0.5, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text' }}>
-            Patient Queue
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 500 }}>
-            Manage and monitor patient flow in real-time
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-
-    <PatientList displayPatients={displayPatients} />
-  </Card>
-);
-
-const PatientList = ({ displayPatients }) => (
-  <Box sx={{ p: 3 }}>
-    <Stack spacing={2}>
-      {displayPatients.length > 0 ? (
-        displayPatients.map((patient) => <PatientCard key={patient.id} patient={patient} />)
-      ) : (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h6" sx={{ color: '#6b7280', fontWeight: 500 }}>
-            No patients found
-          </Typography>
-        </Box>
-      )}
-    </Stack>
-  </Box>
-);
-
-
-const PatientCard = ({ patient }) => {
-  const { handleMoreActions } = usePatientCard(patient);
+const PatientRow = ({ queueItem, index }) => {
+  const { patient, status, queueNumber, assignedDoctor, arrivalTime } = queueItem;
+  const initials = (patient?.firstName?.[0] || '') + (patient?.lastName?.[0] || '');
+  const fullName = `${patient?.firstName} ${patient?.lastName}`;
 
   return (
-    <Card sx={{ p: 3, borderRadius: 2, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)', border: '1px solid #e5e7eb', '&:hover': { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' } }}>
-      <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
-        <PatientInfo patient={patient} />
-        <PatientStatus patient={patient} handleMoreActions={handleMoreActions} />
+    <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        borderBottom: '1px solid #f3f4f6',
+        '&:hover': { background: '#f9fafb' },
+        transition: 'background 0.2s'
+      }}>
+      <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 1.5fr 1fr 60px" gap={2} alignItems="center">
+        {/* 1. Queue Number / Index */}
+        <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 600 }}>{queueNumber}</Typography>
+        
+        {/* 2. Patient Info */}
+        <Box display="flex" alignItems="center" gap={2}>
+          <Avatar sx={{ width: 40, height: 40, background: '#667eea', fontWeight: 700, fontSize: '0.875rem' }}>
+            {initials}
+          </Avatar>
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: '#1f2937' }}>
+              {fullName}
+            </Typography>
+            <Caption>ID: {patient?.patientId}</Caption>
+          </Box>
+        </Box>
+        
+        {/* 3. Age */}
+        <Typography variant="body2" sx={{ color: '#374151' }}>{patient?.age} yrs</Typography>
+        
+        {/* 4. Status */}
+        <Box>
+          <Chip 
+            label={status} 
+            size="small"
+            sx={{ 
+              backgroundColor: getStatusBgColor(status), 
+              color: getStatusColor(status), 
+              fontWeight: 600, 
+              fontSize: '0.75rem',
+              height: '24px',
+              borderRadius: '6px',
+            }} 
+          />
+        </Box>
+        
+        {/* 5. Assigned Doctor (New Field) */}
+        <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 500 }}>
+             {assignedDoctor || "Unassigned"}
+        </Typography>
+
+        {/* 6. Arrival Time (New Field) */}
+        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+            {arrivalTime || "--:--"}
+        </Typography>
+        
+        {/* 7. Actions */}
+        <IconButton size="small" sx={{ color: '#9ca3af' }}>
+          <MoreVert sx={{ fontSize: 18 }} />
+        </IconButton>
       </Box>
-      <PatientDetails patient={patient} />
-    </Card>
+    </Box>
   );
 };
-
-const PatientInfo = ({ patient }) => (
-  <Box display="flex" alignItems="center" gap={2}>
-    <Avatar sx={{ width: 48, height: 48, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontWeight: 700 }}>
-      {patient.initials}
-    </Avatar>
-    <Box>
-      <Typography variant="h6" sx={{ fontWeight: 600, color: '#1f2937', mb: 0.5 }}>
-        {patient.name}
-      </Typography>
-      <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 400 }}>
-        {patient.age} years • {patient.gender}
-      </Typography>
-    </Box>
-  </Box>
-);
-
-const PatientStatus = ({ patient, handleMoreActions }) => (
-  <Box display="flex" alignItems="center" gap={1}>
-    <Chip label={patient.status} sx={{ backgroundColor: getStatusBgColor(patient.status), color: getStatusColor(patient.status), fontWeight: 600, fontSize: '0.75rem', height: '26px' }} />
-    <Chip label={`#${patient.id}`} size="small" sx={{ backgroundColor: getStatusColor(patient.status), color: 'white', fontWeight: 700, fontSize: '0.75rem', height: '26px' }} />
-    <IconButton size="small" sx={{ color: '#9ca3af' }} onClick={handleMoreActions}>
-      <MoreVert sx={{ fontSize: 20 }} />
-    </IconButton>
-  </Box>
-);
-
-const PatientDetails = ({ patient }) => (
-  <Box display="flex" alignItems="center" gap={4}>
-    <Box display="flex" alignItems="center" gap={1}>
-      <Caption>Assigned to |</Caption>
-      <SubCaption>{patient.assignedTo}</SubCaption>
-    </Box>
-    <Box display="flex" alignItems="center" gap={1}>
-      <Caption>Arrival time |</Caption>
-      <SubCaption>{patient.arrivalTime}</SubCaption>
-    </Box>
-  </Box>
-);
-
 
 export default QueueDashboard;

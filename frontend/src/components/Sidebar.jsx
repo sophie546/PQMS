@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Avatar, 
@@ -10,342 +10,315 @@ import {
   ListItemIcon, 
   ListItemText,
   Drawer,
-  alpha
 } from '@mui/material';
-import { SettingsOutlined } from '@mui/icons-material';
+import { SettingsOutlined, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaStethoscope, FaChevronRight } from 'react-icons/fa';
+import { FaStethoscope } from 'react-icons/fa';
 
-// Modern color palette
+const ICON_RAIL_WIDTH = 70; 
+const EXPANDED_WIDTH = 260; 
+const COLLAPSED_WIDTH = 70; 
+const CURVE_SIZE = 30; 
+
 const colors = {
-  primary: '#6366F1',
-  primaryLight: '#8B5CF6',
-  background: '#F8FAFC',
-  surface: '#FFFFFF',
-  textPrimary: '#1E293B',
-  textSecondary: '#64748B',
-  textTertiary: '#94A3B8',
-  border: '#E2E8F0',
-  hover: '#F1F5F9'
+  iconRailBg: '#4B0082',    
+  navRailBg: '#4B0082',     
+  activeBg: '#F3F4F6',     
+  activeText: '#4B0082',    
+  inactiveText: '#E0D4FC',  
+  white: '#FFFFFF',
+  hover: 'rgba(255, 255, 255, 0.08)'
 };
 
-// Sidebar Header Component
-const SidebarHeader = () => (
+// --- FIX 1: Pass isSelected to Curve and use Opacity ---
+const Curve = ({ top, isSelected }) => {
+  return (
+    <Box sx={{
+      position: 'absolute',
+      right: 0, 
+      [top ? 'top' : 'bottom']: -CURVE_SIZE,
+      width: CURVE_SIZE,
+      height: CURVE_SIZE,
+      zIndex: 10,
+      pointerEvents: 'none', // Ensures clicks go through
+      
+      // Control visibility via Opacity + Transition
+      opacity: isSelected ? 1 : 0,
+      transition: 'opacity 0.2s ease-in-out', 
+
+      background: colors.activeBg, 
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0, left: 0,
+        width: '100%', height: '100%',
+        background: colors.navRailBg, 
+        [top ? 'borderBottomRightRadius' : 'borderTopRightRadius']: CURVE_SIZE,
+      }
+    }} />
+  );
+};
+
+const SidebarHeader = ({ collapsed }) => (
   <Box sx={{ 
-    height: "72px",
-    display: 'flex',
+    height: 100, 
+    display: 'flex', 
     alignItems: 'center',
-    gap: 2,
-    px: 2.5,
-    background: colors.surface,
-    borderBottom: `1px solid ${colors.border}`,
+    position: 'relative',
+    zIndex: 20,
   }}>
     <Box sx={{
-      width: 36,
-      height: 36,
-      borderRadius: 8,
-      background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+      width: ICON_RAIL_WIDTH,
+      height: '100%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0, 
     }}>
-      <FaStethoscope size={16} color="white" />
+      <Box sx={{
+        width: 44, height: 44,
+        borderRadius: '12px',
+        background: 'rgba(255,255,255,0.2)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        backdropFilter: 'blur(4px)'
+      }}>
+        <FaStethoscope size={22} color="white" />
+      </Box>
     </Box>
-    <Box sx={{ minWidth: 0 }}>
-      <Typography 
-        variant="h6" 
-        noWrap 
-        component="div" 
-        sx={{ 
-          fontWeight: 700, 
-          fontSize: '1rem',
-          letterSpacing: '-0.2px',
-          fontFamily: '"Inter", "Segoe UI", sans-serif',
-          color: colors.textPrimary,
-        }}
-      >
+
+    <Box sx={{ 
+      pl: 2, 
+      opacity: collapsed ? 0 : 1,
+      width: collapsed ? 0 : 'auto',
+      transition: 'all 0.3s ease',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap'
+    }}>
+      <Typography variant="h6" sx={{ 
+        fontWeight: 700, color: colors.white, fontFamily: '"Arimo", "Poppins", "Inter", sans-serif', lineHeight: 1.2
+      }}>
         ClinicaFlow
       </Typography>
-      <Typography 
-        variant="caption" 
-        sx={{
-          color: colors.textTertiary,
-          fontFamily: '"Inter", "Segoe UI", sans-serif',
-          fontWeight: 500,
-          fontSize: '0.7rem',
-          letterSpacing: '0.3px',
-        }}
-      >
+      <Typography variant="caption" sx={{ 
+        color: colors.inactiveText, fontSize: '0.75rem', fontWeight: 500, opacity: 0.8
+      }}>
         Medical Management
       </Typography>
     </Box>
   </Box>
 );
 
-// Individual Menu Item Component with modern border animation
-const SidebarMenuItem = ({ item, isSelected, onClick }) => (
-  <ListItem disablePadding sx={{ mb: 0.75, px: 1.5 }}>
+const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
+  <ListItem disablePadding sx={{ 
+    display: 'block', 
+    position: 'relative',
+    mb: 0,
+    zIndex: isSelected ? 11 : 1,
+    '&:hover': {
+      zIndex: 12
+    }
+  }}>
     <ListItemButton
       component={Link}
       to={item.path}
       selected={isSelected}
       onClick={() => onClick?.(item)}
       sx={{
-        borderRadius: '12px',
-        py: 1.25,
-        px: 2,
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        color: isSelected ? colors.primary : colors.textSecondary,
-        background: isSelected 
-          ? `linear-gradient(135deg, ${alpha(colors.primary, 0.06)} 0%, ${alpha(colors.primaryLight, 0.04)} 100%)`
-          : 'transparent',
-        border: isSelected 
-          ? `1.5px solid ${colors.primary}` 
-          : `1.5px solid transparent`,
+        height: 50,
+        p: 0,
         position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: isSelected
-            ? `linear-gradient(90deg, ${alpha(colors.primary, 0.1)} 0%, transparent 100%)`
-            : 'transparent',
-          pointerEvents: 'none',
-        },
-        '&:hover': {
-          background: isSelected 
-            ? `linear-gradient(135deg, ${alpha(colors.primary, 0.1)} 0%, ${alpha(colors.primaryLight, 0.06)} 100%)`
-            : colors.hover,
-          color: colors.primary,
-          borderColor: colors.primary,
-          transform: 'translateX(2px)',
-          boxShadow: isSelected
-            ? `0 4px 12px ${alpha(colors.primary, 0.15)}`
-            : 'none',
-        },
+        transition: 'all 0.2s ease',
+        background: 'transparent',
         "&.Mui-selected": {
-          background: `linear-gradient(135deg, ${alpha(colors.primary, 0.06)} 0%, ${alpha(colors.primaryLight, 0.04)} 100%)`,
-          color: colors.primary,
-          fontWeight: 600,
-          border: `1.5px solid ${colors.primary}`,
-          boxShadow: `0 4px 12px ${alpha(colors.primary, 0.12)}`,
-          "&:hover": {
-            background: `linear-gradient(135deg, ${alpha(colors.primary, 0.1)} 0%, ${alpha(colors.primaryLight, 0.06)} 100%)`,
-            borderColor: colors.primary,
-          },
-          '& .MuiListItemIcon-root': {
-            color: colors.primary,
-          },
+          background: 'transparent', 
+          "&:hover": { background: 'transparent' },
         },
+        "&:hover": {
+          background: !isSelected ? colors.hover : 'transparent',
+          zIndex: 11,
+        }
       }}
     >
-      <ListItemIcon sx={{ 
-        color: "inherit",
-        minWidth: 36,
-        fontSize: '1.25rem',
+      {/* 1. Icon Rail Area */}
+      <Box sx={{
+        width: ICON_RAIL_WIDTH,
+        height: '100%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
+        zIndex: 20,
+        flexShrink: 0,
       }}>
-        {item.icon}
-      </ListItemIcon>
-      <ListItemText 
-        primary={item.text}
-        primaryTypographyProps={{
-          fontSize: '0.875rem',
-          fontWeight: isSelected ? 600 : 500,
-          fontFamily: '"Inter", "Segoe UI", sans-serif',
-          letterSpacing: '0.2px',
-        }}
-        sx={{ ml: 0.5 }}
-      />
-      {isSelected && (
+        {/* Active Indicator Line */}
         <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          ml: 1,
-          animation: 'slideIn 0.3s ease-out',
-          '@keyframes slideIn': {
-            from: {
-              opacity: 0,
-              transform: 'translateX(-8px)',
-            },
-            to: {
-              opacity: 1,
-              transform: 'translateX(0)',
-            },
-          },
+            position: 'absolute', left: 0,
+            width: 4, height: 36,
+            borderTopRightRadius: 4, borderBottomRightRadius: 4,
+            background: colors.white,
+            boxShadow: '0 0 10px rgba(255,255,255,0.5)',
+            // Animate the indicator line as well
+            opacity: isSelected ? 1 : 0,
+            transition: 'opacity 0.2s ease-in-out',
+        }} />
+
+        <ListItemIcon sx={{ 
+          minWidth: 'auto',
+          color: isSelected ? colors.white : colors.inactiveText,
+          fontSize: '1.4rem',
         }}>
-          <FaChevronRight size={12} color={colors.primary} />
-        </Box>
-      )}
+          {item.icon}
+        </ListItemIcon>
+      </Box>
+
+      {/* 2. Text / Tab Area */}
+      <Box sx={{
+        flex: 1,
+        height: '100%',
+        display: 'flex', alignItems: 'center',
+        position: 'relative',
+        pl: 2,
+        
+        background: isSelected ? colors.activeBg : 'transparent',
+        borderTopLeftRadius: isSelected ? 30 : 0,
+        borderBottomLeftRadius: isSelected ? 30 : 0,
+        borderTopRightRadius: 0, 
+        borderBottomRightRadius: 0,
+        
+        // --- FIX 2: Consolidate Transitions ---
+        // Combine specific property transitions with the collapse transform transition
+        transition: 'background-color 0.2s ease-in-out, border-radius 0.2s ease-in-out, transform 0.3s ease, opacity 0.3s ease',
+        
+        opacity: collapsed ? 0 : 1,
+        transform: collapsed ? 'translateX(-20px)' : 'translateX(0)',
+      }}>
+        
+        {/* --- FIX 3: Always render Curve, toggle opacity --- */}
+        {!collapsed && <Curve top isSelected={isSelected} />}
+        {!collapsed && <Curve bottom isSelected={isSelected} />}
+
+        <ListItemText 
+          primary={item.text}
+            primaryTypographyProps={{
+            fontSize: '0.95rem',
+            fontWeight: isSelected ? 700 : 500,
+            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+            color: isSelected ? colors.activeText : colors.inactiveText,
+          }}
+        />
+      </Box>
     </ListItemButton>
   </ListItem>
 );
 
-// Sidebar Menu Component
-const SidebarMenu = ({ items = [], currentPath, onItemClick }) => (
-  <Box sx={{ 
-    px: 0.5, 
-    py: 1.5,
-    flex: 1,
-    overflowY: 'auto',
-    '&::-webkit-scrollbar': {
-      width: 4,
-    },
-    '&::-webkit-scrollbar-track': {
-      background: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: colors.border,
-      borderRadius: 2,
-    },
-    '&::-webkit-scrollbar-thumb:hover': {
-      background: colors.textTertiary,
-    },
-  }}>
-    <List sx={{ p: 0 }}>
-      {items && items.map((item) => (
-        <SidebarMenuItem 
-          key={item.text}
-          item={item}
-          isSelected={currentPath === item.path}
-          onClick={onItemClick}
-        />
-      ))}
-    </List>
-  </Box>
-);
-
-// User Profile Component
-const UserProfile = () => {
+const UserProfile = ({ collapsed, onToggle }) => {
   const navigate = useNavigate();
-
-  const handleProfileClick = () => {
-    navigate('/general-settings');
-  };
-
-  const handleSettingsClick = (e) => {
-    e.stopPropagation();
-    navigate('/general-settings'); // Updated to navigate to general-settings
-  };
-
   return (
-    <Box 
-      onClick={handleProfileClick}
-      sx={{
-        background: colors.surface,
-        borderRadius: '12px',
-        p: 1.5,
-        mx: 1.5,
-        mb: 1.5,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.5,
-        border: `1px solid ${colors.border}`,
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        cursor: 'pointer',
-        position: 'relative',
-        overflow: 'hidden',
-        '&:hover': {
-          background: colors.hover,
-          borderColor: colors.primary,
-          transform: 'translateY(-2px)',
-          boxShadow: `0 8px 24px ${alpha(colors.primary, 0.12)}`,
-        }
-      }}
-    >
-      <Avatar sx={{ 
-        width: 36, 
-        height: 36,
-        background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
-        fontSize: '0.75rem',
-        fontWeight: 700,
-        fontFamily: '"Inter", "Segoe UI", sans-serif',
-        flexShrink: 0,
-        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
-      }}>
-        MC
-      </Avatar>
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography 
-          variant="body2" 
+    <Box sx={{ mt: 'auto', position: 'relative', zIndex: 20 }}>
+      <Box sx={{ display: 'flex', justifyContent: collapsed ? 'center' : 'flex-end', p: 1 }}>
+        <IconButton 
+          onClick={onToggle}
+          size="small"
           sx={{ 
-            color: colors.textPrimary, 
-            fontWeight: 600, 
-            lineHeight: 1.2,
-            fontFamily: '"Inter", "Segoe UI", sans-serif',
-            fontSize: '0.8rem',
-            letterSpacing: '0.1px',
+            color: colors.inactiveText, 
+            border: `1px solid ${colors.hover}`,
+            '&:hover': { color: colors.white, background: colors.hover }
           }}
         >
-          Dr. Maria Cruz
-        </Typography>
-        <Typography 
-          variant="caption" 
-          sx={{ 
-            color: colors.textTertiary,
-            fontFamily: '"Inter", "Segoe UI", sans-serif',
-            fontSize: '0.7rem',
-            fontWeight: 500,
-            display: 'block',
-          }}
-        >
-          Physician
-        </Typography>
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
+        </IconButton>
       </Box>
-      <IconButton 
-        size="small"
-        onClick={handleSettingsClick} // Updated to use the new handler
+      <Box 
+        onClick={() => navigate('/general-settings')}
         sx={{
-          color: colors.textTertiary,
-          width: 30,
-          height: 30,
-          flexShrink: 0,
-          transition: 'all 0.2s ease',
-          '&:hover': {
-            color: colors.primary,
-            background: alpha(colors.primary, 0.1),
-            transform: 'scale(1.1) rotate(90deg)',
-          }
+          height: 80,
+          display: 'flex', alignItems: 'center', cursor: 'pointer',
+          borderTop: `1px solid rgba(255,255,255,0.1)`,
+          '&:hover': { background: colors.hover }
         }}
       >
-        <SettingsOutlined fontSize="small" />
-      </IconButton>
+        <Box sx={{
+          width: ICON_RAIL_WIDTH,
+          height: '100%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <Avatar sx={{ 
+            width: 36, height: 36,
+            background: colors.white, color: colors.iconRailBg,
+            fontSize: '0.85rem', fontWeight: 700,
+          }}>
+            MC
+          </Avatar>
+        </Box>
+        <Box sx={{ 
+          pl: 1, flex: 1, minWidth: 0,
+          opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto',
+          transition: 'all 0.3s ease', overflow: 'hidden', whiteSpace: 'nowrap'
+        }}>
+          <Typography variant="body2" sx={{ color: colors.white, fontWeight: 600, fontSize: '0.85rem' }}>
+            Dr. Maria Cruz
+          </Typography>
+          <Typography variant="caption" sx={{ color: colors.inactiveText, fontSize: '0.75rem' }}>
+            Physician
+          </Typography>
+        </Box>
+        {!collapsed && (
+          <IconButton size="small" sx={{ mr: 2, color: colors.inactiveText }}>
+            <SettingsOutlined fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
     </Box>
   );
 };
 
-// Main Sidebar Component
-export const Sidebar = ({ menuItems, currentPath, onItemClick }) => (
+export const Sidebar = ({ menuItems, currentPath, onItemClick, collapsed, onToggle }) => (
   <Box sx={{ 
-    height: '100%', 
-    display: 'flex', 
-    flexDirection: 'column',
-    background: colors.background,
-    borderRight: `1px solid ${colors.border}`,
+    height: '100%', width: '100%',
+    display: 'flex', flexDirection: 'column',
+    position: 'relative', overflow: 'hidden',
+    background: colors.navRailBg, 
   }}>
-    <SidebarHeader />
-    <SidebarMenu items={menuItems} currentPath={currentPath} onItemClick={onItemClick} />
-    <UserProfile />
+    <Box sx={{
+      position: 'absolute',
+      top: 0, left: 0, bottom: 0,
+      width: ICON_RAIL_WIDTH,
+      background: colors.iconRailBg,
+      zIndex: 0,
+    }} />
+
+    <SidebarHeader collapsed={collapsed} />
+    
+    <Box sx={{ 
+      flex: 1,
+      overflowY: 'auto', overflowX: 'hidden',
+      py: 2, zIndex: 1, 
+      '&::-webkit-scrollbar': { width: 4 },
+      '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.2)', borderRadius: 2 },
+    }}>
+      <List sx={{ p: 0 }}>
+        {menuItems.map((item) => (
+          <SidebarMenuItem 
+            key={item.text}
+            item={item}
+            isSelected={currentPath === item.path}
+            onItemClick={onItemClick}
+            collapsed={collapsed}
+          />
+        ))}
+      </List>
+    </Box>
+    <UserProfile collapsed={collapsed} onToggle={onToggle} />
   </Box>
 );
 
-// Sidebar Navigation Component
-export const SidebarNavigation = ({ 
-  mobileOpen, 
-  handleDrawerToggle, 
-  menuItems = [], 
-  currentPath, 
-  onItemClick 
-}) => {
-  const drawerWidth = 260;
+export const SidebarNavigation = ({ mobileOpen, handleDrawerToggle, menuItems, currentPath, onItemClick }) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const currentWidth = collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
+  const handleToggle = () => setCollapsed(!collapsed);
 
   return (
-    <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
-      {/* Mobile drawer */}
+    <Box component="nav" sx={{ 
+      width: { sm: currentWidth }, flexShrink: { sm: 0 },
+      transition: 'width 0.3s ease' 
+    }}>
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -354,39 +327,29 @@ export const SidebarNavigation = ({
         sx={{
           display: { xs: 'block', sm: 'none' },
           '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
-            width: drawerWidth,
-            background: colors.background,
-            border: 'none',
+            boxSizing: 'border-box', width: EXPANDED_WIDTH, border: 'none' 
           },
         }}
       >
         <Sidebar 
-          menuItems={menuItems} 
-          currentPath={currentPath} 
-          onItemClick={onItemClick} 
+          menuItems={menuItems} currentPath={currentPath} onItemClick={onItemClick}
+          collapsed={false} onToggle={() => {}}
         />
       </Drawer>
-      
-      {/* Desktop drawer */}
       <Drawer
         variant="permanent"
         sx={{
           display: { xs: 'none', sm: 'block' },
           '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
-            width: drawerWidth,
-            background: colors.background,
-            border: 'none',
-            borderRight: `1px solid ${colors.border}`,
+            boxSizing: 'border-box', width: currentWidth, border: 'none',
+            overflow: 'hidden', transition: 'width 0.3s ease'
           },
         }}
         open
       >
         <Sidebar 
-          menuItems={menuItems} 
-          currentPath={currentPath} 
-          onItemClick={onItemClick} 
+          menuItems={menuItems} currentPath={currentPath} onItemClick={onItemClick} 
+          collapsed={collapsed} onToggle={handleToggle}
         />
       </Drawer>
     </Box>

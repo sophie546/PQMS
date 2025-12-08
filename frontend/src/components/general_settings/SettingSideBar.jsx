@@ -68,7 +68,7 @@ const SettingSideBar = ({ menuItems, currentView, setCurrentView }) => {
                 fontWeight: 700,
                 color: colors.textPrimary,
                 letterSpacing: '-0.02em',
-                fontFamily: '"Inter", "Segoe UI", sans-serif'
+                fontFamily: '"Arimo", "Poppins", "Inter", "Segoe UI", sans-serif'
               }}>
                 ClinicaFlow
               </h3>
@@ -78,7 +78,7 @@ const SettingSideBar = ({ menuItems, currentView, setCurrentView }) => {
                 color: colors.textTertiary,
                 marginTop: '2px',
                 fontWeight: 500,
-                fontFamily: '"Inter", "Segoe UI", sans-serif'
+                fontFamily: '"Arimo", "Poppins", "Inter", "Segoe UI", sans-serif'
               }}>
                 Settings Panel
               </p>
@@ -133,7 +133,7 @@ const SettingSideBar = ({ menuItems, currentView, setCurrentView }) => {
                 transition: 'all 0.2s ease',
                 position: 'relative',
                 overflow: 'hidden',
-                fontFamily: '"Inter", "Segoe UI", sans-serif',
+                fontFamily: '"Arimo", "Poppins", "Inter", "Segoe UI", sans-serif',
                 boxShadow: currentView === item.id ? '0 4px 12px rgba(99, 102, 241, 0.12)' : 'none'
               }}
               onMouseEnter={(e) => {
@@ -200,7 +200,7 @@ const SettingSideBar = ({ menuItems, currentView, setCurrentView }) => {
         fontSize: '14px',
         transition: 'all 0.2s ease',
         marginTop: '16px',
-        fontFamily: '"Inter", "Segoe UI", sans-serif'
+        fontFamily: '"Arimo", "Poppins", "Inter", "Segoe UI", sans-serif'
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background = colors.hover;

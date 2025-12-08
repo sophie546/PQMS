@@ -29,7 +29,7 @@ const SectionHeader = ({
   color = '#1f2937',
   fontWeight = 600,
   mb = 1,
-  fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontFamily = '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   sx = {},
   ...props 
 }) => (
@@ -67,8 +67,8 @@ const StyledTextField = ({
     size={size}
     sx={{
       '& .MuiOutlinedInput-root': {
-        borderRadius: 2,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      borderRadius: 2,
+      fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         '& fieldset': { 
           borderColor: '#e5e7eb',
           borderWidth: '1px'
@@ -109,7 +109,7 @@ const SymptomButton = styled(Button)(({ theme }) => ({
   border: '1px solid #e5e7eb',
   color: '#374151', 
   fontWeight: 600,
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   transition: 'all 0.2s ease',
   
   '&:hover': {
@@ -132,7 +132,7 @@ const SectionTitle = ({
   color = '#1f2937',
   fontWeight = 600,
   mb = 2,
-  fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontFamily = '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   sx = {},
   ...props 
 }) => (
@@ -171,7 +171,7 @@ const StyledTextArea = ({
       '& .MuiOutlinedInput-root': {
         borderRadius: 2,
         fontWeight: 500,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         '& fieldset': { 
           borderColor: '#e5e7eb',
           borderWidth: '1px'
@@ -273,7 +273,7 @@ function ConsultationPage() {
                     fontWeight: 700,
                     color: '#1f2937',
                     mb: 0.5,
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     fontSize: '1.125rem',
                   }}
                 >
@@ -284,7 +284,7 @@ function ConsultationPage() {
                   sx={{
                     color: '#6b7280',
                     fontWeight: 400,
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     fontSize: '0.875rem',
                   }}
                 >
@@ -356,7 +356,7 @@ function ConsultationPage() {
                               '& .MuiOutlinedInput-root': {
                                 borderRadius: 2,
                                 fontWeight: 500,
-                                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                                 '& fieldset': { 
                                   borderColor: '#e5e7eb',
                                   borderWidth: '1px'
@@ -409,7 +409,7 @@ function ConsultationPage() {
                     fontWeight: 700,
                     color: '#1f2937',
                     mb: 0.5,
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     fontSize: '1.125rem',
                   }}
                 >
@@ -420,7 +420,7 @@ function ConsultationPage() {
                   sx={{
                     color: '#6b7280',
                     fontWeight: 400,
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     fontSize: '0.875rem',
                   }}
                 >
@@ -479,7 +479,7 @@ function ConsultationPage() {
                   sx={{
                     fontWeight: 700,
                     color: '#1f2937',
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     fontSize: '1.125rem',
                   }}
                 >
@@ -534,7 +534,7 @@ function ConsultationPage() {
                   sx={{
                     fontWeight: 700,
                     color: '#1f2937',
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     fontSize: '1.125rem',
                   }}
                 >
@@ -567,7 +567,7 @@ function ConsultationPage() {
                   sx={{
                     fontWeight: 700,
                     color: '#1f2937',
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     fontSize: '1.125rem',
                   }}
                 >

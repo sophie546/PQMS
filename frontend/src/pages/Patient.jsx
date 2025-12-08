@@ -21,10 +21,12 @@ import {
   HeaderIcon,
   HeaderSubText,
   HeaderTitle,
-  HeaderButton,
   Caption,
-  SubCaption
+  SubCaption,
+  GradientButton
 } from "../components";
+
+
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -319,13 +321,13 @@ function PatientPage() {
             </Box>
           </Box>
 
-          <HeaderButton 
-            variant="contained"
-            startIcon={<Add sx={{ fontSize: 18 }} />}
+          <GradientButton 
+            startIcon={<Add fontSize="small" />}
+            sx={{ fontSize: 14 }} 
             onClick={handleAddPatient}
           >
             Add Patient
-          </HeaderButton>
+          </GradientButton>
         </Box>
       </HeaderPaper>
 
@@ -568,12 +570,12 @@ function PatientPage() {
           pb: 1,
           borderBottom: '1px solid #e5e7eb'
         }}>
-          <Typography 
+            <Typography
             fontSize="22px"
             component="h2" 
             fontWeight="bold" 
             sx={{ 
-              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
               color: '#1a237e',
             }}
           >
@@ -582,7 +584,7 @@ function PatientPage() {
           <Typography 
             variant="body2" 
             sx={{ 
-              fontFamily: '"Inter", "SF Pro Text", "Segoe UI", sans-serif',
+              fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
               color: '#666',
               mt: 0.5
             }}

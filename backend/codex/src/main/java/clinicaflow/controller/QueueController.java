@@ -1,44 +1,45 @@
 package clinicaflow.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import clinicaflow.dto.request.PatientQueueRequest;
 import clinicaflow.entity.Queue;
-import clinicaflow.repository.QueueRepository;
+import clinicaflow.service.QueueService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/queue")
+@CrossOrigin(origins = "http://localhost:3000") 
 public class QueueController {
 
     @Autowired
-    private QueueRepository queueRepository;
+    private QueueService queueService;
 
-    // CREATE
-    @PostMapping("/add")
-    public Queue addQueue(@RequestBody Queue queue) {
-        return queueRepository.save(queue);
+    @PostMapping("/join")
+    public ResponseEntity<?> joinQueue(@RequestBody PatientQueueRequest request) {
+        try {
+            Queue newQueue = queueService.joinQueue(request);
+
+            //custom response for the frontend
+            Map<String, Object> response = new HashMap<>();
+            response.put("queueNumber", newQueue.getQueueNumber());
+            response.put("patientName", newQueue.getPatient().getFullName());
+            response.put("status", newQueue.getStatus());
+            response.put("estimatedTime", "15 mins"); // Placeholder logic
+
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error joining queue: " + e.getMessage());
+        }
     }
 
-    // READ
-    @GetMapping("/all")
-    public List<Queue> getAllQueues() {
-        return queueRepository.findAll();
-    }
-
-    // UPDATE
-    @PutMapping("/update/{id}")
-    public Queue updateQueue(@PathVariable Long id, @RequestBody Queue newQueue) {
-        return queueRepository.findById(id).map(queue -> {
-            queue.setQueueNumber(newQueue.getQueueNumber());
-            queue.setStatus(newQueue.getStatus());
-            return queueRepository.save(queue);
-        }).orElse(null);
-    }
-
-    // DELETE
-    @DeleteMapping("/delete/{id}")
-    public String deleteQueue(@PathVariable Long id) {
-        queueRepository.deleteById(id);
-        return "Queue with ID " + id + " has been deleted!";
+    @GetMapping
+    public ResponseEntity<List<Queue>> getAllQueues() {
+        return ResponseEntity.ok(queueService.getAllQueues());
     }
 }

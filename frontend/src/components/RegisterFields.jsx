@@ -296,53 +296,6 @@ export const NameFieldsRow = ({
   );
 };
 
-// GradientButton Component
-export const GradientButton = ({
-  children,
-  disabled = false,
-  loading = false,
-  fullWidth = false, 
-  type = 'button',
-  onClick,
-  sx = {},
-  ...props
-}) => {
-  return (
-    <Button
-      type={type}
-      fullWidth={fullWidth}
-      disabled={disabled || loading}
-      onClick={onClick}
-      sx={{
-        padding: '7px !important', 
-        fontSize: '1rem',
-        fontWeight: 600,
-        borderRadius: 2,
-        textTransform: 'none',
-        background: '#6A0DAD',
-        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
-        display: 'flex',
-        color: 'white',
-        minWidth: '180px !important',
-        textAlign: 'center', 
-        '&:hover': {
-          background: '#4B0082',
-          boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
-        },
-        '&:disabled': {
-          background: '#cccccc',
-          boxShadow: 'none',
-          color: '#999'
-        },
-        ...sx,
-      }}
-      {...props}
-    >
-      {loading ? `${children}...` : children}
-    </Button>
-  );
-};
-
 // ErrorAlert Component
 export const ErrorAlert = ({ message, sx = {} }) => {
   if (!message) return null;

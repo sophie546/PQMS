@@ -21,9 +21,9 @@ import {
   HeaderIcon,
   HeaderSubText,
   HeaderTitle,
-  HeaderButton,
   Caption,
-  SubCaption
+  SubCaption, 
+  GradientButton
 } from "../components";
 import { useStaff } from "../hooks";
 import {
@@ -33,7 +33,6 @@ import {
   CheckCircle,
   FaUserMd,
   FilterList,
-  Clear,
   MoreVert
 } from "../lib";
 
@@ -111,13 +110,13 @@ const Staff = () => {
             </Box>
           </Box>
 
-          <HeaderButton 
-            variant="contained"
-            startIcon={<Add sx={{ fontSize: 18 }} />}
+          <GradientButton 
+            startIcon={<Add fontSize="small" />}
+            sx={{ fontSize: 14 }} 
             onClick={handleAddStaff}
           >
             Add Staff
-          </HeaderButton>
+          </GradientButton>
         </Box>
       </HeaderPaper>
 

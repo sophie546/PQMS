@@ -9,12 +9,9 @@ import { useAuth } from "../hooks";
 import {
   EmailField,
   PasswordField,
-  GradientButton,
   ErrorAlert
 } from "../components/RegisterFields";
-
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
-import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import { NavSideButton, GradientButton } from "../components/ButtonComponents";
 
 const loginValidation = (values) => {
   const errors = {};
@@ -253,21 +250,18 @@ export default function LoginPage() {
                 </Box>
               </Fade>
 
-              <GradientButton
+              <Typography variant="body2" sx={{ color: 'white', mb: 2, fontStyle: 'italic' }}>
+                Don't have an account yet?
+              </Typography>
+              <NavSideButton
                 onClick={handleNavigateToRegister}
-                variant="outlined"
                 sx={{
-                  color: 'white',
-                  borderColor: 'white',
-                  background: 'transparent',
-                  '&:hover': {
-                    borderColor: 'rgba(255,255,255,0.8)',
-                    backgroundColor: 'rgba(255,255,255,0.1)'
-                  }
-                }}
-              >
+                    width: "175px",
+                    fontSize: "16px",
+                  }}
+                >
                 Create Account
-              </GradientButton>
+              </NavSideButton>
             </div>
           </div>
         </div>
