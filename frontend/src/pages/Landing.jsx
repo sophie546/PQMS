@@ -20,6 +20,7 @@ import { styled, keyframes } from "@mui/system";
 import { ArrowForward, Menu as MenuIcon, Close } from '@mui/icons-material';
 import { QueueModal } from "../components/QueueModal.jsx";
 import { GradientButton, OutlineButton, NavButton, NavSideButton } from "../components/ButtonComponents.jsx";
+import { Bold } from "lucide-react";
 
 // Animations
 const fadeInUp = keyframes`
@@ -262,7 +263,7 @@ export default function LandingPage() {
                 <AnimatedBox delay={0.2}>
                   <Typography
                     variant="h1"
-                    fontWeight={800}
+                    fontWeight={900}
                     color="#4B0082"
                     gutterBottom
                     lineHeight={1.1}
