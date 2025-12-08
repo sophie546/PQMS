@@ -135,12 +135,18 @@ export const useConsultation = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      alert("Please fix the validation errors before saving");
-      return;
+      return { success: false, message: "Please fix the highlighted errors in the form." };
+    }
+
+    const pId = parseInt(patientInfo.patientId);
+    
+    if (isNaN(pId)) {
+       return { success: false, message: "Invalid Patient ID." };
     }
 
     const consultationPayload = {
-      patientId: parseInt(patientInfo.patientId), 
+      patientId: pId,
+      // staffId: parseInt(patientInfo.doctor), 
       symptoms: consultationDetails.symptoms,
       diagnosis: consultationDetails.diagnosis,
       medicinePrescribed: consultationDetails.prescription, 
@@ -151,13 +157,9 @@ export const useConsultation = () => {
     try {
       console.log("Sending to Backend:", consultationPayload);
       
-      // 4. Call the backend
+      // 4. Call Backend
       await consultationService.addConsultation(consultationPayload);
       
-      // Success!
-      alert("Consultation saved successfully to Database!");
-      
-      // Reset Form
       setPatientInfo({
         patientId: '',
         name: '',
@@ -173,10 +175,14 @@ export const useConsultation = () => {
         remarks: ''
       });
       setErrors({});
+      setTodayConsultations(prev => prev + 1);
+      
+      return { success: true };
       
     } catch (error) {
-      alert("Failed to save consultation. Check console for details.");
-      console.error(error);
+      console.error("Save Error:", error);
+      
+      return { success: false, message: "Server Error: Failed to save consultation." };
     }
   };
 

@@ -2,9 +2,9 @@ import { useState, useMemo, useEffect } from "react";
 import { consultationService } from "../services/consultationService";
 
 export const usePatientHistory = () => {
-  // Store the raw data fetched from the backend
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [doctorFilter, setDoctorFilter] = useState('all');
@@ -26,23 +26,27 @@ export const usePatientHistory = () => {
         age: item.patient ? item.patient.age : "N/A",
         
         date: item.consultationDate, 
-        time: "10:00 AM", 
-        
-        doctor: "Unknown", 
-        
-        diagnosis: item.diagnosis
+        time: "10:00 AM",
+        doctor: "Unknown", // Update this if your backend sends doctor info, e.g., item.doctorName
+        diagnosis: item.diagnosis,
+        symptoms: item.symptoms || "",      
+        prescription: item.medicinePrescribed || "",
+        remarks: item.remarks || ""
       }));
 
       const sortedData = formattedData.sort((a, b) => b.id - a.id);
       
       setConsultations(sortedData);
+      setError(null);
     } catch (error) {
       console.error("Failed to load history", error);
+      setError("Failed to fetch consultations");
     } finally {
       setLoading(false);
     }
   };
 
+  // Run fetch once on mount
   useEffect(() => {
     fetchHistory();
   }, []);
@@ -59,9 +63,9 @@ export const usePatientHistory = () => {
           matchesSearch = consultation.id === searchId;
         } else {
           matchesSearch = 
-            consultation.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            consultation.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            consultation.diagnosis.toLowerCase().includes(searchQuery.toLowerCase());
+            (consultation.patientName && consultation.patientName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (consultation.doctor && consultation.doctor.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (consultation.diagnosis && consultation.diagnosis.toLowerCase().includes(searchQuery.toLowerCase()));
         }
       }
 
@@ -76,6 +80,7 @@ export const usePatientHistory = () => {
     const totalVisits = filteredConsultations.length;
     
     const thisWeek = filteredConsultations.filter(c => {
+      if (!c.date) return false;
       const consultationDate = new Date(c.date);
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -88,7 +93,7 @@ export const usePatientHistory = () => {
       {
         id: 1,
         title: 'Total Visits',
-        value: totalVisits,
+        value: consultations.length,
         subText: 'All consultations',
         icon: 'history',
         borderColor: 'rgba(102, 126, 234, 0.1)',
@@ -113,8 +118,7 @@ export const usePatientHistory = () => {
         hoverShadow: 'rgba(46, 125, 50, 0.15)'
       }
     ];
-  }, [filteredConsultations]);
-
+  }, [filteredConsultations, consultations.length]); // Fixed dependency
 
   const handleSearch = (searchTerm) => {
     setSearchQuery(searchTerm);
@@ -133,10 +137,6 @@ export const usePatientHistory = () => {
     fetchHistory(); 
   };
 
-  const handleViewDetails = (consultationId) => {
-    console.log("View details for consultation:", consultationId);
-  };
-
   const clearFilters = () => {
     setSearchQuery('');
     setDoctorFilter('all');
@@ -152,12 +152,12 @@ export const usePatientHistory = () => {
     doctorFilter,
     dateFilter,
     loading, 
+    error,
     hasActiveFilters,
     handleSearch,
     handleDoctorFilter,
     handleDateFilter,
     handleRefresh,
-    handleViewDetails,
     clearFilters
   };
 };

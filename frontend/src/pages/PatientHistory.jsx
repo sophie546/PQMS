@@ -1,5 +1,4 @@
-import React from 'react';
-import {
+import React, { useState } from 'react';import {
   Box,
   Card,
   Typography,
@@ -20,12 +19,12 @@ import {
   HeaderIcon,
   HeaderSubText,
   HeaderTitle,
-  HeaderButton,
   Caption,
   SubCaption,
   GradientButton
 } from "../components";
 
+import ConsultationModal from '../components/ConsultationModal';
 import { usePatientHistory } from "../hooks";
 
 import {
@@ -47,7 +46,6 @@ const PatientHistory = () => {
     handleSearch,
     handleDoctorFilter,
     handleRefresh,
-    handleViewDetails,
   } = usePatientHistory();
 
   // Filter menu states
@@ -55,6 +53,9 @@ const PatientHistory = () => {
   const [dateAnchorEl, setDateAnchorEl] = React.useState(null);
   const isDoctorMenuOpen = Boolean(doctorAnchorEl);
   const isDateMenuOpen = Boolean(dateAnchorEl);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
 
   const handleDoctorMenuClick = (event) => {
     setDoctorAnchorEl(event.currentTarget);
@@ -86,6 +87,19 @@ const PatientHistory = () => {
     if (event.key === 'Enter') {
       console.log("Searching for:", searchQuery);
     }
+  };
+
+  const onViewDetails = (id) => {
+    const consultation = consultations.find(c => c.id === id);
+    if (consultation) {
+        setSelectedConsultation(consultation);
+        setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedConsultation(null);
   };
 
   const iconMap = {
@@ -398,7 +412,7 @@ const PatientHistory = () => {
                       <Button
                         variant="outlined"
                         startIcon={<Visibility sx={{ fontSize: 16 }} />}
-                        onClick={() => handleViewDetails(consultation.id)}
+                        onClick={() => onViewDetails(consultation.id)}
                         size="small"
                         sx={{
                           borderColor: '#e5e7eb',
@@ -437,6 +451,11 @@ const PatientHistory = () => {
           </Box>
         </Card>
       </Box>
+      <ConsultationModal 
+        open={isModalOpen} 
+        onClose={handleCloseModal} 
+        data={selectedConsultation} 
+      />
     </Box>
   );
 };

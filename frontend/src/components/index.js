@@ -1,3 +1,6 @@
+export { FeedbackModal } from './FeedbackModal';
+// export { ConsultationModal } from './ConsultationModal'
+
 export { Sidebar } from './Sidebar';
 export { default as Layout } from './Layout';
 
