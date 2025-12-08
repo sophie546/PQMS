@@ -1,17 +1,18 @@
 package clinicaflow.service;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import clinicaflow.dto.request.PatientQueueRequest;
 import clinicaflow.entity.PatientEntity;
 import clinicaflow.entity.Queue;
 import clinicaflow.repository.PatientRepository;
 import clinicaflow.repository.QueueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Service
 public class QueueService {
@@ -58,7 +59,6 @@ public class QueueService {
                 .map(lastQueue -> {
                     // Logic: Get last number "Q-005", parse 5, add 1 -> "Q-006"
                     String lastNumStr = lastQueue.getQueueNumber();
-                    // Assuming format is always "Q-XXX"
                     int lastNum = Integer.parseInt(lastNumStr.split("-")[1]);
                     return String.format("Q-%03d", lastNum + 1);
                 })
@@ -67,5 +67,50 @@ public class QueueService {
 
     public List<Queue> getAllQueues() {
         return queueRepository.findAll();
+    }
+
+    @Transactional
+    public Queue updateQueue(Long id, Queue queueData) throws Exception {
+        Queue queue = queueRepository.findById(id)
+            .orElseThrow(() -> new Exception("Queue item not found with id: " + id));
+
+        // Update queue fields
+        if (queueData.getStatus() != null) {
+            queue.setStatus(queueData.getStatus());
+        }
+        if (queueData.getAssignedDoctor() != null) {
+            queue.setAssignedDoctor(queueData.getAssignedDoctor());
+        }
+
+        // Update patient details if provided
+        if (queueData.getPatient() != null) {
+            PatientEntity patient = queue.getPatient();
+            if (queueData.getPatient().getFirstName() != null) {
+                patient.setFirstName(queueData.getPatient().getFirstName());
+            }
+            if (queueData.getPatient().getLastName() != null) {
+                patient.setLastName(queueData.getPatient().getLastName());
+            }
+            if (queueData.getPatient().getAge() > 0) {
+                patient.setAge(queueData.getPatient().getAge());
+            }
+            patientRepository.save(patient);
+        }
+
+        return queueRepository.save(queue);
+    }
+
+    @Transactional
+    public void deleteQueue(Long id) throws Exception {
+        queueRepository.findById(id)
+            .orElseThrow(() -> new Exception("Queue item not found with id: " + id));
+
+        // Delete the queue entry
+        queueRepository.deleteById(id);
+
+        // Optionally delete the patient as well (uncomment if needed)
+        // if (queue.getPatient() != null) {
+        //     patientRepository.delete(queue.getPatient());
+        // }
     }
 }

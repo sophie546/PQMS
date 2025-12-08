@@ -42,4 +42,26 @@ public class QueueController {
     public ResponseEntity<List<Queue>> getAllQueues() {
         return ResponseEntity.ok(queueService.getAllQueues());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateQueue(@PathVariable Long id, @RequestBody Queue queue) {
+        try {
+            Queue updatedQueue = queueService.updateQueue(id, queue);
+            return ResponseEntity.ok(updatedQueue);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating queue: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteQueue(@PathVariable Long id) {
+        try {
+            queueService.deleteQueue(id);
+            return ResponseEntity.ok(new HashMap<String, String>() {{
+                put("message", "Queue item deleted successfully");
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting queue: " + e.getMessage());
+        }
+    }
 }

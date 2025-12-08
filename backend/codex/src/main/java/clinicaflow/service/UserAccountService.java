@@ -1,19 +1,20 @@
 package clinicaflow.service;
 
-import clinicaflow.dto.request.LoginRequest;
-import clinicaflow.dto.request.RegisterRequest;
-import clinicaflow.dto.response.AuthResponse;
-import clinicaflow.entity.UserAccountEntity;
-import clinicaflow.entity.MedicalStaffEntity;
-import clinicaflow.repository.UserAccountRepository;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.HashMap;
-import java.util.Map;
+import clinicaflow.dto.request.LoginRequest;
+import clinicaflow.dto.request.RegisterRequest;
+import clinicaflow.dto.response.AuthResponse;
+import clinicaflow.entity.MedicalStaffEntity;
+import clinicaflow.entity.UserAccountEntity;
+import clinicaflow.repository.UserAccountRepository;
 
 @Service
 public class UserAccountService {
@@ -88,9 +89,6 @@ public class UserAccountService {
                 staffInfo.put("specialty", user.getMedicalStaff().getSpecialty());
                 userData.put("medicalStaff", staffInfo);
             }
-
-            // TODO: Add JWT token generation here if needed
-            // userData.put("token", generateToken(user));
 
             return AuthResponse.success("Login successful", userData);
 

@@ -19,7 +19,6 @@ import {
   Schedule,
   MedicalServices,
   CheckCircle,
-  MoreVert,
   Refresh,
   LocalHospital,
   FilterList
@@ -44,7 +43,7 @@ import {
 const getStatusColor = (status) => {
   switch (status) {
     case 'WAITING': return '#f59e0b';
-    case 'SERVING': return '#8b5cf6'; // Purple for consulting/serving
+    case 'CONSULTING': return '#8b5cf6'; // Purple for consulting
     case 'COMPLETED': return '#10b981';
     default: return '#6b7280';
   }
@@ -53,7 +52,7 @@ const getStatusColor = (status) => {
 const getStatusBgColor = (status) => {
   switch (status) {
     case 'WAITING': return '#fef3c7';
-    case 'SERVING': return '#ede9fe';
+    case 'CONSULTING': return '#ede9fe';
     case 'COMPLETED': return '#d1fae5';
     default: return '#f3f4f6';
   }
@@ -106,7 +105,11 @@ const QueueDashboard = () => {
   // Filter the list based on Search Term AND Status
   const filteredQueue = queueList.filter((item) => {
     const fullName = `${item.patient?.firstName} ${item.patient?.lastName}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase());
+    const doctorName = (item.assignedDoctor || '').toLowerCase();
+    const matchesSearch = 
+      fullName.includes(searchTerm.toLowerCase()) || 
+      doctorName.includes(searchTerm.toLowerCase()) ||
+      item.queueNumber?.toString().includes(searchTerm);
     const matchesStatus = filterStatus === 'all' || item.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
@@ -115,19 +118,19 @@ const QueueDashboard = () => {
   const stats = {
     total: queueList.length,
     waiting: queueList.filter(q => q.status === 'WAITING').length,
-    serving: queueList.filter(q => q.status === 'SERVING').length,
+    consulting: queueList.filter(q => q.status === 'CONSULTING').length,
     completed: queueList.filter(q => q.status === 'COMPLETED').length,
   };
 
   const patientStats = [
     { id: 1, title: 'Total Patients', value: stats.total, subText: 'Registered today', color: '#6366f1', icon: People },
     { id: 2, title: 'Waiting', value: stats.waiting, subText: 'In queue', color: '#f59e0b', icon: Schedule },
-    { id: 3, title: 'Consulting', value: stats.serving, subText: 'In progress', color: '#8b5cf6', icon: MedicalServices },
+    { id: 3, title: 'Consulting', value: stats.consulting, subText: 'In progress', color: '#8b5cf6', icon: MedicalServices },
     { id: 4, title: 'Completed', value: stats.completed, subText: 'Discharged', color: '#10b981', icon: CheckCircle },
   ];
 
-  // Logic for "Now Serving"
-  const currentServing = queueList.find(q => q.status === 'SERVING') || queueList.find(q => q.status === 'WAITING');
+  // Logic for "Now Consulting"
+  const currentServing = queueList.find(q => q.status === 'CONSULTING') || queueList.find(q => q.status === 'WAITING');
   const servingNumber = currentServing ? currentServing.queueNumber : '--';
 
 
@@ -202,9 +205,14 @@ const QueueDashboard = () => {
           {/* Card Header & Filter */}
           <Box sx={{ p: 3, borderBottom: "1px solid #e5e7eb" }}>
             <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937' }}>
-                Patient List
-              </Typography>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937', mb: 0.5 }}>
+                  Patient Queue
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                  {filteredQueue.length} patient{filteredQueue.length !== 1 ? 's' : ''}
+                </Typography>
+              </Box>
               <Button
                 startIcon={<FilterList />}
                 variant="outlined"
@@ -233,7 +241,7 @@ const QueueDashboard = () => {
           >
             <MenuItem onClick={() => handleStatusFilter('all')}>All Status</MenuItem>
             <MenuItem onClick={() => handleStatusFilter('WAITING')}>Waiting</MenuItem>
-            <MenuItem onClick={() => handleStatusFilter('SERVING')}>Consulting</MenuItem>
+            <MenuItem onClick={() => handleStatusFilter('CONSULTING')}>Consulting</MenuItem>
             <MenuItem onClick={() => handleStatusFilter('COMPLETED')}>Completed</MenuItem>
           </Menu>
 
@@ -381,10 +389,6 @@ const PatientRow = ({ queueItem, index }) => {
             {arrivalTime || "--:--"}
         </Typography>
         
-        {/* 7. Actions */}
-        <IconButton size="small" sx={{ color: '#9ca3af' }}>
-          <MoreVert sx={{ fontSize: 18 }} />
-        </IconButton>
       </Box>
     </Box>
   );
