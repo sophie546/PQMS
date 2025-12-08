@@ -89,7 +89,7 @@ const PatientHistory = () => {
   };
 
   const iconMap = {
-    history: <History sx={{ fontSize: 44, color: '#667eea' }} />,
+    history: <History sx={{ fontSize: 44, color: '#4B0082' }} />,
     schedule: <Schedule sx={{ fontSize: 44, color: '#ed6c02'}} />,
     people: <People sx={{ fontSize: 44, color: '#2e7d32'}} />
   };
@@ -100,7 +100,7 @@ const PatientHistory = () => {
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            <HeaderIcon sx={{ background: '#667eea' }}>
+            <HeaderIcon sx={{ background: '#4B0082' }}>
               <FaClipboardList size={20} color="white" />
             </HeaderIcon>
             <Box>
@@ -283,7 +283,7 @@ const PatientHistory = () => {
                   width: '280px',
                   transition: 'border-color 0.2s',
                   '&:focus-within': {
-                    borderColor: '#667eea',
+                    borderColor: '#4B0082',
                   }
                 }}>
                   <input
@@ -346,7 +346,7 @@ const PatientHistory = () => {
                       <Avatar sx={{ 
                         width: 40, 
                         height: 40, 
-                        background: '#667eea', 
+                        background: '#4B0082', 
                         fontWeight: 700, 
                         fontSize: '0.875rem' 
                       }}>
@@ -374,7 +374,7 @@ const PatientHistory = () => {
                     </Box>
                     
                     {/* Doctor */}
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 500, fontSize: '0.875rem' }}>
+                    <Typography variant="body2" sx={{ color: '#4B0082', fontWeight: 500, fontSize: '0.875rem' }}>
                       {consultation.doctor}
                     </Typography>
                     
@@ -412,9 +412,9 @@ const PatientHistory = () => {
                           minWidth: 'auto',
                           whiteSpace: 'nowrap',
                           '&:hover': {
-                            borderColor: '#667eea',
+                            borderColor: '#4B0082',
                             backgroundColor: 'rgba(102, 126, 234, 0.04)',
-                            color: '#667eea'
+                            color: '#4B0082'
                           },
                         }}
                       >

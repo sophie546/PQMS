@@ -47,4 +47,15 @@ export const patientService = {
       throw error;
     }
   },
+
+  getPatientById: async (id) => {
+    try {
+      // Assuming your backend endpoint is /patients/{id}
+      const response = await API.get(`/patients/${id}`); 
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching patient details:', error);
+      throw error;
+    }
+  },
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import {
   AppBar,
   Toolbar,
@@ -18,9 +18,10 @@ import {
 } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
 import { ArrowForward, Menu as MenuIcon, Close } from '@mui/icons-material';
-import { QueueModal } from "../components/QueueModal.jsx";
+
+// Imports from your project structure
+import { PatientFormModal } from "../components/PatientFormModal.jsx";
 import { GradientButton, OutlineButton, NavButton, NavSideButton } from "../components/ButtonComponents.jsx";
-import { Bold } from "lucide-react";
 
 // Animations
 const fadeInUp = keyframes`
@@ -58,15 +59,45 @@ const AnimatedBox = styled(Box)(({ delay = 0 }) => ({
 }));
 
 export default function LandingPage() {
+  const navigate = useNavigate(); // Hook for navigation
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [queueModalOpen, setQueueModalOpen] = useState(false);
+  const [patientFormModalOpen, setPatientFormModalOpen] = useState(false);
 
-  const handleOpenQueueModal = () => setQueueModalOpen(true);
-  const handleCloseQueueModal = () => setQueueModalOpen(false);
+  const handleOpenPatientFormModal = () => setPatientFormModalOpen(true);
+  const handleClosePatientFormModal = () => setPatientFormModalOpen(false);
 
-  const handleQueueSubmit = (formData) => {
-    console.log('Queue form submitted from landing page:', formData);
+  // Logic to handle joining the queue from the Landing Page
+  const handleQueueSubmit = async (formData) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/queue/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        handleClosePatientFormModal();
+        
+        // Wait a brief moment for animation then redirect
+        setTimeout(() => {
+          navigate('/QueueDashboard', { 
+            state: { 
+              patientData: formData,
+              queueNumber: data.queueNumber,
+              estimatedTime: data.estimatedTime
+            }
+          });
+        }, 500);
+      } else {
+        console.error("Failed to join queue");
+        // You could add an error snackbar here if you like
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
   };
 
   useEffect(() => {
@@ -739,15 +770,19 @@ export default function LandingPage() {
               display: "block",
               my: 5,
             }} 
-            onClick={handleOpenQueueModal}
+            onClick={handleOpenPatientFormModal}
           >
             Join Queue Now
           </GradientButton>
 
-          <QueueModal 
-            open={queueModalOpen}
-            onClose={handleCloseQueueModal}
-            onSubmit={handleQueueSubmit} 
+          {/* Double checked: Renamed to PatientFormModal */}
+          <PatientFormModal 
+            open={patientFormModalOpen}
+            onClose={handleClosePatientFormModal}
+            onSubmit={handleQueueSubmit}
+            title="Join Queue"
+            subtitle="Enter details to get a queue number."
+            submitLabel="Submit & Join Queue"
           />
           
           <Typography 

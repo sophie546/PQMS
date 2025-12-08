@@ -62,7 +62,7 @@ const SettingHeaderCompact = ({ currentView, showSidebar, toggleSidebar, setShow
         <button 
           onClick={() => setShowEditModal(true)}
           style={{
-            background: '#667eea',
+            background: '#4B0082',
             color: 'white',
             padding: '8px 16px',
             borderRadius: '8px',
@@ -98,7 +98,7 @@ const GeneralSettings = () => {
   };
 
   const menuItems = [
-    { id: 'profile', icon: <User size={20} />, text: 'Profile', color: '#667eea' },
+    { id: 'profile', icon: <User size={20} />, text: 'Profile', color: '#4B0082' },
     { id: 'security', icon: <Shield size={20} />, text: 'Security', color: '#48bb78' },
     { id: 'professional', icon: <Briefcase size={20} />, text: 'Professional', color: '#ed8936' }
   ];

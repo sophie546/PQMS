@@ -24,11 +24,7 @@ export const FormTextField = ({
       }}
     >
       {label}
-      {required && (
-        <Box component="span" sx={{ color: '#ef4444', fontSize: '0.75rem' }}>
-          *
-        </Box>
-      )}
+      {required}
     </Typography>
     <TextField
       fullWidth
@@ -38,7 +34,7 @@ export const FormTextField = ({
       helperText={helperText}
       sx={{
         '& .MuiOutlinedInput-root': {
-          borderRadius: 2,
+          borderRadius: 1,
           fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           backgroundColor: 'white',
           transition: 'all 0.2s ease',
@@ -50,18 +46,16 @@ export const FormTextField = ({
             borderColor: error ? '#ef4444' : '#d1d5db' 
           },
           '&.Mui-focused fieldset': { 
-            borderColor: error ? '#ef4444' : '#667eea',
+            borderColor: error ? '#ef4444' : '#4B0082',
             borderWidth: '1px'
           },
-          '&.Mui-focused': {
-            boxShadow: error ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(102, 126, 234, 0.1)',
-          }
         },
         '& .MuiInputBase-input': {
           fontSize: '0.875rem',
           fontWeight: 500,
           color: '#1f2937',
           padding: '10px 14px',
+          height: '20px',  
           '&::placeholder': {
             color: '#9ca3af',
             fontWeight: 400,
@@ -75,6 +69,7 @@ export const FormTextField = ({
           fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         }
       }}
+      required
       {...props}
     />
   </Box>
@@ -94,7 +89,7 @@ export const FormSelectField = ({
       fontWeight={600} 
       mb={1} 
       sx={{ 
-        fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+        fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
         color: '#1f2937',
         fontSize: '0.875rem',
         display: 'flex',
@@ -117,9 +112,10 @@ export const FormSelectField = ({
       helperText={helperText}
       sx={{
         '& .MuiOutlinedInput-root': {
-          borderRadius: 2,
+          borderRadius: 1,
           fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           backgroundColor: 'white',
+          height: '40px',  
           transition: 'all 0.2s ease',
           '& fieldset': { 
             borderColor: error ? '#ef4444' : '#e5e7eb',
@@ -129,12 +125,9 @@ export const FormSelectField = ({
             borderColor: error ? '#ef4444' : '#d1d5db' 
           },
           '&.Mui-focused fieldset': { 
-            borderColor: error ? '#ef4444' : '#667eea',
+            borderColor: error ? '#ef4444' : '#4B0082',
             borderWidth: '1px'
           },
-          '&.Mui-focused': {
-            boxShadow: error ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(102, 126, 234, 0.1)',
-          }
         },
         '& .MuiSelect-select': {
           fontSize: '0.875rem',
@@ -167,7 +160,7 @@ export const FormSelectField = ({
               backgroundColor: '#f3f4f6',
             },
             '&.Mui-selected': {
-              backgroundColor: '#667eea',
+              backgroundColor: '#4B0082',
               color: 'white',
               '&:hover': {
                 backgroundColor: '#5a67d8',
