@@ -1,7 +1,9 @@
 package clinicaflow.controller;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,5 +47,15 @@ public class PatientController {
     @DeleteMapping("/delete/{id}")
     public String deletePatient(@PathVariable int id) {
         return pservice.deletePatient(id);
+    }
+
+    @GetMapping("/{id}") 
+    public ResponseEntity<PatientEntity> getPatientById(@PathVariable int id) {
+        try {
+            PatientEntity patient = pservice.getPatientById(id);
+            return ResponseEntity.ok(patient);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

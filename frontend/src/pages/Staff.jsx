@@ -88,7 +88,7 @@ const Staff = () => {
   };
 
   const iconMap = {
-    people: <People sx={{ fontSize: 40, color: '#667eea' }} />,
+    people: <People sx={{ fontSize: 40, color: '#4B0082' }} />,
     medical: <MedicalServices sx={{ fontSize: 40, color: '#764ba2' }} />,
     check: <CheckCircle sx={{ fontSize: 40, color: '#2e7d32' }} />
   };
@@ -99,7 +99,7 @@ const Staff = () => {
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            <HeaderIcon sx={{ background: '#667eea' }}>
+            <HeaderIcon sx={{ background: '#4B0082' }}>
               <FaUserMd size={20} color="white" />
             </HeaderIcon>
             <Box>
@@ -324,7 +324,7 @@ const Staff = () => {
                       <Avatar sx={{ 
                         width: 40, 
                         height: 40, 
-                        background: '#667eea', 
+                        background: '#4B0082', 
                         fontWeight: 700, 
                         fontSize: '0.875rem' 
                       }}>

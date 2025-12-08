@@ -30,7 +30,6 @@ const colors = {
   hover: 'rgba(255, 255, 255, 0.08)'
 };
 
-// --- FIX 1: Pass isSelected to Curve and use Opacity ---
 const Curve = ({ top, isSelected }) => {
   return (
     <Box sx={{
@@ -40,9 +39,8 @@ const Curve = ({ top, isSelected }) => {
       width: CURVE_SIZE,
       height: CURVE_SIZE,
       zIndex: 10,
-      pointerEvents: 'none', // Ensures clicks go through
+      pointerEvents: 'none',
       
-      // Control visibility via Opacity + Transition
       opacity: isSelected ? 1 : 0,
       transition: 'opacity 0.2s ease-in-out', 
 
@@ -93,7 +91,7 @@ const SidebarHeader = ({ collapsed }) => (
       whiteSpace: 'nowrap'
     }}>
       <Typography variant="h6" sx={{ 
-        fontWeight: 700, color: colors.white, fontFamily: '"Arimo", "Poppins", "Inter", sans-serif', lineHeight: 1.2
+        fontWeight: 700, color: colors.white, fontFamily: '"Poppins", "Inter", sans-serif', lineHeight: 1.2
       }}>
         ClinicaFlow
       </Typography>
@@ -153,7 +151,6 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
             borderTopRightRadius: 4, borderBottomRightRadius: 4,
             background: colors.white,
             boxShadow: '0 0 10px rgba(255,255,255,0.5)',
-            // Animate the indicator line as well
             opacity: isSelected ? 1 : 0,
             transition: 'opacity 0.2s ease-in-out',
         }} />
@@ -181,15 +178,12 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
         borderTopRightRadius: 0, 
         borderBottomRightRadius: 0,
         
-        // --- FIX 2: Consolidate Transitions ---
-        // Combine specific property transitions with the collapse transform transition
         transition: 'background-color 0.2s ease-in-out, border-radius 0.2s ease-in-out, transform 0.3s ease, opacity 0.3s ease',
         
         opacity: collapsed ? 0 : 1,
         transform: collapsed ? 'translateX(-20px)' : 'translateX(0)',
       }}>
         
-        {/* --- FIX 3: Always render Curve, toggle opacity --- */}
         {!collapsed && <Curve top isSelected={isSelected} />}
         {!collapsed && <Curve bottom isSelected={isSelected} />}
 

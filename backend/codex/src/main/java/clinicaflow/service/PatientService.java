@@ -41,6 +41,11 @@ public class PatientService {
         patientRepo.deleteById(patientId);
         return "Patient removed! " + patientId;
     }
+
+    public PatientEntity getPatientById(int id) {
+        return patientRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Patient with id " + id + " does not exist"));
+    }
 }
 
 
