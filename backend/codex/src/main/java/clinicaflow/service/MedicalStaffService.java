@@ -25,9 +25,9 @@ public class MedicalStaffService {
     // CREATE 
     public MedicalStaffEntity addStaff(MedicalStaffEntity staff) {
       
-        if (staff.getUserAccount() != null && staff.getUserAccount().getAccountID() != null) {
+        if (staff.getUserAccount() != null && staff.getUserAccount().getAccountID() > 0) {           
             UserAccountEntity existingAccount = userAccountRepository.findById(staff.getUserAccount().getAccountID())
-                    .orElseThrow(() -> new RuntimeException("UserAccount not found with ID: " + staff.getUserAccount().getAccountID()));
+                .orElseThrow(() -> new RuntimeException("UserAccount not found with ID: " + staff.getUserAccount().getAccountID()));
             
             staff.setUserAccount(existingAccount);
          
@@ -41,17 +41,17 @@ public class MedicalStaffService {
     }
 
     // READ ONE
-    public Optional<MedicalStaffEntity> getStaffById(Long id) {
+    public Optional<MedicalStaffEntity> getStaffById(int id) {
         return repository.findById(id);
     }
 
     // READ by Account ID
-    public Optional<MedicalStaffEntity> getStaffByAccountId(Long accountId) {
+    public Optional<MedicalStaffEntity> getStaffByAccountId(int accountId) {
         return repository.findByUserAccountAccountID(accountId);
     }
 
     // UPDATE
-public MedicalStaffEntity updateStaff(Long id, MedicalStaffEntity updatedStaff) {
+public MedicalStaffEntity updateStaff(int id, MedicalStaffEntity updatedStaff) {
     return repository.findById(id).map(staff -> {
         staff.setName(updatedStaff.getName());
         staff.setRole(updatedStaff.getRole()); 
@@ -66,9 +66,9 @@ public MedicalStaffEntity updateStaff(Long id, MedicalStaffEntity updatedStaff) 
         }
 
        
-        if (updatedStaff.getUserAccount() != null && updatedStaff.getUserAccount().getAccountID() != null) {
+        if (updatedStaff.getUserAccount() != null && updatedStaff.getUserAccount().getAccountID() > 0) {            
             UserAccountEntity account = userAccountRepository.findById(updatedStaff.getUserAccount().getAccountID())
-                    .orElseThrow(() -> new RuntimeException("UserAccount not found"));
+                .orElseThrow(() -> new RuntimeException("UserAccount not found"));
             staff.setUserAccount(account);
         }
 
@@ -77,7 +77,7 @@ public MedicalStaffEntity updateStaff(Long id, MedicalStaffEntity updatedStaff) 
     }
     // DELETE
    @Transactional
-    public void deleteStaff(Long id) {
+    public void deleteStaff(int id) {
         try {
             MedicalStaffEntity staff = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medical staff not found"));

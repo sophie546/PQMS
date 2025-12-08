@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { mockMedicalStaff } from '../data/mockMedicalStaff.js';
 import { mockConsultations } from '../data/mockConsultations.js';
 import { patientService } from "../services/patientService";
+import { consultationService } from "../services/consultationService";
 
 const safeMedicalStaff = mockMedicalStaff || [];
 
@@ -120,7 +121,7 @@ export const useConsultation = () => {
     }
   };
 
-  const saveConsultation = () => {
+  const saveConsultation = async () => {
     setErrors({});
     const newErrors = {};
     
@@ -138,38 +139,45 @@ export const useConsultation = () => {
       return;
     }
 
-    const newConsultation = {
-      consultationId: `CONS-${mockConsultations.length + 1}`,
+    const consultationPayload = {
+      patientId: parseInt(patientInfo.patientId), 
       symptoms: consultationDetails.symptoms,
       diagnosis: consultationDetails.diagnosis,
-      medicinePrescribed: consultationDetails.prescription,
+      medicinePrescribed: consultationDetails.prescription, 
       remarks: consultationDetails.remarks,
-      consultationDate: new Date().toISOString().split('T')[0],
-      patientId: patientInfo.patientId || "PAT-TEMP", 
-      staffId: patientInfo.doctor
+      consultationDate: new Date().toISOString().split('T')[0]
     };
 
-    console.log("Saving consultation:", newConsultation);
-    setTodayConsultations(prev => prev + 1);
-    
-    setPatientInfo({
-      patientId: '',
-      name: '',
-      age: '',
-      gender: '',
-      doctor: '',
-      date: null
-    });
-    
-    setConsultationDetails({
-      symptoms: '',
-      diagnosis: '',
-      prescription: '',
-      remarks: ''
-    });
-
-    setErrors({});
-    alert("Consultation saved successfully!");
+    try {
+      console.log("Sending to Backend:", consultationPayload);
+      
+      // 4. Call the backend
+      await consultationService.addConsultation(consultationPayload);
+      
+      // Success!
+      alert("Consultation saved successfully to Database!");
+      
+      // Reset Form
+      setPatientInfo({
+        patientId: '',
+        name: '',
+        age: '',
+        gender: '',
+        doctor: '',
+        date: null
+      });
+      setConsultationDetails({
+        symptoms: '',
+        diagnosis: '',
+        prescription: '',
+        remarks: ''
+      });
+      setErrors({});
+      
+    } catch (error) {
+      alert("Failed to save consultation. Check console for details.");
+      console.error(error);
+    }
   };
 
   const getDoctorLabel = () => {

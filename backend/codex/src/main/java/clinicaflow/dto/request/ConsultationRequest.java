@@ -1,52 +1,31 @@
-package clinicaflow.entity;
+package clinicaflow.dto.request;
 
 import java.time.LocalDate;
-import jakarta.persistence.*;
 
-@Entity
-@Table(name="consultation")
-public class ConsultationEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int consultationID;
+public class ConsultationRequest {
+    private int patientId;
+    // private int staffId;
+    
     private String symptoms;
     private String diagnosis;
     private String medicinePrescribed;
     private String remarks;
     private LocalDate consultationDate;
 
-
-    @ManyToOne 
-    @JoinColumn(name = "patient_id", nullable = false)
-    private PatientEntity patient;
-
-    public PatientEntity getPatient() {
-        return patient;
-    }
-
-    public void setPatient(PatientEntity patient) {
-        this.patient = patient;
-    }
-
-    // @ManyToOne 
-    // @JoinColumn(name = "staff_id", nullable = false) 
-    // private MedicalStaffEntity doctor;
-
-    // public MedicalStaffEntity getDoctor() {
-    //     return doctor;
+    // public int getStaffId() {
+    //     return staffId;
     // }
 
-    // public void setDoctor(MedicalStaffEntity doctor) {
-    //     this.doctor = doctor;
+    // public void setStaffId(int staffId) {
+    //     this.staffId = staffId;
     // }
 
-    //setters and getters
-    public int getConsultationID() {
-        return consultationID;
+    public int getPatientId() {
+        return patientId;
     }
 
-    public void setConsultationID(int consultationID) {
-        this.consultationID = consultationID;
+    public void setPatientId(int patientId) {
+        this.patientId = patientId;
     }
 
     public String getSymptoms() {
