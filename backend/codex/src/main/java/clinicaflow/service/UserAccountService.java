@@ -29,9 +29,11 @@ public class UserAccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // ========== AUTHENTICATION METHODS ==========
-    
-    // Register a new user (for your React frontend)
+   
+    public Optional<UserAccountEntity> findByUsername(String username) {
+        return userAccountRepository.findByUsername(username);
+    }
+
     public AuthResponse registerUser(RegisterRequest registerRequest) {
         try {
             // Check if username/email already exists
