@@ -27,7 +27,9 @@ import {
   Refresh,
   Edit,
   Delete,
+  Add,
 } from '@mui/icons-material';
+import { FaUserMd } from 'react-icons/fa';
 
 import {
   StatCard,
@@ -39,11 +41,27 @@ import {
   HeaderTitle,
   HeaderSubText,
   Caption,
-  SubCaption
+  SubCaption,
+  HeaderIcon,
+  GradientButton
 } from '../components';
 
 import { queueService } from '../services/queueService';
 import { mockMedicalStaff } from '../data/mockMedicalStaff';
+
+// Theme colors matching Staff component
+const themeColors = {
+  primary: '#4B0082',        // Main purple from Staff header
+  primaryLight: '#764ba2',   // Lighter purple from Staff icon
+  secondary: '#2e7d32',      // Green from CheckCircle in Staff
+  white: '#FFFFFF',
+  background: '#f9fafb',
+  border: '#e5e7eb',
+  textPrimary: '#1f2937',
+  textSecondary: '#6b7280',
+  textLight: '#9ca3af',
+  hoverBg: '#f9fafb',
+};
 
 const PatientQueue = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
@@ -206,29 +224,57 @@ const PatientQueue = () => {
   };
 
   const patientStats = [
-    { id: 1, title: 'Total Patients', value: stats.total, subText: 'Registered today', color: '#6366f1', icon: People },
-    { id: 2, title: 'Waiting', value: stats.waiting, subText: 'In queue', color: '#f59e0b', icon: Schedule },
-    { id: 3, title: 'Consulting', value: stats.consulting, subText: 'In progress', color: '#8b5cf6', icon: MedicalServices },
-    { id: 4, title: 'Completed', value: stats.completed, subText: 'Today', color: '#10b981', icon: CheckCircle },
+    { 
+      id: 1, 
+      title: 'Total Patients', 
+      value: stats.total, 
+      subText: 'Registered today', 
+      color: themeColors.primary, 
+      icon: People 
+    },
+    { 
+      id: 2, 
+      title: 'Waiting', 
+      value: stats.waiting, 
+      subText: 'In queue', 
+      color: '#f59e0b', 
+      icon: Schedule 
+    },
+    { 
+      id: 3, 
+      title: 'Consulting', 
+      value: stats.consulting, 
+      subText: 'In progress', 
+      color: themeColors.primaryLight, 
+      icon: MedicalServices 
+    },
+    { 
+      id: 4, 
+      title: 'Completed', 
+      value: stats.completed, 
+      subText: 'Today', 
+      color: themeColors.secondary, 
+      icon: CheckCircle 
+    },
   ];
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'WAITING': return '#f59e0b';
-    case 'CONSULTING': return '#8b5cf6'; // Purple for consulting
-    case 'COMPLETED': return '#10b981';
-    default: return '#6b7280';
-  }
-};
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'WAITING': return '#f59e0b';
+      case 'CONSULTING': return themeColors.primary; // Purple for consulting
+      case 'COMPLETED': return themeColors.secondary;
+      default: return themeColors.textSecondary;
+    }
+  };
 
-const getStatusBgColor = (status) => {
-  switch (status) {
-    case 'WAITING': return '#fef3c7';
-    case 'CONSULTING': return '#ede9fe';
-    case 'COMPLETED': return '#d1fae5';
-    default: return '#f3f4f6';
-  }
-};
+  const getStatusBgColor = (status) => {
+    switch (status) {
+      case 'WAITING': return '#fef3c7';
+      case 'CONSULTING': return '#f3f0ff'; // Light purple
+      case 'COMPLETED': return '#d1fae5';
+      default: return themeColors.hoverBg;
+    }
+  };
 
   const handleFilterClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
@@ -243,26 +289,30 @@ const getStatusBgColor = (status) => {
     handleFilterClose();
   };
 
+  const iconMap = {
+    people: <People sx={{ fontSize: 40, color: themeColors.primary }} />,
+    schedule: <Schedule sx={{ fontSize: 40, color: '#f59e0b' }} />,
+    medical: <MedicalServices sx={{ fontSize: 40, color: themeColors.primaryLight }} />,
+    check: <CheckCircle sx={{ fontSize: 40, color: themeColors.secondary }} />
+  };
+
   return (
-    <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
-      {/* Header */}
+    <Box sx={{ minHeight: '100vh', background: themeColors.background }}>
+      {/* Header - Matching Staff component styling */}
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            {/* Logo Icon with Blue Background */}
-            <LocalHospital sx={{ 
-              fontSize: 40, 
-              color: 'white',
-              background: '#667eea', 
-              borderRadius: '8px',
-              p: 1.3,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }} />
+            <HeaderIcon sx={{ background: themeColors.primary }}>
+              <LocalHospital sx={{ fontSize: 20, color: 'white' }} />
+            </HeaderIcon>
             <Box>
               <HeaderTitle>Patient Queue</HeaderTitle>
-              <HeaderSubText>Real-time patient monitoring</HeaderSubText>
+              <HeaderSubText>
+                Real-time patient monitoring
+              </HeaderSubText>
             </Box>
           </Box>
+          
           <Box display="flex" gap={2}>
             <input
               type="text"
@@ -270,7 +320,7 @@ const getStatusBgColor = (status) => {
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
               style={{
-                border: '1px solid #e5e7eb',
+                border: `1px solid ${themeColors.border}`,
                 outline: 'none',
                 padding: '8px 16px',
                 fontSize: '0.875rem',
@@ -279,64 +329,77 @@ const getStatusBgColor = (status) => {
                 backgroundColor: 'white',
               }}
             />
-            <Button 
-              variant="contained" 
-              startIcon={<Refresh />} 
+            <GradientButton 
+              startIcon={<Refresh fontSize="small" />}
+              sx={{ fontSize: 14 }} 
               onClick={fetchQueueData}
-              sx={{ background: '#667eea', '&:hover': { background: '#5a67d8' }, textTransform: 'none' }}
             >
               Refresh
-            </Button>
+            </GradientButton>
           </Box>
         </Box>
       </HeaderPaper>
 
       <Box sx={{ maxWidth: '1400px', mx: 'auto', p: 4 }}>
-        {/* Stats Grid */}
+        {/* Stats Grid - Matching Staff component styling */}
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 4 }}>
-          {patientStats.map((stat) => {
-            const IconComponent = stat.icon;
-            return (
-              <StatCard key={stat.id}>
-                <CardContent sx={{ p: 3 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems= 'center'>
-                    <Box>
-                      <StatTitle>{stat.title}</StatTitle>
-                      <StatNumber>{stat.value}</StatNumber>
-                      <SubText>{stat.subText}</SubText>
-                    </Box>
-                    <StatIcon sx={{ background: 'transparent' }}>
-                      <IconComponent sx={{ fontSize: 38, color: stat.color }} />
-                    </StatIcon>
+          {patientStats.map((stat) => (
+            <StatCard key={stat.id}>
+              <CardContent sx={{ p: 3 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Box>
+                    <StatTitle>{stat.title}</StatTitle>
+                    <StatNumber>{stat.value}</StatNumber>
+                    <SubText>{stat.subText}</SubText>
                   </Box>
-                </CardContent>
-              </StatCard>
-            );
-          })}
+                  <StatIcon sx={{ background: 'transparent' }}>
+                    {stat.icon === People && iconMap.people}
+                    {stat.icon === Schedule && iconMap.schedule}
+                    {stat.icon === MedicalServices && iconMap.medical}
+                    {stat.icon === CheckCircle && iconMap.check}
+                  </StatIcon>
+                </Box>
+              </CardContent>
+            </StatCard>
+          ))}
         </Box>
        
         {/* Patient Queue Card */}
-        <Card sx={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', border: '1px solid #e5e7eb' }}>
-          <Box sx={{ p: 3, borderBottom: "1px solid #e5e7eb" }}>
+        <Card sx={{ 
+          borderRadius: 2, 
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)', 
+          border: `1px solid ${themeColors.border}`,
+          background: 'white'
+        }}>
+          {/* Card Header - Matching Staff styling */}
+          <Box sx={{ p: 3, borderBottom: `1px solid ${themeColors.border}` }}>
             <Box display="flex" justifyContent="space-between" alignItems="center">
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f2937', mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: themeColors.primary, mb: 0.5 }}>
                   Patient Queue
                 </Typography>
+                <Typography variant="body2" sx={{ color: themeColors.textSecondary, fontSize: '0.875rem' }}>
+                  {displayPatients.length} patients in queue
+                </Typography>
               </Box>
+              
+              {/* Filter Button - Matching Staff styling */}
               <Button
-                startIcon={<FilterList />}
+                startIcon={<FilterList sx={{ fontSize: 16 }} />}
                 variant="outlined"
                 size="small"
                 onClick={handleFilterClick}
                 sx={{
                   textTransform: 'none',
                   borderRadius: 2,
-                  borderColor: '#e5e7eb',
-                  color: '#374151',
+                  borderColor: themeColors.border,
+                  color: themeColors.textPrimary,
                   fontWeight: 600,
                   fontSize: '0.875rem',
-                  '&:hover': { borderColor: '#d1d5db', background: '#f9fafb' }
+                  '&:hover': { 
+                    borderColor: '#d1d5db', 
+                    background: themeColors.hoverBg 
+                  }
                 }}
               >
                 {filterStatus !== 'all' ? filterStatus : 'All Status'}
@@ -353,8 +416,9 @@ const getStatusBgColor = (status) => {
               sx: {
                 mt: 1,
                 minWidth: 150,
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                border: '1px solid #e5e7eb',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                border: `1px solid ${themeColors.border}`,
+                borderRadius: 2,
               }
             }}
           >
@@ -365,7 +429,7 @@ const getStatusBgColor = (status) => {
           </Menu>
 
           {/* Patient Table Header */}
-          <Box sx={{ px: 3, py: 2, background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <Box sx={{ px: 3, py: 2, background: themeColors.hoverBg, borderBottom: `1px solid ${themeColors.border}` }}>
             <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 1.5fr 1fr 60px" gap={2} alignItems="center">
               <SubCaption>#</SubCaption>
               <SubCaption>PATIENT</SubCaption>
@@ -386,28 +450,42 @@ const getStatusBgColor = (status) => {
                   sx={{ 
                     px: 3, 
                     py: 2.5, 
-                    borderBottom: index < displayPatients.length - 1 ? '1px solid #f3f4f6' : 'none',
-                    '&:hover': { background: '#f9fafb' },
+                    borderBottom: index < displayPatients.length - 1 ? `1px solid ${themeColors.hoverBg}` : 'none',
+                    '&:hover': { background: themeColors.hoverBg },
                     transition: 'background 0.2s'
                   }}
                 >
                   <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 1.5fr 1fr 60px" gap={2} alignItems="center">
-                    <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 600 }}>{patient.queueNumber}</Typography>
+                    {/* Queue Number */}
+                    <Typography variant="body2" sx={{ color: themeColors.textSecondary, fontWeight: 600 }}>
+                      {patient.queueNumber}
+                    </Typography>
                     
+                    {/* Patient Info */}
                     <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar sx={{ width: 40, height: 40, background: '#667eea', fontWeight: 700, fontSize: '0.875rem' }}>
+                      <Avatar sx={{ 
+                        width: 40, 
+                        height: 40, 
+                        background: themeColors.primary, 
+                        fontWeight: 700, 
+                        fontSize: '0.875rem' 
+                      }}>
                         {patient.initials}
                       </Avatar>
                       <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#1f2937', mb: 0.25 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: themeColors.textPrimary, mb: 0.25 }}>
                           {patient.name}
                         </Typography>
                         <Caption>ID: {patient.patientId}</Caption>
                       </Box>
                     </Box>
                     
-                    <Typography variant="body2" sx={{ color: '#374151' }}>{patient.age} yrs</Typography>
+                    {/* Age */}
+                    <Typography variant="body2" sx={{ color: themeColors.textPrimary }}>
+                      {patient.age} yrs
+                    </Typography>
                     
+                    {/* Status Chip - Matching Staff styling */}
                     <Box>
                       <Chip 
                         label={patient.status} 
@@ -423,13 +501,21 @@ const getStatusBgColor = (status) => {
                       />
                     </Box>
                     
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 500 }}>{patient.assignedTo}</Typography>
-                    <Typography variant="body2" sx={{ color: '#6b7280' }}>{patient.arrivalTime}</Typography>
+                    {/* Assigned Doctor */}
+                    <Typography variant="body2" sx={{ color: themeColors.primary, fontWeight: 500 }}>
+                      {patient.assignedTo}
+                    </Typography>
                     
+                    {/* Arrival Time */}
+                    <Typography variant="body2" sx={{ color: themeColors.textSecondary }}>
+                      {patient.arrivalTime}
+                    </Typography>
+                    
+                    {/* Actions Menu */}
                     <Box sx={{ position: 'relative' }}>
                       <IconButton 
                         size="small" 
-                        sx={{ color: '#9ca3af' }}
+                        sx={{ color: themeColors.textLight }}
                         onClick={(e) => handleMenuOpen(e, patient)}
                       >
                         <MoreVert sx={{ fontSize: 18 }} />
@@ -442,8 +528,9 @@ const getStatusBgColor = (status) => {
                         onClose={handleMenuClose}
                         PaperProps={{
                           sx: {
-                            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                            border: '1px solid #e5e7eb',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                            border: `1px solid ${themeColors.border}`,
+                            borderRadius: 2,
                           }
                         }}
                       >
@@ -462,8 +549,11 @@ const getStatusBgColor = (status) => {
               ))
             ) : (
               <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Typography variant="body1" sx={{ color: '#6b7280' }}>
+                <Typography variant="body1" sx={{ color: themeColors.textSecondary, mb: 1 }}>
                   No patients found
+                </Typography>
+                <Typography variant="body2" sx={{ color: themeColors.textLight }}>
+                  Try adjusting your search or filters
                 </Typography>
               </Box>
             )}
@@ -473,7 +563,14 @@ const getStatusBgColor = (status) => {
 
       {/* Edit Patient Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 700, color: '#1f2937' }}>Edit Patient Details</DialogTitle>
+        <DialogTitle sx={{ 
+          fontWeight: 700, 
+          color: themeColors.primary, 
+          borderBottom: `1px solid ${themeColors.border}`,
+          fontSize: '1.125rem'
+        }}>
+          Edit Patient Details
+        </DialogTitle>
         <DialogContent sx={{ pt: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
@@ -530,32 +627,51 @@ const getStatusBgColor = (status) => {
             </TextField>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+        <DialogActions sx={{ p: 2, borderTop: `1px solid ${themeColors.border}` }}>
           <Button 
-            onClick={handleSaveEdit} 
-            variant="contained" 
-            sx={{ background: '#667eea', '&:hover': { background: '#5a67d8' } }}
+            onClick={() => setEditDialogOpen(false)}
+            sx={{ color: themeColors.textSecondary }}
           >
-            Save Changes
+            Cancel
           </Button>
+          <GradientButton onClick={handleSaveEdit}>
+            Save Changes
+          </GradientButton>
         </DialogActions>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirmOpen} onClose={handleCancelDelete}>
-        <DialogTitle sx={{ fontWeight: 700, color: '#1f2937' }}>Delete Patient</DialogTitle>
-        <DialogContent>
-          <Typography sx={{ color: '#6b7280' }}>
+      <Dialog open={deleteConfirmOpen} onClose={handleCancelDelete} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ 
+          fontWeight: 700, 
+          color: themeColors.primary, 
+          borderBottom: `1px solid ${themeColors.border}`,
+          fontSize: '1.125rem'
+        }}>
+          Delete Patient
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography sx={{ color: themeColors.textSecondary }}>
             Are you sure you want to delete <strong>{selectedPatient?.name}</strong>? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleCancelDelete}>Cancel</Button>
+        <DialogActions sx={{ p: 2, borderTop: `1px solid ${themeColors.border}` }}>
+          <Button 
+            onClick={handleCancelDelete}
+            sx={{ color: themeColors.textSecondary }}
+          >
+            Cancel
+          </Button>
           <Button 
             onClick={handleConfirmDelete} 
             variant="contained" 
-            sx={{ background: '#ef4444', '&:hover': { background: '#dc2626' } }}
+            sx={{ 
+              background: '#ef4444', 
+              color: 'white',
+              '&:hover': { background: '#dc2626' },
+              textTransform: 'none',
+              borderRadius: '8px'
+            }}
           >
             Delete
           </Button>
