@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CircularProgress } from '@mui/material';
 import {
   Box,
@@ -10,7 +10,7 @@ import {
   Avatar,
   Button,
   Menu,
-  MenuItem,
+  MenuItem
 } from "../lib";
 import {
   StatCard,
@@ -23,19 +23,18 @@ import {
   HeaderSubText,
   HeaderTitle,
   Caption,
-  SubCaption, 
-  GradientButton
+  SubCaption
 } from "../components";
 import { useStaff } from "../hooks";
 import {
-  Add,
   People,
   MedicalServices,
   CheckCircle,
   FaUserMd,
   FilterList,
-  MoreVert
+  MoreVert,
 } from "../lib";
+import { FeedbackModal } from "../components/FeedbackModal";
 
 const Staff = () => {
   const {
@@ -53,15 +52,29 @@ const Staff = () => {
     handleSearch,
     handleRoleFilter,
     handleStatusFilter,
-    handleAddStaff,
-    handleStaffMenuClick,
     clearFilters,
-    refreshStaffData
+    refreshStaffData,
+    // Remove deleteStaff since we're removing delete functionality
   } = useStaff();
 
   // Filter menu states
-  const [roleAnchorEl, setRoleAnchorEl] = React.useState(null);
-  const [statusAnchorEl, setStatusAnchorEl] = React.useState(null);
+  const [roleAnchorEl, setRoleAnchorEl] = useState(null);
+  const [statusAnchorEl, setStatusAnchorEl] = useState(null);
+  
+  // Remove staff action menu states since we're removing delete
+  
+  // Feedback Modal State (keep for any other feedback)
+  const [feedbackModal, setFeedbackModal] = useState({
+    open: false,
+    type: 'success', 
+    title: '',
+    message: '',
+    onConfirm: null,
+    confirmText: 'Confirm'
+  });
+
+  // Remove addModalOpen state
+
   const isRoleMenuOpen = Boolean(roleAnchorEl);
   const isStatusMenuOpen = Boolean(statusAnchorEl);
 
@@ -73,6 +86,8 @@ const Staff = () => {
     setStatusAnchorEl(event.currentTarget);
   };
 
+  // Remove handleStaffMenuClick function
+
   const handleRoleMenuClose = () => {
     setRoleAnchorEl(null);
   };
@@ -80,6 +95,8 @@ const Staff = () => {
   const handleStatusMenuClose = () => {
     setStatusAnchorEl(null);
   };
+
+  // Remove handleActionMenuClose function
 
   const handleRoleSelect = (role) => {
     handleRoleFilter(role);
@@ -91,6 +108,14 @@ const Staff = () => {
     handleStatusMenuClose();
   };
 
+  // Remove handleAddClick function
+
+  // Remove handleStaffSubmit function
+
+  // Remove handleConfirmDelete function
+
+  // Remove performDelete function
+
   const iconMap = {
     people: <People sx={{ fontSize: 40, color: '#4B0082' }} />,
     medical: <MedicalServices sx={{ fontSize: 40, color: '#764ba2' }} />,
@@ -99,7 +124,7 @@ const Staff = () => {
 
   return (
     <Box sx={{ minHeight: '100vh', background: '#f9fafb' }}>
-      {/* Header */}
+      {/* Header - Removed Add Staff button */}
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
@@ -109,18 +134,12 @@ const Staff = () => {
             <Box>
               <HeaderTitle>Staff Management</HeaderTitle>
               <HeaderSubText>
-                Manage doctors and nurses
+                View doctors and nurses
               </HeaderSubText>
             </Box>
           </Box>
 
-          <GradientButton 
-            startIcon={<Add fontSize="small" />}
-            sx={{ fontSize: 14 }} 
-            onClick={handleAddStaff}
-          >
-            Add Staff
-          </GradientButton>
+          {/* Removed Add Staff button */}
         </Box>
       </HeaderPaper>
 
@@ -202,7 +221,7 @@ const Staff = () => {
                       Staff Directory
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                      {staffMembers.length} staff members found
+                      {staffMembers.length} staff members
                     </Typography>
                   </Box>
                   
@@ -327,10 +346,6 @@ const Staff = () => {
                         width: '280px',
                         backgroundColor: 'white',
                         transition: 'border 0.2s',
-                        '&:focus': {
-                          borderColor: '#4B0082',
-                          boxShadow: '0 0 0 3px rgba(75, 0, 130, 0.1)'
-                        }
                       }}
                     />
 
@@ -357,9 +372,9 @@ const Staff = () => {
                 </Box>
               </Box>
 
-              {/* Table Header */}
+              {/* Table Header - Remove Actions column */}
               <Box sx={{ px: 3, py: 2, background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 2fr 1.5fr 1.5fr 60px" gap={2} alignItems="center">
+                <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 2fr 1.5fr 1.5fr" gap={2} alignItems="center">
                   <SubCaption>#</SubCaption>
                   <SubCaption>STAFF</SubCaption>
                   <SubCaption>ROLE</SubCaption>
@@ -367,11 +382,10 @@ const Staff = () => {
                   <SubCaption>EMAIL</SubCaption>
                   <SubCaption>CONTACT</SubCaption>
                   <SubCaption>AVAILABILITY</SubCaption>
-                  <Box />
                 </Box>
               </Box>
 
-              {/* Staff List - Table Format */}
+              {/* Staff List - Table Format - Remove Actions column */}
               <Box>
                 {staffMembers.length > 0 ? (
                   staffMembers.map((staff, index) => (
@@ -385,7 +399,7 @@ const Staff = () => {
                         transition: 'background 0.2s'
                       }}
                     >
-                      <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 2fr 1.5fr 1.5fr 60px" gap={2} alignItems="center">
+                      <Box display="grid" gridTemplateColumns="60px 2fr 1fr 1.5fr 2fr 1.5fr 1.5fr" gap={2} alignItems="center">
                         {/* Number */}
                         <Typography variant="body2" sx={{ color: '#6b7280', fontWeight: 600 }}>
                           {index + 1}
@@ -457,16 +471,7 @@ const Staff = () => {
                           />
                         </Box>
                         
-                        {/* Actions */}
-                        <Box display="flex" justifyContent="flex-end">
-                          <IconButton 
-                            size="small" 
-                            sx={{ color: '#9ca3af' }}
-                            onClick={() => handleStaffMenuClick(staff.id)}
-                          >
-                            <MoreVert sx={{ fontSize: 18 }} />
-                          </IconButton>
-                        </Box>
+                        {/* Removed Actions column (three dots button) */}
                       </Box>
                     </Box>
                   ))
@@ -480,7 +485,7 @@ const Staff = () => {
                     <Typography variant="body2" sx={{ color: '#9ca3af', mb: 3 }}>
                       {searchQuery || roleFilter !== 'all' || statusFilter !== 'all' 
                         ? 'Try adjusting your search or filters' 
-                        : 'Add staff members to get started'}
+                        : 'No staff data available'}
                     </Typography>
                     {hasActiveFilters && (
                       <Button
@@ -503,6 +508,20 @@ const Staff = () => {
           </>
         )}
       </Box>
+
+      {/* Removed Action Menu for Staff */}
+
+      {/* Removed AddStaffModal */}
+
+      <FeedbackModal 
+        open={feedbackModal.open}
+        onClose={() => setFeedbackModal(prev => ({ ...prev, open: false }))}
+        onConfirm={feedbackModal.onConfirm}
+        title={feedbackModal.title}
+        message={feedbackModal.message}
+        type={feedbackModal.type}
+        confirmText={feedbackModal.confirmText}
+      />
     </Box>
   );
 };

@@ -1,5 +1,9 @@
 // src/lib/index.js - COMPLETE version for all pages
 
+// FIRST: Import all icons and components at the TOP
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
 // MUI Core (for Patient.jsx + Consultations.jsx + PatientHistory.jsx)
 export { 
   Box,       
@@ -63,3 +67,7 @@ export { default as dayjs } from 'dayjs';
 // MUI Components
 export { Menu } from "@mui/material";
 export { Clear } from "@mui/icons-material";
+
+// Export Delete and Edit icons
+export { default as Delete } from '@mui/icons-material/Delete';
+export { default as Edit } from '@mui/icons-material/Edit';
