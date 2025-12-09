@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Shield, Briefcase, Home, Settings, Edit2 } from 'lucide-react';
-import { Box, Button, Typography, Container } from '@mui/material';
+import { Box, Button, Typography, Container, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import {
   HeaderPaper,
@@ -18,21 +18,153 @@ const GeneralSettings = () => {
   const [availability, setAvailability] = useState('available');
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDays, setSelectedDays] = useState(['M', 'W', 'F']);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const userData = {
-    name: 'Dr. Maria Cruz',
-    title: 'Senior Physician',
-    age: '45 years',
-    gender: 'Female',
-    email: 'maria.cruz@clinic.com',
-    phone: '+1 (555) 123-4567',
-    specialization: 'Dermatology',
-    department: 'Physician',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria'
+  // Fetch user data from API
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        
+        // Get auth token from localStorage
+        const token = localStorage.getItem('authToken') || 
+                      sessionStorage.getItem('authToken');
+        
+        console.log('🔍 Fetching current user data...');
+        console.log('Token exists:', !!token);
+        
+        if (!token) {
+          console.log('No auth token found, user might not be logged in');
+          setUserData(getEmptyUserData());
+          return;
+        }
+        
+        // Fetch from API
+        const response = await fetch('http://localhost:8080/api/useraccount/current', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+            // Note: Spring Security automatically handles authentication from session
+            // If using JWT, add: 'Authorization': `Bearer ${token}`
+          },
+          credentials: 'include' // Include cookies for session-based auth
+        });
+        
+        console.log('API Response status:', response.status);
+        
+        if (response.ok) {
+          const apiData = await response.json();
+          console.log('✅ API user data received:', apiData);
+          
+          // Map API data to our format
+          const mappedData = mapApiData(apiData);
+          console.log('📝 Mapped user data:', mappedData);
+          setUserData(mappedData);
+          
+          // Cache the data in localStorage
+          localStorage.setItem('currentUser', JSON.stringify(mappedData));
+        } else if (response.status === 401) {
+          console.log('User not authenticated, redirecting to login');
+          // Redirect to login or show message
+          setUserData(getEmptyUserData());
+        } else {
+          console.error('API fetch failed with status:', response.status);
+          // Try to use cached data
+          const cachedData = localStorage.getItem('currentUser');
+          if (cachedData) {
+            console.log('Using cached data');
+            setUserData(JSON.parse(cachedData));
+          } else {
+            setUserData(getEmptyUserData());
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error fetching user data:', error);
+        // Try to use cached data
+        const cachedData = localStorage.getItem('currentUser');
+        if (cachedData) {
+          console.log('Using cached data after error');
+          setUserData(JSON.parse(cachedData));
+        } else {
+          setUserData(getEmptyUserData());
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Map API response to user data format
+  const mapApiData = (apiData) => {
+    console.log('Mapping API data:', apiData);
+    
+    // Extract name from username (email) if name is not provided
+    let name = apiData.name;
+    if (!name || name.trim() === '') {
+      const username = apiData.username || '';
+      const emailParts = username.split('@')[0];
+      if (emailParts) {
+        // Convert "sophie.aloria" to "Sophie Aloria"
+        name = emailParts.split('.')
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ');
+      }
+    }
+    
+    return {
+      name: name || 'N/A',
+      role: apiData.medicalRole || apiData.role || 'N/A',
+      specialization: apiData.specialty || 'N/A',
+      department: apiData.department || 'Medical Department',
+      contactNo: apiData.contactNo || 'N/A',
+      gender: apiData.gender || 'N/A',
+      age: apiData.age || 'N/A',
+      email: apiData.username || 'N/A', // username is email in your DB
+      accountID: apiData.accountID || 'N/A',
+      staffID: apiData.staffID || 'N/A',
+      username: apiData.username || 'N/A',
+      title: apiData.medicalRole || apiData.role || 'Medical Professional',
+      phone: apiData.contactNo || 'N/A'
+    };
+  };
+
+  // Get empty user data with N/A values
+  const getEmptyUserData = () => {
+    return {
+      name: 'N/A',
+      role: 'N/A',
+      specialization: 'N/A',
+      department: 'N/A',
+      contactNo: 'N/A',
+      gender: 'N/A',
+      age: 'N/A',
+      email: 'N/A',
+      accountID: 'N/A',
+      staffID: 'N/A',
+      username: 'N/A',
+      title: 'N/A',
+      phone: 'N/A'
+    };
+  };
+
+  // Generate avatar initials from name
+  const getAvatarInitials = (name) => {
+    if (!name || name === 'N/A') return '?';
+    
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
   };
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
   const toggleDay = (day) => {
     setSelectedDays(prev =>
       prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
@@ -65,7 +197,14 @@ const GeneralSettings = () => {
   ];
 
   const handleHomeClick = () => {
-    navigate('/PatientQueue'); // Navigate to PatientQueue page
+    navigate('/PatientQueue');
+  };
+
+  // Handle profile update
+  const handleProfileUpdate = (updatedData) => {
+    const newData = { ...userData, ...updatedData };
+    setUserData(newData);
+    localStorage.setItem('currentUser', JSON.stringify(newData));
   };
 
   return (
@@ -75,7 +214,6 @@ const GeneralSettings = () => {
         <Container maxWidth="1400px">
           <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
             <Box display="flex" alignItems="center" gap={3}>
-              {/* Fixed: Purple background with white icon */}
               <HeaderIcon sx={{ 
                 background: '#4B0082',
                 display: 'flex',
@@ -90,7 +228,7 @@ const GeneralSettings = () => {
               </Box>
             </Box>
 
-            {/* Top Navigation - Always visible */}
+            {/* Top Navigation */}
             <Box display="flex" alignItems="center" gap={3}>
               <Box display="flex" gap={1}>
                 {navigationItems.map((item) => (
@@ -126,7 +264,7 @@ const GeneralSettings = () => {
         </Container>
       </HeaderPaper>
 
-      {/* Page Title - Consistent spacing */}
+      {/* Page Title */}
       <Container maxWidth="1400px" sx={{ py: 4 }}>
         <Box sx={{ px: 3, mb: 4 }}>
           <Typography variant="h6" sx={{ 
@@ -145,9 +283,25 @@ const GeneralSettings = () => {
           </Typography>
         </Box>
 
-        {/* Main Content - Consistent card styling */}
+        {/* Main Content */}
         <Box sx={{ px: 3 }}>
-          {currentView === 'profile' && (
+          {loading ? (
+            <Box sx={{ 
+              background: 'white', 
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              border: '1px solid #e5e7eb',
+              p: 4,
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2
+            }}>
+              <CircularProgress size={40} />
+              <Typography>Loading user data from database...</Typography>
+            </Box>
+          ) : currentView === 'profile' ? (
             <Box sx={{ 
               background: 'white', 
               borderRadius: '12px',
@@ -155,7 +309,7 @@ const GeneralSettings = () => {
               border: '1px solid #e5e7eb',
               overflow: 'hidden'
             }}>
-              {/* Profile Header with User Info and Edit Button */}
+              {/* Profile Header */}
               <Box sx={{ 
                 p: 3, 
                 borderBottom: '1px solid #e5e7eb',
@@ -167,16 +321,39 @@ const GeneralSettings = () => {
                 gap: 2
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ width: 60, height: 60 }}>
+                  {/* Avatar - NO PURPLE BACKGROUND */}
+                  <Box sx={{ 
+                    width: 60, 
+                    height: 60,
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    background: 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid #e5e7eb'
+                  }}>
+                    {/* Use DiceBear with user's name as seed */}
                     <img 
-                      src={userData.avatar} 
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userData?.name || 'user')}`} 
                       alt="Profile" 
                       style={{ 
                         width: '100%', 
-                        height: '100%', 
-                        borderRadius: '12px',
+                        height: '100%',
                         objectFit: 'cover'
                       }} 
+                      onError={(e) => {
+                        // Fallback if image fails to load
+                        e.target.style.display = 'none';
+                        e.target.parentElement.style.background = '#f3f4f6';
+                        e.target.parentElement.style.display = 'flex';
+                        e.target.parentElement.style.alignItems = 'center';
+                        e.target.parentElement.style.justifyContent = 'center';
+                        e.target.parentElement.innerHTML = 
+                          '<div style="color: #6b7280; font-weight: bold; font-size: 18px;">' + 
+                          getAvatarInitials(userData?.name) + 
+                          '</div>';
+                      }}
                     />
                   </Box>
                   <Box>
@@ -186,14 +363,23 @@ const GeneralSettings = () => {
                       fontSize: '1.25rem',
                       lineHeight: 1.2
                     }}>
-                      {userData.name}
+                      {userData?.name || 'N/A'}
                     </Typography>
                     <Typography variant="body2" sx={{ 
                       color: '#6b7280',
                       fontSize: '0.875rem',
                       mb: 0.5
                     }}>
-                      {userData.title}
+                      {userData?.role || 'N/A'}
+                      {userData?.accountID && userData.accountID !== 'N/A' && (
+                        <span style={{ 
+                          marginLeft: '12px', 
+                          fontSize: '12px', 
+                          color: '#9ca3af' 
+                        }}>
+                          Account ID: {userData.accountID}
+                        </span>
+                      )}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Box sx={{
@@ -217,7 +403,7 @@ const GeneralSettings = () => {
                   </Box>
                 </Box>
                 
-                {/* Edit Profile Button positioned here - Updated to theme color */}
+                {/* Edit Profile Button */}
                 <Button
                   onClick={() => setShowEditModal(true)}
                   startIcon={<Edit2 size={16} />}
@@ -255,16 +441,20 @@ const GeneralSettings = () => {
                 }}>
                   PROFILE INFORMATION
                 </Typography>
-                <SettingsProfileView 
-                  userData={userData} 
-                  availability={availability} 
-                  setAvailability={setAvailability} 
-                />
+                {userData ? (
+                  <SettingsProfileView 
+                    userData={userData} 
+                    availability={availability} 
+                    setAvailability={setAvailability} 
+                  />
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography>No profile information available</Typography>
+                  </Box>
+                )}
               </Box>
             </Box>
-          )}
-
-          {currentView === 'security' && (
+          ) : currentView === 'security' ? (
             <Box sx={{ 
               background: 'white', 
               borderRadius: '12px',
@@ -287,9 +477,7 @@ const GeneralSettings = () => {
               </Box>
               <SettingsPasswordView />
             </Box>
-          )}
-          
-          {currentView === 'professional' && (
+          ) : currentView === 'professional' ? (
             <Box sx={{ 
               background: 'white', 
               borderRadius: '12px',
@@ -311,21 +499,22 @@ const GeneralSettings = () => {
                 </Typography>
               </Box>
               <SettingsProfessionalView
-                userData={userData}
+                userData={userData || getEmptyUserData()}
                 days={days}
                 selectedDays={selectedDays}
                 toggleDay={toggleDay}
               />
             </Box>
-          )}
+          ) : null}
         </Box>
       </Container>
 
       {/* Edit Profile Modal */}
-      {showEditModal && (
+      {showEditModal && userData && (
         <SettingsEditModal
           userData={userData}
           close={() => setShowEditModal(false)}
+          onSave={handleProfileUpdate}
         />
       )}
     </Box>
