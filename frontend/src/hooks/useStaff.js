@@ -1,5 +1,5 @@
 // hooks/useStaff.js
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import staffService from '../services/staffService';
 
 export const useStaff = () => {
@@ -24,7 +24,7 @@ export const useStaff = () => {
       } catch (err) {
         console.error('❌ Error fetching staff data:', err);
         setError('Failed to load staff data. Please try again.');
-        setStaffMembers([]); // Set empty array on error
+        setStaffMembers([]);
       } finally {
         setLoading(false);
       }
@@ -68,7 +68,7 @@ export const useStaff = () => {
       const matchesRole = roleFilter === 'all' || 
                          staffRole.toLowerCase() === roleFilter.toLowerCase();
       
-      // Status filter (using default 'Available' for now)
+      // Status filter
       const staffStatus = staff.status || 'Available';
       const matchesStatus = statusFilter === 'all' || 
                            staffStatus.toLowerCase() === statusFilter.toLowerCase();
@@ -175,24 +175,6 @@ export const useStaff = () => {
     setStatusFilter(status);
   };
 
-  const handleAddStaff = async (staffData) => {
-    try {
-      console.log("➕ Adding new staff:", staffData);
-      const newStaff = await staffService.addStaff(staffData);
-      // Refresh the staff list
-      const updatedStaff = await staffService.getAllStaff();
-      setStaffMembers(updatedStaff);
-      return newStaff;
-    } catch (err) {
-      console.error("❌ Error adding staff:", err);
-      throw err;
-    }
-  };
-
-  const handleStaffMenuClick = (staffId) => {
-    console.log("Menu clicked for staff:", staffId);
-  };
-
   const clearFilters = () => {
     setSearchQuery('');
     setRoleFilter('all');
@@ -230,11 +212,9 @@ export const useStaff = () => {
     handleSearch,
     handleRoleFilter,
     handleStatusFilter,
-    handleAddStaff,
-    handleStaffMenuClick,
     clearFilters,
     refreshStaffData,
-    updateStaff: staffService.updateStaff,
-    deleteStaff: staffService.deleteStaff
+    // Removed: handleAddStaff, handleStaffMenuClick, deleteStaff, updateStaff
+    // Removed: autocompleteResults, autocompleteLoading, isCheckingExisting, searchExistingStaff, checkStaffExistsByEmail
   };
 };
