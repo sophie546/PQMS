@@ -1,24 +1,46 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, LogOut, Globe } from 'lucide-react';
 
 const SettingsPasswordView = () => {
   return (
     <div style={{
       background: 'white',
-      borderRadius: '16px',
+      borderRadius: '12px',
       padding: '32px',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-      border: '1px solid #e0e0e0'
+      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+      border: '1px solid #e5e7eb'
     }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px' }}>
         {/* Change Password */}
         <div>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <Lock size={48} color="#667eea" style={{ marginBottom: '16px' }} />
-            <h3 style={{ fontWeight: 700, fontSize: '24px', marginBottom: '8px', color: '#333' }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: '#F3F0FF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px auto'
+            }}>
+              <Lock size={24} color="#4B0082" />
+            </div>
+            <h3 style={{ 
+              fontWeight: 700, 
+              fontSize: '24px', 
+              marginBottom: '8px', 
+              color: '#1f2937',
+              fontFamily: '"Poppins", "Inter", sans-serif'
+            }}>
               Change Password
             </h3>
-            <p style={{ color: '#666', fontSize: '14px' }}>
+            <p style={{ 
+              color: '#6b7280', 
+              fontSize: '14px',
+              fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+              lineHeight: '1.5'
+            }}>
               To change your password, please<br />fill all fields below:
             </p>
           </div>
@@ -29,8 +51,17 @@ const SettingsPasswordView = () => {
               style={{
                 padding: '12px 16px',
                 borderRadius: '8px',
-                border: '1px solid #ddd',
-                fontSize: '14px'
+                border: '1px solid #e5e7eb',
+                fontSize: '14px',
+                fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+                color: '#1f2937',
+                background: '#f9fafb',
+                transition: 'border-color 0.2s ease',
+                '&:focus': {
+                  outline: 'none',
+                  borderColor: '#4B0082',
+                  boxShadow: '0 0 0 3px rgba(75,0,130,0.1)'
+                }
               }}
             />
             <input
@@ -39,8 +70,12 @@ const SettingsPasswordView = () => {
               style={{
                 padding: '12px 16px',
                 borderRadius: '8px',
-                border: '1px solid #ddd',
-                fontSize: '14px'
+                border: '1px solid #e5e7eb',
+                fontSize: '14px',
+                fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+                color: '#1f2937',
+                background: '#f9fafb',
+                transition: 'border-color 0.2s ease'
               }}
             />
             <input
@@ -49,8 +84,12 @@ const SettingsPasswordView = () => {
               style={{
                 padding: '12px 16px',
                 borderRadius: '8px',
-                border: '1px solid #ddd',
-                fontSize: '14px'
+                border: '1px solid #e5e7eb',
+                fontSize: '14px',
+                fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+                color: '#1f2937',
+                background: '#f9fafb',
+                transition: 'border-color 0.2s ease'
               }}
             />
           </div>
@@ -58,36 +97,86 @@ const SettingsPasswordView = () => {
             width: '100%',
             padding: '12px',
             borderRadius: '8px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: '#4B0082',
             color: 'white',
             border: 'none',
             cursor: 'pointer',
             fontWeight: 600,
-            marginTop: '24px'
+            fontSize: '14px',
+            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+            marginTop: '24px',
+            boxShadow: '0 3px 10px rgba(75,0,130,0.25)',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              background: '#3A0066',
+              boxShadow: '0 5px 15px rgba(75,0,130,0.3)',
+              transform: 'translateY(-1px)'
+            }
           }}>
             Change Password
           </button>
         </div>
 
-        {/* Your Devices */}
+        {/* Session Management */}
         <div>
-          <h3 style={{ fontWeight: 700, fontSize: '24px', marginBottom: '8px', color: '#333' }}>
-            Your Devices
-          </h3>
-          <p style={{ color: '#666', marginBottom: '24px' }}>
-            Your devices link to this account.
-          </p>
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: '#F3F0FF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px auto'
+            }}>
+              <Globe size={24} color="#4B0082" />
+            </div>
+            <h3 style={{ 
+              fontWeight: 700, 
+              fontSize: '24px', 
+              marginBottom: '8px', 
+              color: '#1f2937',
+              fontFamily: '"Poppins", "Inter", sans-serif'
+            }}>
+              Session Management
+            </h3>
+            <p style={{ 
+              color: '#6b7280', 
+              marginBottom: '24px',
+              fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+              fontSize: '14px',
+              lineHeight: '1.5'
+            }}>
+              Manage your active sessions and<br />account security
+            </p>
+          </div>
           <button style={{
             width: '100%',
             padding: '12px',
             borderRadius: '8px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: '#4B0082',
             color: 'white',
             border: 'none',
             cursor: 'pointer',
-            fontWeight: 600
+            fontWeight: 600,
+            fontSize: '14px',
+            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+            boxShadow: '0 3px 10px rgba(75,0,130,0.25)',
+            transition: 'all 0.2s ease',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            '&:hover': {
+              background: '#3A0066',
+              boxShadow: '0 5px 15px rgba(75,0,130,0.3)',
+              transform: 'translateY(-1px)'
+            }
           }}>
-            Log Out From All Devices
+            <LogOut size={16} />
+            Log Out All Sessions
           </button>
         </div>
       </div>
