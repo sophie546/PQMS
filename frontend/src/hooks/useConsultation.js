@@ -144,6 +144,23 @@ export const useConsultation = () => {
        return { success: false, message: "Invalid Patient ID." };
     }
 
+    // Format the selected date from patientInfo.date (Dayjs object)
+    let selectedDate = new Date().toISOString().split('T')[0]; // Default to today
+    
+    if (patientInfo.date) {
+      // If patientInfo.date is a Dayjs object, convert it to string
+      if (patientInfo.date.$L !== undefined) {
+        // It's a Dayjs object
+        selectedDate = patientInfo.date.format('YYYY-MM-DD');
+      } else if (patientInfo.date instanceof Date) {
+        // It's a JavaScript Date object
+        selectedDate = patientInfo.date.toISOString().split('T')[0];
+      } else {
+        // It's already a string
+        selectedDate = patientInfo.date;
+      }
+    }
+
     const consultationPayload = {
       patientId: pId,
       // staffId: parseInt(patientInfo.doctor), 
@@ -151,7 +168,7 @@ export const useConsultation = () => {
       diagnosis: consultationDetails.diagnosis,
       medicinePrescribed: consultationDetails.prescription, 
       remarks: consultationDetails.remarks,
-      consultationDate: new Date().toISOString().split('T')[0]
+      consultationDate: selectedDate
     };
 
     try {

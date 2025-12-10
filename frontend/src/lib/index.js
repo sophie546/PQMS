@@ -45,6 +45,8 @@ export { default as Person } from '@mui/icons-material/Person';
 export { default as FilterList } from '@mui/icons-material/FilterList';
 export { default as Refresh } from '@mui/icons-material/Refresh';
 export { default as History } from '@mui/icons-material/History';
+export { default as Edit } from '@mui/icons-material/Edit';
+export { default as Delete } from '@mui/icons-material/Delete';
 
 // MUI Icons (for PatientQueue.jsx)
 export { default as MedicalServices } from '@mui/icons-material/MedicalServices';

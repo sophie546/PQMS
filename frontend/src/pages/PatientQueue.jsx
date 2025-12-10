@@ -15,6 +15,9 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Modal,
+  Fade,
+  Backdrop,
 } from '@mui/material';
 import {
   FilterList,
@@ -43,11 +46,12 @@ import {
   Caption,
   SubCaption,
   HeaderIcon,
-  GradientButton
+  GradientButton,
+  FeedbackModal
 } from '../components';
 
 import { queueService } from '../services/queueService';
-import { mockMedicalStaff } from '../data/mockMedicalStaff';
+import { staffService } from '../services/staffService';
 
 // Theme colors matching Staff component
 const themeColors = {
@@ -74,9 +78,27 @@ const PatientQueue = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({});
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [staffList, setStaffList] = useState([]);
+  const [feedback, setFeedback] = useState({
+    open: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   
   const isFilterOpen = Boolean(filterAnchorEl);
   const isMenuOpen = Boolean(menuAnchorEl);
+
+  // Fetch staff data from backend
+  const fetchStaffData = async () => {
+    try {
+      const data = await staffService.getAllStaff();
+      setStaffList(data);
+      console.log('✅ Staff data loaded:', data);
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+    }
+  };
 
   // Fetch queue data from backend
   const fetchQueueData = async () => {
@@ -86,7 +108,12 @@ const PatientQueue = () => {
       setQueueList(data);
     } catch (error) {
       console.error("Error fetching queue:", error);
-      alert('Failed to fetch queue data');
+      setFeedback({
+        open: true,
+        type: 'error',
+        title: 'Failed to Load Queue',
+        message: 'Unable to fetch queue data. Please try again.'
+      });
     } finally {
       setLoading(false);
     }
@@ -94,6 +121,7 @@ const PatientQueue = () => {
 
   useEffect(() => {
     fetchQueueData();
+    fetchStaffData();
     const interval = setInterval(fetchQueueData, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -159,7 +187,12 @@ const PatientQueue = () => {
 
   const handleSaveEdit = async () => {
     if (!editFormData.firstName || !editFormData.lastName) {
-      alert('Please fill in all required fields');
+      setFeedback({
+        open: true,
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please fill in all required fields'
+      });
       return;
     }
 
@@ -179,14 +212,25 @@ const PatientQueue = () => {
 
       await queueService.updateQueueItem(selectedPatient?.id, updatePayload);
       
-      alert('Patient details updated successfully!');
+      setFeedback({
+        open: true,
+        type: 'success',
+        title: 'Patient Updated',
+        message: 'Patient details have been successfully updated.'
+      });
+      
       fetchQueueData();
       setEditDialogOpen(false);
       setSelectedPatient(null);
       setEditFormData({});
     } catch (error) {
       console.error('Error updating patient:', error);
-      alert('Error updating patient: ' + error.message);
+      setFeedback({
+        open: true,
+        type: 'error',
+        title: 'Update Failed',
+        message: error.message || 'Error updating patient details. Please try again.'
+      });
     }
   };
 
@@ -200,13 +244,24 @@ const PatientQueue = () => {
     try {
       await queueService.deleteQueueItem(selectedPatient?.id);
 
-      alert('Patient deleted successfully!');
+      setFeedback({
+        open: true,
+        type: 'success',
+        title: 'Patient Deleted',
+        message: 'Patient has been successfully removed from the queue.'
+      });
+
       fetchQueueData();
       setDeleteConfirmOpen(false);
       setSelectedPatient(null);
     } catch (error) {
       console.error('Error deleting patient:', error);
-      alert('Error deleting patient: ' + error.message);
+      setFeedback({
+        open: true,
+        type: 'error',
+        title: 'Delete Failed',
+        message: error.message || 'Error deleting patient. Please try again.'
+      });
     }
   };
 
@@ -561,84 +616,237 @@ const PatientQueue = () => {
         </Card>
       </Box>
 
-      {/* Edit Patient Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ 
-          fontWeight: 700, 
-          color: themeColors.primary, 
-          borderBottom: `1px solid ${themeColors.border}`,
-          fontSize: '1.125rem'
-        }}>
-          Edit Patient Details
-        </DialogTitle>
-        <DialogContent sx={{ pt: 3 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              label="First Name"
-              value={editFormData.firstName || ''}
-              onChange={(e) => handleEditFormChange('firstName', e.target.value)}
-              fullWidth
-              size="small"
-            />
-            <TextField
-              label="Last Name"
-              value={editFormData.lastName || ''}
-              onChange={(e) => handleEditFormChange('lastName', e.target.value)}
-              fullWidth
-              size="small"
-            />
-            <TextField
-              label="Age"
-              type="number"
-              value={editFormData.age || ''}
-              onChange={(e) => handleEditFormChange('age', e.target.value)}
-              fullWidth
-              size="small"
-            />
-            <TextField
-              label="Status"
-              select
-              value={editFormData.status || ''}
-              onChange={(e) => handleEditFormChange('status', e.target.value)}
-              fullWidth
-              size="small"
-            >
-              <MenuItem value="WAITING">Waiting</MenuItem>
-              <MenuItem value="CONSULTING">Consulting</MenuItem>
-              <MenuItem value="COMPLETED">Completed</MenuItem>
-            </TextField>
-            <TextField
-              select
-              label="Assigned Doctor"
-              value={editFormData.assignedDoctor || ''}
-              onChange={(e) => handleEditFormChange('assignedDoctor', e.target.value)}
-              fullWidth
-              size="small"
-            >
-              <MenuItem value="">Unassigned</MenuItem>
-              {mockMedicalStaff
-                .filter(staff => staff.role === 'Doctor')
-                .map(doctor => (
-                  <MenuItem key={doctor.id} value={doctor.name}>
-                    {doctor.name}
-                  </MenuItem>
-                ))
-              }
-            </TextField>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, borderTop: `1px solid ${themeColors.border}` }}>
-          <Button 
-            onClick={() => setEditDialogOpen(false)}
-            sx={{ color: themeColors.textSecondary }}
+      {/* Edit Patient Modal - Modern Design */}
+      <Modal
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{ backdrop: { timeout: 500 } }}
+      >
+        <Fade in={editDialogOpen}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 550,
+              maxWidth: '90vw',
+              bgcolor: 'background.paper',
+              borderRadius: 2,
+              boxShadow: 24,
+              p: 4,
+              outline: 'none',
+            }}
           >
-            Cancel
-          </Button>
-          <GradientButton onClick={handleSaveEdit}>
-            Save Changes
-          </GradientButton>
-        </DialogActions>
-      </Dialog>
+            <Typography 
+              component="h2" 
+              fontWeight="bold" 
+              mb={1}
+              sx={{ 
+                fontSize: '22px',
+                fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                color: themeColors.primary,
+              }}
+            >
+              Edit Patient Details
+            </Typography>
+            
+            <Typography 
+              variant="body2" 
+              mb={3}
+              sx={{ 
+                fontFamily: '"Arimo", "Poppins", "Inter", "SF Pro Text", "Segoe UI", sans-serif',
+                color: '#666',
+              }}
+            >
+              Update patient information and queue status
+            </Typography>
+
+            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {/* First Name & Last Name Row */}
+              <Box sx={{ display: 'flex', gap: 2, width: '100%', flexDirection: { xs: 'column', sm: 'row' } }}>
+                <Box sx={{ flex: 1 }}>
+                  <TextField
+                    fullWidth
+                    variant="standard"
+                    label="First Name"
+                    value={editFormData.firstName || ''}
+                    onChange={(e) => handleEditFormChange('firstName', e.target.value)}
+                    required
+                    sx={{
+                      '& .MuiInput-underline': {
+                        '&:before': { borderBottomColor: '#4B0082' },
+                        '&:hover:before': { borderBottomColor: '#4B0082' },
+                        '&:after': { borderBottomColor: '#4B0082' },
+                      },
+                      '& .MuiInputBase-input': {
+                        fontSize: 14,
+                        padding: '10px 0', 
+                        fontWeight: 600,
+                        height: '20px',             
+                        boxSizing: 'content-box',
+                      },
+                      mb: 2,
+                    }}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <TextField
+                    fullWidth
+                    variant="standard"
+                    label="Last Name"
+                    value={editFormData.lastName || ''}
+                    onChange={(e) => handleEditFormChange('lastName', e.target.value)}
+                    required
+                    sx={{
+                      '& .MuiInput-underline': {
+                        '&:before': { borderBottomColor: '#4B0082' },
+                        '&:hover:before': { borderBottomColor: '#4B0082' },
+                        '&:after': { borderBottomColor: '#4B0082' },
+                      },
+                      '& .MuiInputBase-input': {
+                        fontSize: 14,
+                        padding: '10px 0', 
+                        fontWeight: 600,
+                        height: '20px',             
+                        boxSizing: 'content-box',
+                      },
+                      mb: 2,
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Age, Status & Doctor Row */}
+              <Box sx={{ display: 'flex', gap: 2, width: '100%', flexDirection: { xs: 'column', sm: 'row' }, mt: 2, alignItems: 'flex-start' }}>
+                <Box sx={{ flex: 1 }}>
+                  <TextField
+                    fullWidth
+                    variant="standard"
+                    label="Age"
+                    type="number"
+                    value={editFormData.age || ''}
+                    onChange={(e) => handleEditFormChange('age', e.target.value)}
+                    required
+                    sx={{
+                      '& .MuiInput-underline': {
+                        '&:before': { borderBottomColor: '#4B0082' },
+                        '&:hover:before': { borderBottomColor: '#4B0082' },
+                        '&:after': { borderBottomColor: '#4B0082' },
+                      },
+                      '& .MuiInputBase-input': {
+                        fontSize: 14,
+                        padding: '10px 0', 
+                        fontWeight: 600,
+                        height: '20px',             
+                        boxSizing: 'content-box',
+                      },
+                      mb: 2,
+                    }}
+                  />
+                </Box>
+
+                <Box sx={{ flex: 1 }}>
+                  <TextField
+                    fullWidth
+                    variant="standard"
+                    select
+                    label="Status"
+                    value={editFormData.status || ''}
+                    onChange={(e) => handleEditFormChange('status', e.target.value)}
+                    required
+                    sx={{
+                      '& .MuiInput-underline': {
+                        '&:before': { borderBottomColor: '#4B0082' },
+                        '&:hover:before': { borderBottomColor: '#4B0082' },
+                        '&:after': { borderBottomColor: '#4B0082' },
+                      },
+                      '& .MuiInputBase-input': {
+                        fontSize: 14,
+                        padding: '10px 0', 
+                        fontWeight: 600,
+                        height: '20px',             
+                        boxSizing: 'content-box',
+                      },
+                      mb: 2,
+                    }}
+                  >
+                    <MenuItem value="WAITING">Waiting</MenuItem>
+                    <MenuItem value="CONSULTING">Consulting</MenuItem>
+                    <MenuItem value="COMPLETED">Completed</MenuItem>
+                  </TextField>
+                </Box>
+
+                <Box sx={{ flex: 1 }}>
+                  <TextField
+                    fullWidth
+                    variant="standard"
+                    select
+                    label="Assigned Doctor"
+                    value={editFormData.assignedDoctor || ''}
+                    onChange={(e) => handleEditFormChange('assignedDoctor', e.target.value)}
+                    sx={{
+                      '& .MuiInput-underline': {
+                        '&:before': { borderBottomColor: '#4B0082' },
+                        '&:hover:before': { borderBottomColor: '#4B0082' },
+                        '&:after': { borderBottomColor: '#4B0082' },
+                      },
+                      '& .MuiInputBase-input': {
+                        fontSize: 14,
+                        padding: '10px 0', 
+                        fontWeight: 600,
+                        height: '20px',             
+                        boxSizing: 'content-box',
+                      },
+                      mb: 2,
+                    }}
+                  >
+                    <MenuItem value="">Unassigned</MenuItem>
+                    {staffList
+                      .filter(staff => staff.role && staff.role.toLowerCase().includes('doctor'))
+                      .map(doctor => (
+                        <MenuItem key={doctor.id} value={doctor.name}>
+                          {doctor.name}
+                        </MenuItem>
+                      ))
+                    }
+                  </TextField>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Action Buttons */}
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 4 }}>
+              <GradientButton 
+                onClick={() => setEditDialogOpen(false)}
+                sx={{ 
+                  padding: "5px 24px !important",
+                  minWidth: "auto",
+                  fontSize: "14px",
+                  background: 'transparent',
+                  color: '#666',
+                  border: '1px solid #ccc',
+                  '&:hover': { background: '#f5f5f5' }
+                }}
+              >
+                Cancel
+              </GradientButton>
+              <GradientButton 
+                onClick={handleSaveEdit}
+                sx={{ 
+                  padding: "5px 24px !important",
+                  minWidth: "auto",
+                  fontSize: "14px"
+                }}
+              >
+                Save Changes
+              </GradientButton>
+            </Box>
+          </Box>
+        </Fade>
+      </Modal>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteConfirmOpen} onClose={handleCancelDelete} maxWidth="xs" fullWidth>
@@ -677,6 +885,15 @@ const PatientQueue = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        open={feedback.open}
+        onClose={() => setFeedback(prev => ({ ...prev, open: false }))}
+        type={feedback.type}
+        title={feedback.title}
+        message={feedback.message}
+      />
     </Box>
   );
 };
