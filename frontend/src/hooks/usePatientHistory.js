@@ -36,7 +36,7 @@ export const usePatientHistory = () => {
           
           date: displayDate || item.consultationDate,
           time: "10:00 AM",
-          doctor: "Unknown", // Update this if your backend sends doctor info, e.g., item.doctorName
+          doctor: item.medicalStaff ? item.medicalStaff.name : "Unknown",         
           diagnosis: item.diagnosis,
           symptoms: item.symptoms || "",      
           prescription: item.medicinePrescribed || "",

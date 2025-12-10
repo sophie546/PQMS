@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class ConsultationRequest {
     private int patientId;
-    // private int staffId;
+    private int staffId;
     
     private String symptoms;
     private String diagnosis;
@@ -12,13 +12,13 @@ public class ConsultationRequest {
     private String remarks;
     private LocalDate consultationDate;
 
-    // public int getStaffId() {
-    //     return staffId;
-    // }
+    public int getStaffId() {
+        return staffId;
+    }
 
-    // public void setStaffId(int staffId) {
-    //     this.staffId = staffId;
-    // }
+    public void setStaffId(int staffId) {
+        this.staffId = staffId;
+    }
 
     public int getPatientId() {
         return patientId;

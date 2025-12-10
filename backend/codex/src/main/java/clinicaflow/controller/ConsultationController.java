@@ -38,7 +38,7 @@ public class ConsultationController {
         
 
         // Pass the ID and the entity to the service
-        return cservice.saveConsultation(request.getPatientId(), consultationEntity);    
+        return cservice.saveConsultation(request.getPatientId(), request.getStaffId(), consultationEntity);
     }
     
     

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import { Link, useNavigate } from "react-router-dom"; 
 import {
   AppBar,
   Toolbar,
@@ -19,7 +19,6 @@ import {
 import { styled, keyframes } from "@mui/system";
 import { ArrowForward, Menu as MenuIcon, Close } from '@mui/icons-material';
 
-// Imports from your project structure
 import { PatientFormModal } from "../components/PatientFormModal.jsx";
 import { GradientButton, OutlineButton, NavButton, NavSideButton } from "../components/ButtonComponents.jsx";
 
