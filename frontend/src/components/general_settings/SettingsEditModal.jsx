@@ -10,7 +10,8 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
     phone: userData.phone || '',
     email: userData.email || '',
     role: userData.role || '',
-    specialization: userData.specialization || ''
+    specialization: userData.specialization || '',
+    department: userData.department || 'General Medicine'  // Add department
   });
   
   const [accountID, setAccountID] = useState(null);
@@ -112,7 +113,6 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       }
       
       // Method 5: Last resort - check if we're Sophie (accountID: 1)
-      // This is a fallback since we know Sophie's account ID is 1
       if (userData.email === 'sophie.aloria@gmail.com' || 
           userData.name === 'Sophie Aloria' || 
           userData.name === 'sophie.aloria') {
@@ -210,108 +210,111 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
     }
   };
 
-const updateMedicalStaffRecord = async (accountId) => {
-  const updateData = {
-    name: formData.name,
-    role: formData.role.toLowerCase(),
-    contactNo: formData.phone,
-    specialty: formData.specialization,
-    age: formData.age ? parseInt(formData.age) : null,  // Add this
-    gender: formData.gender || null,                     // Add this
-    userAccount: { 
-      accountID: accountId
-    }
-  };
-  
-  console.log('Updating existing medical staff:', updateData);
-  
-  const response = await fetch(`http://localhost:8080/api/medicalstaff/update/${userData.staffID}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(updateData)
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to update medical staff: ${response.status} - ${errorText}`);
-  }
-  
-  return await response.json();
-};
-
-const createMedicalStaffRecord = async (accountId) => {
-  const newStaffData = {
-    name: formData.name,
-    role: formData.role.toLowerCase(),
-    contactNo: formData.phone,
-    specialty: formData.specialization,
-    age: formData.age ? parseInt(formData.age) : null,  // Add this
-    gender: formData.gender || null,                     // Add this
-    userAccount: { 
-      accountID: accountId
-    }
-  };
-  
-  console.log('Creating new medical staff record:', newStaffData);
-  
-  const response = await fetch('http://localhost:8080/api/medicalstaff/add', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(newStaffData)
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to create medical staff record: ${response.status} - ${errorText}`);
-  }
-  
-  const newStaff = await response.json();
-  console.log('✅ New medical staff created:', newStaff);
-  
-  // Update the staffID in localStorage for future updates
-  const updatedUserData = {
-    ...userData,
-    staffID: newStaff.id || newStaff.staffID,
-    accountID: accountId,
-    age: formData.age,      // Add this
-    gender: formData.gender // Add this
-  };
-  localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
-  
-  return newStaff;
-};
-
-const updateLocalStorage = (accountId) => {
-  try {
-    // Update current user data
-    const updatedUserData = {
-      ...userData,
+  const updateMedicalStaffRecord = async (accountId) => {
+    const updateData = {
       name: formData.name,
-      role: formData.role,
-      specialization: formData.specialization,
+      role: formData.role.toLowerCase(),
       contactNo: formData.phone,
-      phone: formData.phone,
-      email: formData.email,
-      gender: formData.gender,  // Make sure this is included
-      age: formData.age,        // Make sure this is included
-      accountID: accountId,
-      hasMedicalStaffData: true
+      specialty: formData.specialization,
+      age: formData.age ? parseInt(formData.age) : null,
+      gender: formData.gender || null,
+      department: formData.department || 'General Medicine',  // Add department
+      userAccount: { 
+        accountID: accountId
+      }
     };
     
+    console.log('Updating existing medical staff:', updateData);
+    
+    const response = await fetch(`http://localhost:8080/api/medicalstaff/update/${userData.staffID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updateData)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to update medical staff: ${response.status} - ${errorText}`);
+    }
+    
+    return await response.json();
+  };
+
+  const createMedicalStaffRecord = async (accountId) => {
+    const newStaffData = {
+      name: formData.name,
+      role: formData.role.toLowerCase(),
+      contactNo: formData.phone,
+      specialty: formData.specialization,
+      age: formData.age ? parseInt(formData.age) : null,
+      gender: formData.gender || null,
+      department: formData.department || 'General Medicine',  // Add department
+      userAccount: { 
+        accountID: accountId
+      }
+    };
+    
+    console.log('Creating new medical staff record:', newStaffData);
+    
+    const response = await fetch('http://localhost:8080/api/medicalstaff/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newStaffData)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create medical staff record: ${response.status} - ${errorText}`);
+    }
+    
+    const newStaff = await response.json();
+    console.log('✅ New medical staff created:', newStaff);
+    
+    // Update the staffID in localStorage for future updates
+    const updatedUserData = {
+      ...userData,
+      staffID: newStaff.id || newStaff.staffID,
+      accountID: accountId,
+      department: formData.department  // Add department
+    };
     localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
-    console.log('✅ Updated currentUser in localStorage');
     
-    // Fetch fresh staff list to update
-    updateStaffList();
-    
-  } catch (error) {
-    console.error('Error updating localStorage:', error);
-  }
-};
+    return newStaff;
+  };
+
+  const updateLocalStorage = (accountId) => {
+    try {
+      // Update current user data
+      const updatedUserData = {
+        ...userData,
+        name: formData.name,
+        role: formData.role,
+        specialization: formData.specialization,
+        department: formData.department,  // Add department
+        contactNo: formData.phone,
+        phone: formData.phone,
+        email: formData.email,
+        gender: formData.gender,
+        age: formData.age,
+        accountID: accountId,
+        hasMedicalStaffData: true
+      };
+      
+      localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
+      console.log('✅ Updated currentUser in localStorage');
+      
+      // Fetch fresh staff list to update
+      updateStaffList();
+      
+    } catch (error) {
+      console.error('Error updating localStorage:', error);
+    }
+  };
+
   const updateStaffList = async () => {
     try {
       // Fetch fresh staff list from API
@@ -530,6 +533,22 @@ const updateLocalStorage = (accountId) => {
             size="small"
             fullWidth
             required
+            disabled={fetchingAccount}
+            InputProps={{
+              sx: {
+                borderRadius: '8px',
+                fontSize: '14px'
+              }
+            }}
+          />
+          
+          <TextField
+            name="department"
+            value={formData.department}
+            onChange={handleChange}
+            label="Department"
+            size="small"
+            fullWidth
             disabled={fetchingAccount}
             InputProps={{
               sx: {

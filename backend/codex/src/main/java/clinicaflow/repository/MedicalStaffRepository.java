@@ -29,4 +29,13 @@ public interface MedicalStaffRepository extends JpaRepository<MedicalStaffEntity
     List<MedicalStaffEntity> findByRoleAndGender(String role, String gender);
     
     List<MedicalStaffEntity> findBySpecialtyIgnoreCase(String specialty);
+    
+    // NEW: Department queries
+    List<MedicalStaffEntity> findByDepartmentIgnoreCase(String department);
+    
+    List<MedicalStaffEntity> findByDepartmentAndRole(String department, String role);
+    
+    List<MedicalStaffEntity> findByDepartmentAndGender(String department, String gender);
+    
+    List<MedicalStaffEntity> findByDepartmentAndSpecialty(String department, String specialty);
 }

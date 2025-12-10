@@ -1,7 +1,144 @@
-import React from 'react';
-import { Lock, LogOut, Globe } from 'lucide-react';
+import React, { useState } from 'react';
+import { Lock, LogOut, Globe, Eye, EyeOff } from 'lucide-react';
+import { Alert, Snackbar } from '@mui/material';
 
 const SettingsPasswordView = () => {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [currentFocused, setCurrentFocused] = useState(false);
+  const [newFocused, setNewFocused] = useState(false);
+  const [confirmFocused, setConfirmFocused] = useState(false);
+
+  const handleChangePassword = async () => {
+    try {
+      // Validation
+      if (!currentPassword.trim()) {
+        setError('Please enter your current password');
+        return;
+      }
+      
+      if (!newPassword.trim()) {
+        setError('Please enter a new password');
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        setError('New password must be at least 6 characters long');
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        setError('New passwords do not match');
+        return;
+      }
+      
+      if (currentPassword === newPassword) {
+        setError('New password must be different from current password');
+        return;
+      }
+
+      setLoading(true);
+      setError('');
+      
+      // Get user data from localStorage
+      const storedUser = localStorage.getItem('user') || 
+                        localStorage.getItem('currentUser') ||
+                        sessionStorage.getItem('user');
+      
+      if (!storedUser) {
+        throw new Error('User not found. Please login again.');
+      }
+      
+      const userData = JSON.parse(storedUser);
+      const accountId = userData.accountID || userData.id;
+      const username = userData.username || userData.email;
+      
+      if (!accountId || !username) {
+        throw new Error('User information incomplete');
+      }
+
+      console.log('Changing password for account:', accountId);
+      
+      // Call API to change password
+      const response = await fetch('http://localhost:8080/api/useraccount/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+          accountID: parseInt(accountId)
+        })
+      });
+      
+      const data = await response.text();
+      
+      if (response.ok) {
+        console.log('Password changed successfully:', data);
+        
+        // Update localStorage with new password
+        if (userData.password) {
+          userData.password = newPassword;
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+        
+        // Clear form
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        
+        setSuccess(true);
+        setError('');
+        
+        // Auto-hide success message
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
+        
+      } else {
+        console.error('Failed to change password:', data);
+        throw new Error(data || 'Failed to change password. Please try again.');
+      }
+      
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setError(error.message || 'An error occurred while changing password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogoutAllSessions = () => {
+    if (window.confirm('Are you sure you want to log out from all devices? This will end all active sessions.')) {
+      try {
+        // Clear all user data from storage
+        localStorage.removeItem('user');
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('medicalStaffData');
+        sessionStorage.removeItem('user');
+        
+        // Clear token if exists
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        
+        // Redirect to login page
+        window.location.href = '/login';
+      } catch (error) {
+        console.error('Error during logout:', error);
+        setError('Error during logout. Please try again.');
+      }
+    }
+  };
+
   return (
     <div style={{
       background: 'white',
@@ -45,76 +182,222 @@ const SettingsPasswordView = () => {
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <input
-              type="password"
-              placeholder="Current Password"
-              style={{
-                padding: '12px 16px',
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb',
-                fontSize: '14px',
-                fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
-                color: '#1f2937',
-                background: '#f9fafb',
-                transition: 'border-color 0.2s ease',
-                '&:focus': {
+            {/* Current Password Input */}
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showCurrentPassword ? "text" : "password"}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Current Password"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  paddingRight: '40px',
+                  borderRadius: '8px',
+                  border: currentFocused ? '1px solid #4B0082' : '1px solid #e5e7eb',
+                  fontSize: '14px',
+                  fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+                  color: '#1f2937',
+                  background: '#f9fafb',
+                  transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                   outline: 'none',
-                  borderColor: '#4B0082',
-                  boxShadow: '0 0 0 3px rgba(75,0,130,0.1)'
-                }
-              }}
-            />
-            <input
-              type="password"
-              placeholder="New Password"
-              style={{
-                padding: '12px 16px',
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb',
-                fontSize: '14px',
-                fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
-                color: '#1f2937',
-                background: '#f9fafb',
-                transition: 'border-color 0.2s ease'
-              }}
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              style={{
-                padding: '12px 16px',
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb',
-                fontSize: '14px',
-                fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
-                color: '#1f2937',
-                background: '#f9fafb',
-                transition: 'border-color 0.2s ease'
-              }}
-            />
+                  boxSizing: 'border-box',
+                  boxShadow: currentFocused ? '0 0 0 3px rgba(75,0,130,0.1)' : 'none'
+                }}
+                onFocus={() => setCurrentFocused(true)}
+                onBlur={() => setCurrentFocused(false)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                onMouseDown={(e) => e.preventDefault()} // Prevent focus stealing
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            
+            {/* New Password Input */}
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showNewPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="New Password"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  paddingRight: '40px',
+                  borderRadius: '8px',
+                  border: newFocused ? '1px solid #4B0082' : '1px solid #e5e7eb',
+                  fontSize: '14px',
+                  fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+                  color: '#1f2937',
+                  background: '#f9fafb',
+                  transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  boxShadow: newFocused ? '0 0 0 3px rgba(75,0,130,0.1)' : 'none'
+                }}
+                onFocus={() => setNewFocused(true)}
+                onBlur={() => setNewFocused(false)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                onMouseDown={(e) => e.preventDefault()} // Prevent focus stealing
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            
+            {/* Confirm Password Input */}
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm Password"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  paddingRight: '40px',
+                  borderRadius: '8px',
+                  border: confirmFocused ? '1px solid #4B0082' : '1px solid #e5e7eb',
+                  fontSize: '14px',
+                  fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+                  color: '#1f2937',
+                  background: '#f9fafb',
+                  transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  boxShadow: confirmFocused ? '0 0 0 3px rgba(75,0,130,0.1)' : 'none'
+                }}
+                onFocus={() => setConfirmFocused(true)}
+                onBlur={() => setConfirmFocused(false)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onMouseDown={(e) => e.preventDefault()} // Prevent focus stealing
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
-          <button style={{
-            width: '100%',
+          
+          {/* Error Message */}
+          {error && (
+            <div style={{
+              marginTop: '16px',
+              padding: '12px',
+              borderRadius: '8px',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#991b1b',
+              fontSize: '14px',
+              fontFamily: '"Arimo", "Poppins", "Inter", sans-serif'
+            }}>
+              {error}
+            </div>
+          )}
+          
+          <button 
+            onClick={handleChangePassword}
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '8px',
+              background: loading ? '#9ca3af' : '#4B0082',
+              color: 'white',
+              border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+              fontSize: '14px',
+              fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+              marginTop: '24px',
+              boxShadow: '0 3px 10px rgba(75,0,130,0.25)',
+              transition: 'all 0.2s ease',
+              opacity: loading ? 0.7 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.background = '#3A0066';
+                e.target.style.boxShadow = '0 5px 15px rgba(75,0,130,0.3)';
+                e.target.style.transform = 'translateY(-1px)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.background = '#4B0082';
+                e.target.style.boxShadow = '0 3px 10px rgba(75,0,130,0.25)';
+                e.target.style.transform = 'translateY(0)';
+              }
+            }}
+          >
+            {loading ? 'Changing Password...' : 'Change Password'}
+          </button>
+          
+          {/* Password Requirements */}
+          <div style={{
+            marginTop: '16px',
             padding: '12px',
             borderRadius: '8px',
-            background: '#4B0082',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: '14px',
-            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
-            marginTop: '24px',
-            boxShadow: '0 3px 10px rgba(75,0,130,0.25)',
-            transition: 'all 0.2s ease',
-            '&:hover': {
-              background: '#3A0066',
-              boxShadow: '0 5px 15px rgba(75,0,130,0.3)',
-              transform: 'translateY(-1px)'
-            }
+            background: '#f9fafb',
+            border: '1px solid #e5e7eb',
+            fontSize: '12px',
+            color: '#6b7280',
+            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif'
           }}>
-            Change Password
-          </button>
+            <strong>Password Requirements:</strong>
+            <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+              <li>At least 6 characters long</li>
+              <li>Must be different from current password</li>
+              <li>New passwords must match</li>
+            </ul>
+          </div>
         </div>
 
         {/* Session Management */}
@@ -151,35 +434,91 @@ const SettingsPasswordView = () => {
               Manage your active sessions and<br />account security
             </p>
           </div>
-          <button style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: '8px',
-            background: '#4B0082',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer',
-            fontWeight: 600,
-            fontSize: '14px',
-            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
-            boxShadow: '0 3px 10px rgba(75,0,130,0.25)',
-            transition: 'all 0.2s ease',
-            marginBottom: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            '&:hover': {
-              background: '#3A0066',
-              boxShadow: '0 5px 15px rgba(75,0,130,0.3)',
-              transform: 'translateY(-1px)'
-            }
-          }}>
+          <button 
+            onClick={handleLogoutAllSessions}
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '8px',
+              background: '#4B0082',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '14px',
+              fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+              boxShadow: '0 3px 10px rgba(75,0,130,0.25)',
+              transition: 'all 0.2s ease',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = '#3A0066';
+              e.target.style.boxShadow = '0 5px 15px rgba(75,0,130,0.3)';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = '#4B0082';
+              e.target.style.boxShadow = '0 3px 10px rgba(75,0,130,0.25)';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
             <LogOut size={16} />
             Log Out All Sessions
           </button>
+          
+          {/* Warning Box */}
+          <div style={{
+            padding: '16px',
+            borderRadius: '8px',
+            background: '#fef3c7',
+            border: '1px solid #fbbf24',
+            color: '#92400e',
+            fontSize: '13px',
+            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif'
+          }}>
+            <strong>⚠️ Important:</strong>
+            <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+              <li>This will log you out from all devices</li>
+              <li>You'll need to login again on all devices</li>
+              <li>Active sessions will be terminated immediately</li>
+            </ul>
+          </div>
         </div>
       </div>
+
+      {/* Success Snackbar */}
+      <Snackbar
+        open={success}
+        autoHideDuration={3000}
+        onClose={() => setSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999
+        }}
+      >
+        <Alert 
+          onClose={() => setSuccess(false)} 
+          severity="success" 
+          style={{ 
+            background: '#d1fae5',
+            color: '#065f46',
+            border: '1px solid #10b981',
+            borderRadius: '8px',
+            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
+            minWidth: '300px'
+          }}
+        >
+          Password changed successfully!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

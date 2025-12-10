@@ -49,6 +49,11 @@ public class MedicalStaffService {
             }
         }
         
+        // Set default department if not provided
+        if (staff.getDepartment() == null || staff.getDepartment().trim().isEmpty()) {
+            staff.setDepartment("General Medicine");
+        }
+        
         // Set user account if provided
         if (staff.getUserAccount() != null && staff.getUserAccount().getAccountID() > 0) {           
             UserAccountEntity existingAccount = userAccountRepository.findById(staff.getUserAccount().getAccountID())
@@ -123,6 +128,11 @@ public class MedicalStaffService {
                 }
             }
             
+            // NEW: Update department field
+            if (updatedStaff.getDepartment() != null) {
+                staff.setDepartment(updatedStaff.getDepartment().trim());
+            }
+            
             // Update user account role if needed
             if (staff.getUserAccount() != null) {
                 UserAccountEntity userAccount = staff.getUserAccount();
@@ -181,5 +191,15 @@ public class MedicalStaffService {
     
     public List<MedicalStaffEntity> getStaffByAgeRange(int minAge, int maxAge) {
         return repository.findByAgeBetween(minAge, maxAge);
+    }
+    
+    // NEW: Get staff by department
+    public List<MedicalStaffEntity> getStaffByDepartment(String department) {
+        return repository.findByDepartmentIgnoreCase(department);
+    }
+    
+    // NEW: Get staff by department and role
+    public List<MedicalStaffEntity> getStaffByDepartmentAndRole(String department, String role) {
+        return repository.findByDepartmentAndRole(department, role);
     }
 }

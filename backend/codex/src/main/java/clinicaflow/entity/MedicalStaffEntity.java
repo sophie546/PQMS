@@ -18,6 +18,7 @@ public class MedicalStaffEntity {
     // ADD THESE NEW FIELDS
     private Integer age;        // Using Integer instead of int to allow null
     private String gender;      // e.g., "Male", "Female", "Other"
+    private String department;  // NEW: Department field
 
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "accountID", unique = true)
@@ -78,6 +79,15 @@ public class MedicalStaffEntity {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    // NEW: Department getter and setter
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     public UserAccountEntity getUserAccount() {
