@@ -43,6 +43,12 @@ public class MedicalStaffController {
         return service.getStaffById(id);
     }
 
+    // READ by Account ID
+    @GetMapping("/by-account/{accountId}")
+    public Optional<MedicalStaffEntity> getStaffByAccountId(@PathVariable int accountId) {
+        return service.getStaffByAccountId(accountId);
+    }
+
     // UPDATE
     @PutMapping("/update/{id}")
     public MedicalStaffEntity updateStaff(@PathVariable int id, @RequestBody MedicalStaffEntity staff) {
