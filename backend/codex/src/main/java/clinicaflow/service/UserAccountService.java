@@ -17,6 +17,8 @@ import clinicaflow.entity.UserAccountEntity;
 import clinicaflow.repository.UserAccountRepository;
 import clinicaflow.repository.MedicalStaffRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserAccountService {
 
@@ -123,6 +125,60 @@ public class UserAccountService {
     // Check if email exists - NO CHANGES
     public boolean emailExists(String email) {
         return userAccountRepository.findByUsername(email).isPresent();
+    }
+
+    // CHANGE PASSWORD - ADD THIS METHOD
+    @Transactional
+    public boolean changePassword(String username, String currentPassword, String newPassword, Integer accountId) {
+        try {
+            Optional<UserAccountEntity> userOptional;
+            
+            // Find user by account ID (preferred) or username
+            if (accountId != null) {
+                userOptional = userAccountRepository.findById(accountId);
+            } else {
+                userOptional = userAccountRepository.findByUsername(username);
+            }
+            
+            if (userOptional.isEmpty()) {
+                System.out.println("❌ User not found: username=" + username + ", accountId=" + accountId);
+                return false;
+            }
+            
+            UserAccountEntity user = userOptional.get();
+            System.out.println("✅ Found user: " + user.getUsername() + ", ID: " + user.getAccountID());
+            
+            // Verify current password using PasswordEncoder (BCrypt)
+            if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+                System.out.println("❌ Current password doesn't match");
+                return false;
+            }
+            
+            // Check if new password is same as current
+            if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+                System.out.println("❌ New password must be different from current password");
+                return false;
+            }
+            
+            // Check password length
+            if (newPassword.length() < 6) {
+                System.out.println("❌ New password must be at least 6 characters");
+                return false;
+            }
+            
+            // Update password with BCrypt encoding
+            String encodedNewPassword = passwordEncoder.encode(newPassword);
+            user.setPasswordHash(encodedNewPassword);
+            userAccountRepository.save(user);
+            
+            System.out.println("✅ Password updated successfully for user: " + user.getUsername());
+            return true;
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error in changePassword: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error changing password: " + e.getMessage());
+        }
     }
 
     // ========== YOUR EXISTING CRUD METHODS ==========

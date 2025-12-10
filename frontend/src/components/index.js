@@ -19,5 +19,4 @@ export { default as SettingSideBar } from './general_settings/SettingSideBar';
 export { default as SettingHeader } from './general_settings/SettingHeader';
 export { default as SettingsProfileView } from './general_settings/SettingsProfileView';
 export { default as SettingsPasswordView } from './general_settings/SettingsPasswordView';
-export { default as SettingsProfessionalView } from './general_settings/SettingsProfessionalView';
 export { default as SettingsEditModal } from './general_settings/SettingsEditModal';

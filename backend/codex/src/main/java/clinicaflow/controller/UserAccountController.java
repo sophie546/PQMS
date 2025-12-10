@@ -96,6 +96,9 @@ public class UserAccountController {
                 response.put("medicalRole", medicalStaff.getRole());
                 response.put("specialty", medicalStaff.getSpecialty());
                 response.put("contactNo", medicalStaff.getContactNo());
+                response.put("department", medicalStaff.getDepartment());
+                response.put("age", medicalStaff.getAge());
+                response.put("gender", medicalStaff.getGender());
             } else {
                 System.out.println("⚠️ No medical staff linked to this account");
                 response.put("name", userAccount.getUsername().split("@")[0]); // Use email name as fallback
@@ -112,6 +115,57 @@ public class UserAccountController {
         }
     }
 
+    // CHANGE PASSWORD
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request) {
+        try {
+            System.out.println("🔐 Change password request received:");
+            System.out.println("Username: " + request.getUsername());
+            System.out.println("Account ID: " + request.getAccountID());
+            System.out.println("Current password length: " + (request.getCurrentPassword() != null ? request.getCurrentPassword().length() : 0));
+            System.out.println("New password length: " + (request.getNewPassword() != null ? request.getNewPassword().length() : 0));
+            
+            // Validate request
+            if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Username is required");
+            }
+            
+            if (request.getCurrentPassword() == null || request.getCurrentPassword().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Current password is required");
+            }
+            
+            if (request.getNewPassword() == null || request.getNewPassword().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("New password is required");
+            }
+            
+            if (request.getNewPassword().length() < 6) {
+                return ResponseEntity.badRequest().body("New password must be at least 6 characters");
+            }
+            
+            // Change password
+            boolean success = service.changePassword(
+                request.getUsername(),
+                request.getCurrentPassword(),
+                request.getNewPassword(),
+                request.getAccountID()
+            );
+            
+            if (success) {
+                System.out.println("✅ Password changed successfully for user: " + request.getUsername());
+                return ResponseEntity.ok("Password changed successfully");
+            } else {
+                System.out.println("❌ Failed to change password for user: " + request.getUsername());
+                return ResponseEntity.badRequest().body("Failed to change password. Please check your current password.");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error changing password: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error changing password: " + e.getMessage());
+        }
+    }
+
     // UPDATE
     @PutMapping("/update/{id}")
     public UserAccountEntity updateAccount(@PathVariable int id, @RequestBody UserAccountEntity account) {
@@ -123,5 +177,46 @@ public class UserAccountController {
     public String deleteAccount(@PathVariable int id) {
         service.deleteAccount(id);
         return "User account with ID " + id + " has been deleted.";
+    }
+    
+    // Inner class for password change request
+    public static class PasswordChangeRequest {
+        private String username;
+        private String currentPassword;
+        private String newPassword;
+        private Integer accountID;
+        
+        // Getters and setters
+        public String getUsername() { 
+            return username; 
+        }
+        
+        public void setUsername(String username) { 
+            this.username = username; 
+        }
+        
+        public String getCurrentPassword() { 
+            return currentPassword; 
+        }
+        
+        public void setCurrentPassword(String currentPassword) { 
+            this.currentPassword = currentPassword; 
+        }
+        
+        public String getNewPassword() { 
+            return newPassword; 
+        }
+        
+        public void setNewPassword(String newPassword) { 
+            this.newPassword = newPassword; 
+        }
+        
+        public Integer getAccountID() { 
+            return accountID; 
+        }
+        
+        public void setAccountID(Integer accountID) { 
+            this.accountID = accountID; 
+        }
     }
 }
