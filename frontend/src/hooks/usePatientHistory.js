@@ -1,112 +1,116 @@
-import { useState, useMemo } from "react";
-
-// Mock data for consultations
-const consultations = [
-  {
-    id: 1,
-    patientName: "Maria Santos",
-    gender: "Female",
-    age: 45,
-    date: "2025-01-05",
-    time: "09:30 AM",
-    doctor: "Dr. Maria Cruz",
-    diagnosis: "Hypertension - Stage 2"
-  },
-  {
-    id: 2,
-    patientName: "Juan Dela Cruz",
-    gender: "Male",
-    age: 32,
-    date: "2025-01-05",
-    time: "10:15 AM",
-    doctor: "Dr. Roberto Santos",
-    diagnosis: "Acute Asthma Exacerbation"
-  },
-  {
-    id: 3,
-    patientName: "Ana Reyes",
-    gender: "Female",
-    age: 28,
-    date: "2025-01-04",
-    time: "02:00 PM",
-    doctor: "Dr. Maria Cruz",
-    diagnosis: "Migraine with Aura"
-  },
-  {
-    id: 4,
-    patientName: "Pedro Garcia",
-    gender: "Male",
-    age: 55,
-    date: "2025-01-04",
-    time: "11:30 AM",
-    doctor: "Dr. Roberto Santos",
-    diagnosis: "Type 2 Diabetes Mellitus"
-  },
-  {
-    id: 5,
-    patientName: "Maria Santos",
-    gender: "Female",
-    age: 45,
-    date: "2024-12-28",
-    time: "08:45 AM",
-    doctor: "Dr. Maria Cruz",
-    diagnosis: "Follow-up: Hypertension Management"
-  },
-  {
-    id: 6,
-    patientName: "Rosa Martinez",
-    gender: "Female",
-    age: 38,
-    date: "2024-12-27",
-    time: "03:15 PM",
-    doctor: "Dr. Roberto Santos",
-    diagnosis: "Acute Bronchitis"
-  }
-];
+import { useState, useMemo, useEffect } from "react";
+import { consultationService } from "../services/consultationService";
 
 export const usePatientHistory = () => {
+  const [consultations, setConsultations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [doctorFilter, setDoctorFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('');
 
-  // Filter consultations based on search and filter criteria
+  const fetchHistory = async () => {
+    try {
+      setLoading(true);
+      const data = await consultationService.getAllConsultations();
+
+      const formattedData = data.map(item => {
+        // Handle timezone offset issue with date
+        let displayDate = item.consultationDate;
+        if (displayDate) {
+          // If it's a string date, ensure it displays correctly without timezone offset
+          const date = new Date(displayDate + 'T00:00:00'); // Add time to avoid UTC conversion
+          displayDate = date.toISOString().split('T')[0];
+        }
+        
+        return {
+          id: item.consultationID, 
+          
+          patientName: item.patient 
+            ? `${item.patient.firstName} ${item.patient.lastName}` 
+            : "Unknown Patient",
+            
+          gender: item.patient ? item.patient.gender : "N/A",
+          age: item.patient ? item.patient.age : "N/A",
+          
+          date: displayDate || item.consultationDate,
+          time: "10:00 AM",
+          doctor: "Unknown", // Update this if your backend sends doctor info, e.g., item.doctorName
+          diagnosis: item.diagnosis,
+          symptoms: item.symptoms || "",      
+          prescription: item.medicinePrescribed || "",
+          remarks: item.remarks || ""
+        };
+      });
+
+      const sortedData = formattedData.sort((a, b) => b.id - a.id);
+      
+      setConsultations(sortedData);
+      setError(null);
+    } catch (error) {
+      console.error("Failed to load history", error);
+      setError("Failed to fetch consultations");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Run fetch once on mount
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
   const filteredConsultations = useMemo(() => {
     return consultations.filter(consultation => {
-      // If search query is a pure number, search ONLY by exact consultation ID
       const isPureNumber = /^\d+$/.test(searchQuery);
       
       let matchesSearch = searchQuery === '';
       
       if (searchQuery !== '') {
         if (isPureNumber) {
-          // Convert searchQuery to number for exact comparison
           const searchId = parseInt(searchQuery, 10);
-          // Pure number search: only match by exact consultation ID
           matchesSearch = consultation.id === searchId;
         } else {
-          // Text search: match by patient name, doctor, or diagnosis
           matchesSearch = 
-            consultation.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            consultation.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            consultation.diagnosis.toLowerCase().includes(searchQuery.toLowerCase());
+            (consultation.patientName && consultation.patientName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (consultation.doctor && consultation.doctor.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (consultation.diagnosis && consultation.diagnosis.toLowerCase().includes(searchQuery.toLowerCase()));
         }
       }
 
-      // Doctor filter
       const matchesDoctor = doctorFilter === 'all' || consultation.doctor === doctorFilter;
       
-      // Date filter
-      const matchesDate = dateFilter === '' || consultation.date === dateFilter;
+      let matchesDate = true;
+      if (dateFilter !== '') {
+        if (!consultation.date) {
+          matchesDate = false;
+        } else if (dateFilter === 'thisWeek') {
+          const consultationDate = new Date(consultation.date);
+          const today = new Date();
+          const oneWeekAgo = new Date(today);
+          oneWeekAgo.setDate(today.getDate() - 7);
+          matchesDate = consultationDate >= oneWeekAgo && consultationDate <= today;
+        } else if (dateFilter === 'thisMonth') {
+          const consultationDate = new Date(consultation.date);
+          const today = new Date();
+          const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+          matchesDate = consultationDate >= firstDayOfMonth && consultationDate <= today;
+        } else {
+          // Specific date format (YYYY-MM-DD)
+          matchesDate = consultation.date === dateFilter;
+        }
+      }
 
       return matchesSearch && matchesDoctor && matchesDate;
     });
-  }, [searchQuery, doctorFilter, dateFilter]);
+  }, [searchQuery, doctorFilter, dateFilter, consultations]);
 
-  // Calculate stats based on filtered consultations
   const patientStats = useMemo(() => {
     const totalVisits = filteredConsultations.length;
     
     const thisWeek = filteredConsultations.filter(c => {
+      if (!c.date) return false;
       const consultationDate = new Date(c.date);
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -119,7 +123,7 @@ export const usePatientHistory = () => {
       {
         id: 1,
         title: 'Total Visits',
-        value: totalVisits,
+        value: consultations.length,
         subText: 'All consultations',
         icon: 'history',
         borderColor: 'rgba(102, 126, 234, 0.1)',
@@ -144,7 +148,7 @@ export const usePatientHistory = () => {
         hoverShadow: 'rgba(46, 125, 50, 0.15)'
       }
     ];
-  }, [filteredConsultations]);
+  }, [filteredConsultations, consultations.length]); // Fixed dependency
 
   const handleSearch = (searchTerm) => {
     setSearchQuery(searchTerm);
@@ -159,11 +163,8 @@ export const usePatientHistory = () => {
   };
 
   const handleRefresh = () => {
-    console.log("Refresh clicked");
-  };
-
-  const handleViewDetails = (consultationId) => {
-    console.log("View details for consultation:", consultationId);
+    console.log("Refreshing data...");
+    fetchHistory(); 
   };
 
   const clearFilters = () => {
@@ -180,12 +181,13 @@ export const usePatientHistory = () => {
     searchQuery,
     doctorFilter,
     dateFilter,
+    loading, 
+    error,
     hasActiveFilters,
     handleSearch,
     handleDoctorFilter,
     handleDateFilter,
     handleRefresh,
-    handleViewDetails,
     clearFilters
   };
 };

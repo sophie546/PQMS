@@ -144,7 +144,7 @@ const QueueDashboard = () => {
             <LocalHospital sx={{ 
               fontSize: 40, 
               color: 'white',
-              background: '#667eea', 
+              background: '#4B0082', 
               borderRadius: '8px',
               p: 1.3,
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
@@ -176,7 +176,7 @@ const QueueDashboard = () => {
                 variant="contained" 
                 startIcon={<Refresh />} 
                 onClick={fetchQueueData}
-                sx={{ background: '#667eea', '&:hover': { background: '#5a67d8' }, textTransform: 'none' }}
+                sx={{ background: '#4B0082', '&:hover': { background: '#5a67d8' }, textTransform: 'none' }}
              >
               Refresh
             </Button>
@@ -304,7 +304,7 @@ const StatCardItem = ({ stat }) => {
 const QueueNumber = ({ myNumber, servingNumber }) => {
   return (
     <Box sx={{ 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(135deg, #4B0082 0%, #764ba2 100%)',
       borderRadius: 3,
       boxShadow: '0 4px 25px rgba(0,0,0,0.08)',
       p: 0,
@@ -349,7 +349,7 @@ const PatientRow = ({ queueItem, index }) => {
         
         {/* 2. Patient Info */}
         <Box display="flex" alignItems="center" gap={2}>
-          <Avatar sx={{ width: 40, height: 40, background: '#667eea', fontWeight: 700, fontSize: '0.875rem' }}>
+          <Avatar sx={{ width: 40, height: 40, background: '#4B0082', fontWeight: 700, fontSize: '0.875rem' }}>
             {initials}
           </Avatar>
           <Box>
@@ -380,7 +380,7 @@ const PatientRow = ({ queueItem, index }) => {
         </Box>
         
         {/* 5. Assigned Doctor (New Field) */}
-        <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 500 }}>
+        <Typography variant="body2" sx={{ color: '#4B0082', fontWeight: 500 }}>
              {assignedDoctor || "Unassigned"}
         </Typography>
 

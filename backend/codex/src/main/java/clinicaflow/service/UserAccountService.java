@@ -15,12 +15,16 @@ import clinicaflow.dto.response.AuthResponse;
 import clinicaflow.entity.MedicalStaffEntity;
 import clinicaflow.entity.UserAccountEntity;
 import clinicaflow.repository.UserAccountRepository;
+import clinicaflow.repository.MedicalStaffRepository;
 
 @Service
 public class UserAccountService {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private MedicalStaffRepository medicalStaffRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -44,6 +48,22 @@ public class UserAccountService {
             // Save to database
             UserAccountEntity savedUser = userAccountRepository.save(userAccount);
 
+            // ========== FIX: CREATE MEDICAL STAFF RECORD ==========
+            // Check if this is a medical staff role (doctor or nurse)
+            String role = registerRequest.getRole().toLowerCase();
+            if ("doctor".equals(role) || "nurse".equals(role)) {
+                MedicalStaffEntity medicalStaff = new MedicalStaffEntity();
+                medicalStaff.setName(registerRequest.getFirstName() + " " + registerRequest.getLastName());
+                medicalStaff.setRole(registerRequest.getRole());
+                medicalStaff.setSpecialty(""); // Empty as requested
+                medicalStaff.setContactNo(""); // Empty as requested
+                medicalStaff.setUserAccount(savedUser);
+                
+                // Save to medical_staff table
+                medicalStaffRepository.save(medicalStaff);
+            }
+            // ========== END FIX ==========
+
             // Create response data
             Map<String, Object> userData = new HashMap<>();
             userData.put("id", savedUser.getAccountID());
@@ -60,7 +80,7 @@ public class UserAccountService {
         }
     }
 
-    // Login user
+    // Login user - NO CHANGES NEEDED
     public AuthResponse loginUser(LoginRequest loginRequest) {
         try {
             Optional<UserAccountEntity> userOptional = userAccountRepository.findByUsername(loginRequest.getEmail());
@@ -98,14 +118,14 @@ public class UserAccountService {
         }
     }
 
-    // Check if email exists
+    // Check if email exists - NO CHANGES
     public boolean emailExists(String email) {
         return userAccountRepository.findByUsername(email).isPresent();
     }
 
     // ========== YOUR EXISTING CRUD METHODS ==========
     
-    // CREATE
+    // CREATE - NO CHANGES
     public UserAccountEntity addAccount(UserAccountEntity account) {
         // Encrypt password before saving
         if (account.getPasswordHash() != null && !account.getPasswordHash().startsWith("$2a$")) {
@@ -120,7 +140,7 @@ public class UserAccountService {
         return userAccountRepository.save(account);
     }
 
-    // CREATE with staff details
+    // CREATE with staff details - NO CHANGES (but consider updating it too)
     public UserAccountEntity createAccountWithStaff(UserAccountEntity account, String staffName, 
                                                    String staffRole, String contactNo, String specialty) {
         // Encrypt password
@@ -139,23 +159,23 @@ public class UserAccountService {
         return userAccountRepository.save(account);
     }
 
-    // READ ALL
+    // READ ALL - NO CHANGES
     public List<UserAccountEntity> getAllAccounts() {
         return userAccountRepository.findAll();
     }
 
-    // READ ONE
-    public Optional<UserAccountEntity> getAccountById(Long id) {
+    // READ ONE - NO CHANGES
+    public Optional<UserAccountEntity> getAccountById(int id) {
         return userAccountRepository.findById(id);
     }
 
-    // READ by username
+    // READ by username - NO CHANGES
     public Optional<UserAccountEntity> getAccountByUsername(String username) {
         return userAccountRepository.findByUsername(username);
     }
 
-    // UPDATE
-    public UserAccountEntity updateAccount(Long id, UserAccountEntity updatedAccount) {
+    // UPDATE - NO CHANGES
+    public UserAccountEntity updateAccount(int id, UserAccountEntity updatedAccount) {
         return userAccountRepository.findById(id).map(account -> {
             account.setUsername(updatedAccount.getUsername());
             
@@ -173,8 +193,8 @@ public class UserAccountService {
         }).orElse(null);
     }
 
-    // DELETE
-    public void deleteAccount(Long id) {
+    // DELETE - NO CHANGES
+    public void deleteAccount(int id) {
         userAccountRepository.deleteById(id);
     }
 }

@@ -7,7 +7,6 @@ import Fade from '@mui/material/Fade';
 import Backdrop from '@mui/material/Backdrop';
 import MenuItem from '@mui/material/MenuItem';
 import { useNumericInput, useFormValidation } from '../hooks';
-import { useNavigate } from 'react-router-dom';
 import { GradientButton } from './ButtonComponents';
 
 const style = {
@@ -30,15 +29,9 @@ const CustomTextField = ({ sx, ...props }) => (
     variant="standard"
     sx={{
       '& .MuiInput-underline': {
-        '&:before': {
-          borderBottomColor: '#4B0082',
-        },
-        '&:hover:before': {
-          borderBottomColor: '#4B0082',
-        },
-        '&:after': {
-          borderBottomColor: '#4B0082',
-        },
+        '&:before': { borderBottomColor: '#4B0082' },
+        '&:hover:before': { borderBottomColor: '#4B0082' },
+        '&:after': { borderBottomColor: '#4B0082' },
       },
       '& .MuiInputBase-input': {
         fontSize: 14,
@@ -47,9 +40,7 @@ const CustomTextField = ({ sx, ...props }) => (
         height: '20px',             
         boxSizing: 'content-box',
       },
-      '& .MuiInputLabel-root': {
-        paddingLeft: '5px',
-      },
+      '& .MuiInputLabel-root': { paddingLeft: '5px' },
       mb: 2,
       ...sx,
     }}
@@ -57,7 +48,6 @@ const CustomTextField = ({ sx, ...props }) => (
   />
 );
 
-// New GenderSelectField
 const GenderSelectField = ({ value, onChange, error, helperText, ...props }) => {
   return (
     <CustomTextField
@@ -71,16 +61,26 @@ const GenderSelectField = ({ value, onChange, error, helperText, ...props }) => 
       {...props}
     >
       <MenuItem value=""><em>Select Gender</em></MenuItem>
-      <MenuItem value="male">Male</MenuItem>
-      <MenuItem value="female">Female</MenuItem>
+      <MenuItem value="Male">Male</MenuItem>
+      <MenuItem value="Female">Female</MenuItem>
     </CustomTextField>
   );
 };
 
-export function QueueModal({ open, onClose }) { 
-  const navigate = useNavigate();
-  const ageInput = useNumericInput('');
-  const contactInput = useNumericInput('');
+export function PatientFormModal({ 
+    open, 
+    onClose, 
+    onSubmit, // NEW: Function to handle submission logic
+    initialData = null, // NEW: Data for editing (optional)
+    title = "Join Queue", // NEW: Customizable Title
+    subtitle = "Fill in details below.", // NEW: Customizable Subtitle
+    submitLabel = "Submit & Join Queue", // NEW: Customizable Button Label
+    isSubmitting = false // NEW: Loading state for button
+}) { 
+  
+  // Initialize inputs
+  const ageInput = useNumericInput(initialData?.age || '');
+  const contactInput = useNumericInput(initialData?.contactNo || '');
   const { errors, validateField, setFieldError, clearErrors } = useFormValidation();
 
   const [formData, setFormData] = React.useState({
@@ -90,9 +90,27 @@ export function QueueModal({ open, onClose }) {
     gender: '',
     contactNo: '',
     address: '',
-    reason: ''
+    ...initialData // Overwrite defaults if initialData exists
   });
 
+  // Reset form when modal opens/closes or initialData changes
+  React.useEffect(() => {
+    if (open) {
+        if (initialData) {
+            setFormData(initialData);
+            ageInput.setValue(initialData.age); // Assuming useNumericInput has setValue
+            contactInput.setValue(initialData.contactNo);
+        } else {
+            // Reset to empty
+            setFormData({ firstName: '', lastName: '', age: '', gender: '', contactNo: '', address: '' });
+            ageInput.reset();
+            contactInput.reset();
+        }
+        clearErrors();
+    }
+  }, [open, initialData]);
+
+  // Sync hooks
   React.useEffect(() => {
     setFormData(prev => ({
       ...prev,
@@ -102,14 +120,8 @@ export function QueueModal({ open, onClose }) {
   }, [ageInput.value, contactInput.value]);
 
   const handleInputChange = (field) => (event) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: event.target.value
-    }));
-  
-    if (errors[field]) {
-      setFieldError(field, '');
-    }
+    setFormData(prev => ({ ...prev, [field]: event.target.value }));
+    if (errors[field]) setFieldError(field, '');
   };
 
   const validateForm = () => {
@@ -122,44 +134,18 @@ export function QueueModal({ open, onClose }) {
     if (contactError) newErrors.contactNo = contactError;
     if (genderError) newErrors.gender = genderError;
 
-    Object.keys(newErrors).forEach(field => {
-      setFieldError(field, newErrors[field]);
-    });
-
+    Object.keys(newErrors).forEach(field => setFieldError(field, newErrors[field]));
     return Object.keys(newErrors).length === 0;
   };
 
- const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
     if (validateForm()) {
-        try {
-            const response = await fetch('http://localhost:8080/api/queue/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-            
-            // Now you have the REAL queue number from backend
-            onClose();
-            
-            setTimeout(() => {
-                navigate('/QueueDashboard', { 
-                    state: { 
-                        patientData: formData,
-                        queueNumber: data.queueNumber, // <--- FROM BACKEND
-                        estimatedTime: data.estimatedTime
-                    }
-                });
-            }, 500);
-
-        } catch (error) {
-            console.error("Failed to join queue", error);
-        }
+        // Pass the data back to the parent component
+        // The parent handles API calls, navigation, etc.
+        onSubmit(formData); 
     }
-};
+  };
 
   return (
     <Modal
@@ -169,11 +155,7 @@ export function QueueModal({ open, onClose }) {
       aria-describedby="queue-modal-description"
       closeAfterTransition
       slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500, // This matches the setTimeout duration
-        },
-      }}
+      slotProps={{ backdrop: { timeout: 500 } }}
     >
       <Fade in={open}>
         <Box sx={style}>
@@ -188,7 +170,7 @@ export function QueueModal({ open, onClose }) {
                 color: '#4B0082',
                 }}
             >
-            Join Queue
+            {title}
             </Typography>
             
             <Typography 
@@ -199,24 +181,14 @@ export function QueueModal({ open, onClose }) {
                 color: '#666',
             }}
             >
-            Fill in your details to join the patient queue. You'll receive a queue number after submission.
+            {subtitle}
             </Typography>
 
             <form onSubmit={handleSubmit}>
-            <Box sx={{ 
-                width: '100%', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: 1 
-                }}>
+            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
 
                 {/* First Name & Last Name Row */}
-                <Box sx={{ 
-                    display: 'flex', 
-                    gap: 2, 
-                    width: '100%',
-                    flexDirection: { xs: 'column', sm: 'row' } 
-                }}>
+                <Box sx={{ display: 'flex', gap: 2, width: '100%', flexDirection: { xs: 'column', sm: 'row' } }}>
                     <Box sx={{ flex: 1 }}>
                     <CustomTextField
                         label="First Name"
@@ -239,14 +211,7 @@ export function QueueModal({ open, onClose }) {
                 </Box>
 
                 {/* Age, Gender & Contact Number Row */}
-                <Box sx={{ 
-                    display: 'flex', 
-                    gap: 2, 
-                    width: '100%',
-                    flexDirection: { xs: 'column', sm: 'row' }, 
-                    mt:2,
-                    alignItems: 'flex-start'
-                }}>
+                <Box sx={{ display: 'flex', gap: 2, width: '100%', flexDirection: { xs: 'column', sm: 'row' }, mt:2, alignItems: 'flex-start' }}>
                     <Box sx={{ flex: 1 }}>
                     <CustomTextField
                         label="Age"
@@ -257,9 +222,7 @@ export function QueueModal({ open, onClose }) {
                         labelSx={{ fontSize: '14px' }}
                         error={!!errors.age}
                         helperText={errors.age}
-                        inputProps={{
-                        maxLength: 3,
-                        }}
+                        inputProps={{ maxLength: 3 }}
                     />
                     </Box>
                     
@@ -284,9 +247,7 @@ export function QueueModal({ open, onClose }) {
                         labelSx={{ fontSize: '14px' }}
                         error={!!errors.contactNo}
                         helperText={errors.contactNo}
-                        inputProps={{
-                        maxLength: 11,
-                        }}
+                        inputProps={{ maxLength: 11 }}
                     />
                     </Box>
                 </Box>
@@ -307,23 +268,30 @@ export function QueueModal({ open, onClose }) {
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 4 }}>
                 <GradientButton 
                     onClick={onClose}
+                    // Override gradient button styles for "Cancel" to look different if needed
+                    // Or use a simple Button component here
                     sx={{ 
-                    padding: "5px 24px !important",
-                    minWidth: "auto",
-                    fontSize: "14px",
+                        padding: "5px 24px !important",
+                        minWidth: "auto",
+                        fontSize: "14px",
+                        background: 'transparent',
+                        color: '#666',
+                        border: '1px solid #ccc',
+                        '&:hover': { background: '#f5f5f5' }
                     }}
                 >
                     Cancel
                 </GradientButton>
                 <GradientButton 
                     type="submit"
+                    disabled={isSubmitting}
                     sx={{ 
                         padding: "5px 24px !important",
                         minWidth: "auto",
                         fontSize: "14px"
                     }}
                     >
-                    Submit & Join Queue
+                    {isSubmitting ? "Processing..." : submitLabel}
                 </GradientButton>
                 </Box>
             </form>

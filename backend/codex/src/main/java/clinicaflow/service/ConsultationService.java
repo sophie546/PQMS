@@ -5,15 +5,33 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import clinicaflow.entity.ConsultationEntity;
+// import clinicaflow.entity.MedicalStaffEntity;
+import clinicaflow.entity.PatientEntity;
 import clinicaflow.repository.ConsultationRepository;
+// import clinicaflow.repository.MedicalStaffRepository;
+import clinicaflow.repository.PatientRepository;
 
 @Service
 public class ConsultationService {
     @Autowired
     private ConsultationRepository crepo;
 
-    //create
-    public ConsultationEntity saveConsultation(ConsultationEntity consultation) {
+    @Autowired
+    private PatientRepository prepo;
+
+    // @Autowired
+    // private MedicalStaffRepository srepo;
+
+    public ConsultationEntity saveConsultation(int patientId, ConsultationEntity consultation) {
+        PatientEntity patient = prepo.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient with ID " + patientId + " not found"));
+
+        // MedicalStaffEntity doctor = srepo.findById(staffId)
+        // .orElseThrow(() -> new RuntimeException("Doctor/Staff with ID " + staffId + " not found"));
+
+        // consultation.setDoctor(doctor);
+        consultation.setPatient(patient);
+
         return crepo.save(consultation);
     }
 

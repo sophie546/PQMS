@@ -1,6 +1,23 @@
 import React from 'react';
-import { ChevronLeft, User, Bell, Shield } from 'lucide-react';
+import { ChevronLeft, User, Shield, Bell } from 'lucide-react';
 import { Box, Typography, Button } from '@mui/material';
+
+// Exact colors from your sidebar
+const sidebarColors = {
+  iconRailBg: '#4B0082',    // Main purple (icon rail background)
+  navRailBg: '#4B0082',     // Main purple (nav rail background)
+  activeBg: '#F3F4F6',      // Active background
+  activeText: '#4B0082',    // Active text color (purple)
+  inactiveText: '#E0D4FC',  // Inactive text color (light purple)
+  white: '#FFFFFF',
+  hover: 'rgba(255, 255, 255, 0.08)'
+};
+
+// Fonts from your sidebar
+const fonts = {
+  primary: '"Poppins", "Inter", sans-serif',
+  secondary: '"Arimo", "Poppins", "Inter", sans-serif'
+};
 
 const SettingHeader = ({ currentView, showSidebar, toggleSidebar, setShowEditModal }) => {
 
@@ -37,7 +54,7 @@ const SettingHeader = ({ currentView, showSidebar, toggleSidebar, setShowEditMod
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        background: '#ffffff',
+        background: sidebarColors.white,
         py: 2,
         px: 3,
         borderBottom: '1px solid #e5e7eb',
@@ -57,17 +74,16 @@ const SettingHeader = ({ currentView, showSidebar, toggleSidebar, setShowEditMod
               width: 36,
               height: 36,
               borderRadius: 2,
-              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              background: sidebarColors.iconRailBg,
               color: 'white',
               p: 0,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 3px 10px rgba(102,126,234,0.25)',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
               '&:hover': {
-                boxShadow: '0 5px 15px rgba(102,126,234,0.3)',
-                transform: 'translateY(-1px)',
-                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                background: sidebarColors.iconRailBg,
+                opacity: 0.9,
               }
             }}
           >
@@ -78,17 +94,29 @@ const SettingHeader = ({ currentView, showSidebar, toggleSidebar, setShowEditMod
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              borderRadius: 2,
-              background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
+              width: 44,
+              height: 44,
+              borderRadius: '12px',
+              background: 'rgba(75,0,130,0.2)', // 20% opacity of #4B0082
+              backdropFilter: 'blur(4px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#667eea',
+              border: `1px solid ${sidebarColors.iconRailBg}33` // 20% opacity border
             }}
           >
-            {getIcon()}
+            <Box
+              sx={{
+                width: 24,
+                height: 24,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: sidebarColors.iconRailBg
+              }}
+            >
+              {getIcon()}
+            </Box>
           </Box>
 
           <Box>
@@ -96,18 +124,21 @@ const SettingHeader = ({ currentView, showSidebar, toggleSidebar, setShowEditMod
               sx={{
                 fontWeight: 700,
                 fontSize: '1.25rem',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
+                color: sidebarColors.activeText,
+                fontFamily: fonts.primary,
+                lineHeight: 1.2
               }}
             >
               {getTitle()}
             </Typography>
             <Typography
               sx={{
-                fontSize: '0.8125rem',
-                color: '#6b7280',
-                mt: 0.5
+                fontSize: '0.75rem',
+                color: sidebarColors.inactiveText,
+                mt: 0.5,
+                fontFamily: fonts.secondary,
+                fontWeight: 500,
+                opacity: 0.8
               }}
             >
               {getSubtitle()}
@@ -121,20 +152,20 @@ const SettingHeader = ({ currentView, showSidebar, toggleSidebar, setShowEditMod
         <Button
           onClick={() => setShowEditModal(true)}
           sx={{
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
-            color: 'white',
-            fontWeight: 600,
-            fontSize: '0.8125rem',
-            borderRadius: 2,
+            background: sidebarColors.iconRailBg,
+            color: sidebarColors.white,
+            fontWeight: 700,
+            fontSize: '0.85rem',
+            borderRadius: '8px',
             px: 3,
             py: 1,
-            boxShadow: '0 3px 10px rgba(102,126,234,0.25)',
             textTransform: 'none',
+            fontFamily: fonts.secondary,
             '&:hover': {
-              boxShadow: '0 5px 15px rgba(102,126,234,0.3)',
-              transform: 'translateY(-1px)',
-              background: 'linear-gradient(135deg, #667eea, #764ba2)',
-            }
+              background: sidebarColors.iconRailBg,
+              opacity: 0.9,
+            },
+            boxShadow: '0 2px 4px rgba(75,0,130,0.2)'
           }}
         >
           Edit Profile

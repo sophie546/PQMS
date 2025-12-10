@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import clinicaflow.service.MedicalStaffService;
 
 @RestController
 @RequestMapping("/api/medicalstaff")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MedicalStaffController {
 
     @Autowired
@@ -37,19 +39,19 @@ public class MedicalStaffController {
 
     // READ ONE
     @GetMapping("/{id}")
-    public Optional<MedicalStaffEntity> getStaffById(@PathVariable Long id) {
+    public Optional<MedicalStaffEntity> getStaffById(@PathVariable int id) {
         return service.getStaffById(id);
     }
 
     // UPDATE
     @PutMapping("/update/{id}")
-    public MedicalStaffEntity updateStaff(@PathVariable Long id, @RequestBody MedicalStaffEntity staff) {
+    public MedicalStaffEntity updateStaff(@PathVariable int id, @RequestBody MedicalStaffEntity staff) {
         return service.updateStaff(id, staff);
     }
 
     // DELETE
     @DeleteMapping("/delete/{id}")
-    public String deleteStaff(@PathVariable Long id) {
+    public String deleteStaff(@PathVariable int id) {
         service.deleteStaff(id);
         return "Medical staff with ID " + id + " has been deleted.";
     }

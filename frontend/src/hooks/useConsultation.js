@@ -1,18 +1,21 @@
 import { useState, useMemo } from "react";
 import { mockMedicalStaff } from '../data/mockMedicalStaff.js';
 import { mockConsultations } from '../data/mockConsultations.js';
+import { patientService } from "../services/patientService";
+import { consultationService } from "../services/consultationService";
 
-// Use data from your structured files
-const doctors = mockMedicalStaff
-  .filter(staff => staff.role === 'Doctor')
+const safeMedicalStaff = mockMedicalStaff || [];
+
+const doctors = safeMedicalStaff
+  .filter(staff => staff.role === 'Doctor' || staff.role === 'doctor') // Handle case sensitivity
   .map(doctor => ({
-    value: doctor.staffId,
-    label: doctor.name
+    value: doctor.staffId || doctor.id, // Handle potential ID field mismatch
+    label: doctor.name || doctor.fullName // Handle potential Name field mismatch
   }));
 
 const gender = [
-  { value: 'female', label: 'Female' },
-  { value: 'male', label: 'Male' }
+  { value: 'Female', label: 'Female' },
+  { value: 'Male', label: 'Male' }
 ];
 
 const quickTemplates = [
@@ -44,6 +47,7 @@ const quickTemplates = [
 
 export const useConsultation = () => {
   const [patientInfo, setPatientInfo] = useState({
+    patientId: '',
     name: '',
     age: '',
     gender: '',
@@ -61,28 +65,25 @@ export const useConsultation = () => {
   const [todayConsultations, setTodayConsultations] = useState(mockConsultations.length);
   const [errors, setErrors] = useState({});
 
-  // Validate name (letters only)
   const validateName = (name) => {
     const nameRegex = /^[A-Za-z\s]*$/;
     return nameRegex.test(name);
   };
 
-  // Validate age (numbers only)
   const validateAge = (age) => {
     const ageRegex = /^\d*$/;
     return ageRegex.test(age);
   };
 
-  // Handle patient info changes with validation
   const handlePatientInfoChange = (field, value) => {
     let isValid = true;
     
+    setErrors(prev => ({ ...prev, [field]: '' }));
+
     if (field === 'name') {
       isValid = validateName(value);
       if (!isValid && value !== '') {
         setErrors(prev => ({ ...prev, name: 'Name can only contain letters' }));
-      } else {
-        setErrors(prev => ({ ...prev, name: '' }));
       }
     }
     
@@ -90,12 +91,9 @@ export const useConsultation = () => {
       isValid = validateAge(value);
       if (!isValid && value !== '') {
         setErrors(prev => ({ ...prev, age: 'Age can only contain numbers' }));
-      } else {
-        setErrors(prev => ({ ...prev, age: '' }));
       }
     }
 
-    // Only update if valid or empty string (to allow backspace/delete)
     if (isValid || value === '') {
       setPatientInfo(prev => ({
         ...prev,
@@ -104,7 +102,6 @@ export const useConsultation = () => {
     }
   };
 
-  // Handle consultation details changes
   const handleConsultationChange = (field, value) => {
     setConsultationDetails(prev => ({
       ...prev,
@@ -112,7 +109,6 @@ export const useConsultation = () => {
     }));
   };
 
-  // Apply quick template
   const applyTemplate = (templateId) => {
     const template = quickTemplates.find(t => t.id === templateId);
     if (template) {
@@ -125,89 +121,91 @@ export const useConsultation = () => {
     }
   };
 
-  // Save consultation
-  const saveConsultation = () => {
-    // Clear previous errors
+  const saveConsultation = async () => {
     setErrors({});
-
-    // Validate required fields
     const newErrors = {};
     
-    if (!patientInfo.name) {
-      newErrors.name = 'Patient name is required';
-    } else if (!validateName(patientInfo.name)) {
-      newErrors.name = 'Name can only contain letters';
-    }
+    if (!patientInfo.name) newErrors.name = 'Patient name is required';
+    else if (!validateName(patientInfo.name)) newErrors.name = 'Name can only contain letters';
     
-    if (!patientInfo.doctor) {
-      newErrors.doctor = 'Doctor selection is required';
-    }
-    
-    if (!patientInfo.date) {
-      newErrors.date = 'Date is required';
-    }
-    
-    if (!consultationDetails.symptoms) {
-      newErrors.symptoms = 'Symptoms are required';
-    }
-    
-    if (!consultationDetails.diagnosis) {
-      newErrors.diagnosis = 'Diagnosis is required';
-    }
+    if (!patientInfo.doctor) newErrors.doctor = 'Doctor selection is required';
+    if (!patientInfo.date) newErrors.date = 'Date is required';
+    if (!consultationDetails.symptoms) newErrors.symptoms = 'Symptoms are required';
+    if (!consultationDetails.diagnosis) newErrors.diagnosis = 'Diagnosis is required';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      alert("Please fix the validation errors before saving");
-      return;
+      return { success: false, message: "Please fix the highlighted errors in the form." };
     }
 
-    // Create new consultation using your entity structure
-    const newConsultation = {
-      consultationId: `CONS-${mockConsultations.length + 1}`,
+    const pId = parseInt(patientInfo.patientId);
+    
+    if (isNaN(pId)) {
+       return { success: false, message: "Invalid Patient ID." };
+    }
+
+    // Format the selected date from patientInfo.date (Dayjs object)
+    let selectedDate = new Date().toISOString().split('T')[0]; // Default to today
+    
+    if (patientInfo.date) {
+      // If patientInfo.date is a Dayjs object, convert it to string
+      if (patientInfo.date.$L !== undefined) {
+        // It's a Dayjs object
+        selectedDate = patientInfo.date.format('YYYY-MM-DD');
+      } else if (patientInfo.date instanceof Date) {
+        // It's a JavaScript Date object
+        selectedDate = patientInfo.date.toISOString().split('T')[0];
+      } else {
+        // It's already a string
+        selectedDate = patientInfo.date;
+      }
+    }
+
+    const consultationPayload = {
+      patientId: pId,
+      // staffId: parseInt(patientInfo.doctor), 
       symptoms: consultationDetails.symptoms,
       diagnosis: consultationDetails.diagnosis,
-      medicinePrescribed: consultationDetails.prescription,
+      medicinePrescribed: consultationDetails.prescription, 
       remarks: consultationDetails.remarks,
-      consultationDate: new Date().toISOString().split('T')[0], // Today's date
-      patientId: "PAT-TEMP", // You'd get this from patient search
-      staffId: patientInfo.doctor
+      consultationDate: selectedDate
     };
 
-    console.log("Saving consultation:", newConsultation);
-    
-    // In a real app, you'd add to mockConsultations or send to API
-    // mockConsultations.push(newConsultation);
-    
-    setTodayConsultations(prev => prev + 1);
-    
-    // Reset form
-    setPatientInfo({
-      name: '',
-      age: '',
-      gender: '',
-      doctor: '',
-      date: null
-    });
-    
-    setConsultationDetails({
-      symptoms: '',
-      diagnosis: '',
-      prescription: '',
-      remarks: ''
-    });
-
-    setErrors({});
-    
-    alert("Consultation saved successfully!");
+    try {
+      console.log("Sending to Backend:", consultationPayload);
+      
+      // 4. Call Backend
+      await consultationService.addConsultation(consultationPayload);
+      
+      setPatientInfo({
+        patientId: '',
+        name: '',
+        age: '',
+        gender: '',
+        doctor: '',
+        date: null
+      });
+      setConsultationDetails({
+        symptoms: '',
+        diagnosis: '',
+        prescription: '',
+        remarks: ''
+      });
+      setErrors({});
+      setTodayConsultations(prev => prev + 1);
+      
+      return { success: true };
+      
+    } catch (error) {
+      console.error("Save Error:", error);
+      
+      return { success: false, message: "Server Error: Failed to save consultation." };
+    }
   };
 
-  // Get doctor label for display
   const getDoctorLabel = () => {
     const doctorValue = patientInfo.doctor;
-    
-    if (doctorValue === undefined || doctorValue === null || doctorValue === "") {
-      return "";
-    }
+    if (doctorValue === undefined || doctorValue === null || doctorValue === "") return "";
     
     const doctorValueStr = String(doctorValue);
     const foundDoctor = doctors.find(d => String(d.value) === doctorValueStr);
@@ -215,7 +213,6 @@ export const useConsultation = () => {
     return foundDoctor ? foundDoctor.label : "Not found";
   };
 
-  // Check if form is valid for submission
   const isFormValid = useMemo(() => {
     return patientInfo.name && 
            validateName(patientInfo.name) &&
@@ -224,6 +221,41 @@ export const useConsultation = () => {
            consultationDetails.symptoms && 
            consultationDetails.diagnosis;
   }, [patientInfo, consultationDetails]);
+
+  const handlePatientIdSearch = async (id) => {
+    if (!id) return;
+
+    setErrors(prev => ({ ...prev, patientId: '' }));
+
+    try {
+        console.log("Searching for patient ID:", id);
+        
+        const data = await patientService.getPatientById(id);
+
+        if (data) {
+            setPatientInfo(prev => ({
+                ...prev,
+                name: `${data.firstName} ${data.lastName}`,
+                age: String(data.age),
+                gender: data.gender,
+            }));
+        } else {
+            setErrors(prev => ({ ...prev, patientId: "Patient ID not found" }));
+        }
+
+    } catch (error) {
+        console.error("Patient not found", error);
+        
+        setErrors(prev => ({ ...prev, patientId: "Patient ID not found" }));
+        
+        setPatientInfo(prev => ({
+            ...prev,
+            name: '',
+            age: '',
+            gender: ''
+        }));
+    }
+  };
 
   return {
     patientInfo,
@@ -235,6 +267,7 @@ export const useConsultation = () => {
     errors,
     handlePatientInfoChange,
     handleConsultationChange,
+    handlePatientIdSearch,
     applyTemplate,
     saveConsultation,
     getDoctorLabel,

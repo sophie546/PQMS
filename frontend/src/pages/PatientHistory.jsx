@@ -1,5 +1,4 @@
-import React from 'react';
-import {
+import React, { useState } from 'react';import {
   Box,
   Card,
   Typography,
@@ -20,12 +19,13 @@ import {
   HeaderIcon,
   HeaderSubText,
   HeaderTitle,
-  HeaderButton,
   Caption,
   SubCaption,
   GradientButton
 } from "../components";
 
+import ConsultationModal from '../components/ConsultationModal';
+import { FeedbackModal } from '../components/FeedbackModal';
 import { usePatientHistory } from "../hooks";
 
 import {
@@ -35,7 +35,10 @@ import {
   People,
   FaClipboardList,
   FilterList,
-  Visibility
+  Visibility,
+  MoreVert,
+  Edit,
+  Delete
 } from "../lib";
 
 const PatientHistory = () => {
@@ -44,10 +47,11 @@ const PatientHistory = () => {
     patientStats,
     searchQuery,
     doctorFilter,
+    dateFilter,
     handleSearch,
     handleDoctorFilter,
+    handleDateFilter,
     handleRefresh,
-    handleViewDetails,
   } = usePatientHistory();
 
   // Filter menu states
@@ -55,6 +59,21 @@ const PatientHistory = () => {
   const [dateAnchorEl, setDateAnchorEl] = React.useState(null);
   const isDoctorMenuOpen = Boolean(doctorAnchorEl);
   const isDateMenuOpen = Boolean(dateAnchorEl);
+
+  // Actions menu state
+  const [actionAnchorEl, setActionAnchorEl] = React.useState(null);
+  const [selectedConsultationForAction, setSelectedConsultationForAction] = useState(null);
+  const isActionMenuOpen = Boolean(actionAnchorEl);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [feedback, setFeedback] = useState({
+    open: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
 
   const handleDoctorMenuClick = (event) => {
     setDoctorAnchorEl(event.currentTarget);
@@ -78,7 +97,24 @@ const PatientHistory = () => {
   };
 
   const handleDateSelect = (dateType) => {
-    console.log("Date filter:", dateType);
+    const today = new Date();
+    let selectedDate = '';
+    
+    switch(dateType) {
+      case 'today':
+        selectedDate = today.toISOString().split('T')[0];
+        break;
+      case 'thisWeek':
+        selectedDate = 'thisWeek';
+        break;
+      case 'thisMonth':
+        selectedDate = 'thisMonth';
+        break;
+      default:
+        selectedDate = '';
+    }
+    
+    handleDateFilter(selectedDate);
     handleDateMenuClose();
   };
 
@@ -88,8 +124,118 @@ const PatientHistory = () => {
     }
   };
 
+  const onViewDetails = (id) => {
+    const consultation = consultations.find(c => c.id === id);
+    if (consultation) {
+        setSelectedConsultation(consultation);
+        setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedConsultation(null);
+    setIsEditMode(false);
+  };
+
+  const handleActionMenuClick = (event, consultation) => {
+    setActionAnchorEl(event.currentTarget);
+    setSelectedConsultationForAction(consultation);
+  };
+
+  const handleActionMenuClose = () => {
+    setActionAnchorEl(null);
+    setSelectedConsultationForAction(null);
+  };
+
+  const handleEditConsultation = () => {
+    if (selectedConsultationForAction) {
+      setSelectedConsultation(selectedConsultationForAction);
+      setIsEditMode(true);
+      setIsModalOpen(true);
+      handleActionMenuClose();
+    }
+  };
+
+  const handleSaveConsultation = async (updatedData) => {
+    try {
+      const { consultationService } = await import('../services/consultationService');
+      
+      // Prepare the complete payload with all consultation fields
+      const payload = {
+        symptoms: updatedData.symptoms,
+        diagnosis: updatedData.diagnosis,
+        medicinePrescribed: updatedData.prescription,
+        remarks: updatedData.remarks,
+        consultationDate: updatedData.date
+      };
+      
+      await consultationService.updateConsultation(selectedConsultation.id, payload);
+      handleRefresh();
+      handleCloseModal();
+      
+      // Show feedback modal for successful update
+      setFeedback({
+        open: true,
+        type: 'success',
+        title: 'Consultation Updated',
+        message: 'The consultation details have been successfully updated.'
+      });
+      
+      console.log('Consultation updated successfully');
+    } catch (error) {
+      console.error('Error updating consultation:', error);
+      
+      // Show error feedback
+      setFeedback({
+        open: true,
+        type: 'error',
+        title: 'Update Failed',
+        message: 'Failed to update consultation. Please try again.'
+      });
+    }
+  };
+
+  const handleDeleteConsultation = async () => {
+    if (selectedConsultationForAction) {
+      try {
+        // Dynamically import consultationService
+        const { consultationService } = await import('../services/consultationService');
+        console.log('Attempting to delete consultation ID:', selectedConsultationForAction.id);
+        await consultationService.deleteConsultation(selectedConsultationForAction.id);
+        
+        // Remove from local state
+        const updatedConsultations = consultations.filter(c => c.id !== selectedConsultationForAction.id);
+        // Update the hook's state by calling refresh
+        handleRefresh();
+        handleActionMenuClose();
+        
+        // Show feedback modal for successful deletion
+        setFeedback({
+          open: true,
+          type: 'success',
+          title: 'Consultation Deleted',
+          message: 'The consultation record has been successfully removed.'
+        });
+        
+        console.log('Consultation deleted successfully:', selectedConsultationForAction.id);
+      } catch (error) {
+        console.error('Error deleting consultation:', error);
+        console.error('Error response:', error.response?.status, error.response?.data);
+        
+        // Show error feedback
+        setFeedback({
+          open: true,
+          type: 'error',
+          title: 'Delete Failed',
+          message: error.response?.data?.message || 'Failed to delete consultation. Please try again.'
+        });
+      }
+    }
+  };
+
   const iconMap = {
-    history: <History sx={{ fontSize: 44, color: '#667eea' }} />,
+    history: <History sx={{ fontSize: 44, color: '#4B0082' }} />,
     schedule: <Schedule sx={{ fontSize: 44, color: '#ed6c02'}} />,
     people: <People sx={{ fontSize: 44, color: '#2e7d32'}} />
   };
@@ -100,7 +246,7 @@ const PatientHistory = () => {
       <HeaderPaper>
         <Box display="flex" justifyContent="space-between" alignItems="center" maxWidth="1400px" mx="auto">
           <Box display="flex" alignItems="center" gap={2}>
-            <HeaderIcon sx={{ background: '#667eea' }}>
+            <HeaderIcon sx={{ background: '#4B0082' }}>
               <FaClipboardList size={20} color="white" />
             </HeaderIcon>
             <Box>
@@ -172,17 +318,18 @@ const PatientHistory = () => {
                   sx={{
                     textTransform: 'none',
                     borderRadius: 2,
-                    borderColor: '#e5e7eb',
-                    color: '#374151',
+                    borderColor: doctorFilter !== 'all' ? '#4B0082' : '#e5e7eb',
+                    color: doctorFilter !== 'all' ? '#4B0082' : '#374151',
                     fontWeight: 600,
                     fontSize: '0.875rem',
+                    backgroundColor: doctorFilter !== 'all' ? 'rgba(75, 0, 130, 0.05)' : 'transparent',
                     '&:hover': { 
-                      borderColor: '#d1d5db', 
-                      background: '#f9fafb' 
+                      borderColor: '#4B0082', 
+                      background: 'rgba(75, 0, 130, 0.05)'
                     }
                   }}
                 >
-                  Doctor
+                  Doctor {doctorFilter !== 'all' && '✓'}
                 </Button>
 
                 {/* Date Filter Button */}
@@ -194,17 +341,18 @@ const PatientHistory = () => {
                   sx={{
                     textTransform: 'none',
                     borderRadius: 2,
-                    borderColor: '#e5e7eb',
-                    color: '#374151',
+                    borderColor: dateFilter !== '' ? '#4B0082' : '#e5e7eb',
+                    color: dateFilter !== '' ? '#4B0082' : '#374151',
                     fontWeight: 600,
                     fontSize: '0.875rem',
+                    backgroundColor: dateFilter !== '' ? 'rgba(75, 0, 130, 0.05)' : 'transparent',
                     '&:hover': { 
-                      borderColor: '#d1d5db', 
-                      background: '#f9fafb' 
+                      borderColor: '#4B0082', 
+                      background: 'rgba(75, 0, 130, 0.05)'
                     }
                   }}
                 >
-                  Date
+                  Date {dateFilter !== '' && '✓'}
                 </Button>
 
                 {/* Doctor Filter Menu */}
@@ -283,7 +431,7 @@ const PatientHistory = () => {
                   width: '280px',
                   transition: 'border-color 0.2s',
                   '&:focus-within': {
-                    borderColor: '#667eea',
+                    borderColor: '#4B0082',
                   }
                 }}>
                   <input
@@ -346,7 +494,7 @@ const PatientHistory = () => {
                       <Avatar sx={{ 
                         width: 40, 
                         height: 40, 
-                        background: '#667eea', 
+                        background: '#4B0082', 
                         fontWeight: 700, 
                         fontSize: '0.875rem' 
                       }}>
@@ -374,7 +522,7 @@ const PatientHistory = () => {
                     </Box>
                     
                     {/* Doctor */}
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 500, fontSize: '0.875rem' }}>
+                    <Typography variant="body2" sx={{ color: '#4B0082', fontWeight: 500, fontSize: '0.875rem' }}>
                       {consultation.doctor}
                     </Typography>
                     
@@ -393,12 +541,12 @@ const PatientHistory = () => {
                       {consultation.diagnosis}
                     </Typography>
                     
-                    {/* Actions - View Details Button */}
-                    <Box display="flex" justifyContent="center">
+                    {/* Actions - View Details Button & More Menu */}
+                    <Box display="flex" justifyContent="center" gap={1}>
                       <Button
                         variant="outlined"
                         startIcon={<Visibility sx={{ fontSize: 16 }} />}
-                        onClick={() => handleViewDetails(consultation.id)}
+                        onClick={() => onViewDetails(consultation.id)}
                         size="small"
                         sx={{
                           borderColor: '#e5e7eb',
@@ -412,15 +560,69 @@ const PatientHistory = () => {
                           minWidth: 'auto',
                           whiteSpace: 'nowrap',
                           '&:hover': {
-                            borderColor: '#667eea',
+                            borderColor: '#4B0082',
                             backgroundColor: 'rgba(102, 126, 234, 0.04)',
-                            color: '#667eea'
+                            color: '#4B0082'
                           },
                         }}
                       >
                         Details
                       </Button>
+                      <Button
+                        onClick={(e) => handleActionMenuClick(e, consultation)}
+                        size="small"
+                        sx={{
+                          minWidth: 'auto',
+                          p: 0.75,
+                          color: '#6b7280',
+                          '&:hover': {
+                            backgroundColor: 'rgba(102, 126, 234, 0.04)',
+                            color: '#4B0082'
+                          }
+                        }}
+                      >
+                        <MoreVert sx={{ fontSize: 18 }} />
+                      </Button>
                     </Box>
+                  
+                    {/* Actions Menu */}
+                    <Menu
+                      anchorEl={actionAnchorEl}
+                      open={isActionMenuOpen}
+                      onClose={handleActionMenuClose}
+                      PaperProps={{
+                        sx: {
+                          borderRadius: 2,
+                          boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                          border: '1px solid #e5e7eb',
+                          minWidth: 180
+                        }
+                      }}
+                    >
+                      <MenuItem
+                        onClick={handleEditConsultation}
+                        sx={{
+                          fontSize: '0.875rem',
+                          display: 'flex',
+                          gap: 1.5
+                        }}
+                      >
+                        <Edit sx={{ fontSize: 18, color: '#4B0082' }} />
+                        Edit Details
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleDeleteConsultation}
+                        sx={{
+                          fontSize: '0.875rem',
+                          color: '#dc2626',
+                          display: 'flex',
+                          gap: 1.5
+                        }}
+                      >
+                        <Delete sx={{ fontSize: 18, color: '#dc2626' }} />
+                        Delete History
+                      </MenuItem>
+                    </Menu>
                   </Box>
                 </Box>
               ))
@@ -437,6 +639,20 @@ const PatientHistory = () => {
           </Box>
         </Card>
       </Box>
+      <ConsultationModal 
+        open={isModalOpen} 
+        onClose={handleCloseModal} 
+        data={selectedConsultation}
+        isEditMode={isEditMode}
+        onSave={handleSaveConsultation}
+      />
+      <FeedbackModal
+        open={feedback.open}
+        onClose={() => setFeedback(prev => ({ ...prev, open: false }))}
+        type={feedback.type}
+        title={feedback.title}
+        message={feedback.message}
+      />
     </Box>
   );
 };

@@ -10,7 +10,7 @@ public class UserAccountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long accountID;
+    private int accountID;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -25,11 +25,11 @@ public class UserAccountEntity {
     @JsonIgnore 
     private MedicalStaffEntity medicalStaff;
 
-    public Long getAccountID() {
+    public int getAccountID() {
         return accountID;
     }
 
-    public void setAccountID(Long accountID) {
+    public void setAccountID(int accountID) {
         this.accountID = accountID;
     }
 

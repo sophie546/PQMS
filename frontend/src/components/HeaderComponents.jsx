@@ -40,9 +40,9 @@ export const HeaderTitle = ({ children, sx = {}, ...props }) => (
   <Typography
     variant="h5"
     sx={{
-      color: '#1f2937',
+      color: '#4B0082',
       fontWeight: 700,
-        fontFamily: '"Arimo", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       fontSize: '1.5rem',
       ...sx
     }}
@@ -71,7 +71,7 @@ export const HeaderButton = ({
   children,
   variant = "contained",
   startIcon,
-  background = '#667eea',
+  background = '#4B0082',
   color = 'rgba(255, 255, 255, 0.9)',
   textTransform = 'none',
   fontWeight = 700,
