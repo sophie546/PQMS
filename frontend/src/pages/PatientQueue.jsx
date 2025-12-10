@@ -51,7 +51,7 @@ import {
 } from '../components';
 
 import { queueService } from '../services/queueService';
-import { mockMedicalStaff } from '../data/mockMedicalStaff';
+import { staffService } from '../services/staffService';
 
 // Theme colors matching Staff component
 const themeColors = {
@@ -78,6 +78,7 @@ const PatientQueue = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({});
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [staffList, setStaffList] = useState([]);
   const [feedback, setFeedback] = useState({
     open: false,
     type: 'success',
@@ -87,6 +88,17 @@ const PatientQueue = () => {
   
   const isFilterOpen = Boolean(filterAnchorEl);
   const isMenuOpen = Boolean(menuAnchorEl);
+
+  // Fetch staff data from backend
+  const fetchStaffData = async () => {
+    try {
+      const data = await staffService.getAllStaff();
+      setStaffList(data);
+      console.log('✅ Staff data loaded:', data);
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+    }
+  };
 
   // Fetch queue data from backend
   const fetchQueueData = async () => {
@@ -109,6 +121,7 @@ const PatientQueue = () => {
 
   useEffect(() => {
     fetchQueueData();
+    fetchStaffData();
     const interval = setInterval(fetchQueueData, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -791,8 +804,8 @@ const PatientQueue = () => {
                     }}
                   >
                     <MenuItem value="">Unassigned</MenuItem>
-                    {mockMedicalStaff
-                      .filter(staff => staff.role === 'Doctor')
+                    {staffList
+                      .filter(staff => staff.role && staff.role.toLowerCase().includes('doctor'))
                       .map(doctor => (
                         <MenuItem key={doctor.id} value={doctor.name}>
                           {doctor.name}

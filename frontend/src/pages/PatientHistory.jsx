@@ -22,11 +22,11 @@ import {
   HeaderTitle,
   Caption,
   SubCaption,
-  GradientButton
+  GradientButton,
+  FeedbackModal
 } from "../components";
 
 import ConsultationModal from '../components/ConsultationModal';
-import { FeedbackModal } from '../components/FeedbackModal';
 import { usePatientHistory } from "../hooks";
 
 import {
@@ -117,26 +117,6 @@ const PatientHistory = () => {
     
     handleDateFilter(selectedDate);
     handleDateMenuClose();
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      console.log("Searching for:", searchQuery);
-    }
-  };
-
-  const onViewDetails = (id) => {
-    const consultation = consultations.find(c => c.id === id);
-    if (consultation) {
-        setSelectedConsultation(consultation);
-        setIsModalOpen(true);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedConsultation(null);
-    setIsEditMode(false);
   };
 
   const handleActionMenuClick = (event, consultation) => {
@@ -233,6 +213,26 @@ const PatientHistory = () => {
         });
       }
     }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      console.log("Searching for:", searchQuery);
+    }
+  };
+
+  const onViewDetails = (id) => {
+    const consultation = consultations.find(c => c.id === id);
+    if (consultation) {
+        setSelectedConsultation(consultation);
+        setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedConsultation(null);
+    setIsEditMode(false);
   };
 
   const iconMap = {
