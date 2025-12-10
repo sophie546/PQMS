@@ -51,7 +51,7 @@ import {
 } from '../components';
 
 import { queueService } from '../services/queueService';
-import { staffService } from '../services/staffService';
+import staffService from '../services/staffService'; 
 
 // Theme colors matching Staff component
 const themeColors = {

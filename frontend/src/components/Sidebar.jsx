@@ -64,6 +64,7 @@ const SidebarHeader = ({ collapsed }) => (
     alignItems: 'center',
     position: 'relative',
     zIndex: 20,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   }}>
     <Box sx={{
       width: ICON_RAIL_WIDTH,
@@ -76,7 +77,12 @@ const SidebarHeader = ({ collapsed }) => (
         borderRadius: '12px',
         background: 'rgba(255,255,255,0.2)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        backdropFilter: 'blur(4px)'
+        backdropFilter: 'blur(4px)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'scale(1.05)',
+          background: 'rgba(255,255,255,0.25)',
+        }
       }}>
         <FaStethoscope size={22} color="white" />
       </Box>
@@ -86,9 +92,10 @@ const SidebarHeader = ({ collapsed }) => (
       pl: 2, 
       opacity: collapsed ? 0 : 1,
       width: collapsed ? 0 : 'auto',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       overflow: 'hidden',
-      whiteSpace: 'nowrap'
+      whiteSpace: 'nowrap',
+      transform: collapsed ? 'translateX(-10px)' : 'translateX(0)',
     }}>
       <Typography variant="h6" sx={{ 
         fontWeight: 700, color: colors.white, fontFamily: '"Poppins", "Inter", sans-serif', lineHeight: 1.2
@@ -108,7 +115,7 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
   <ListItem disablePadding sx={{ 
     display: 'block', 
     position: 'relative',
-    mb: 0,
+    mb: 0.5,
     zIndex: isSelected ? 11 : 1,
     '&:hover': {
       zIndex: 12
@@ -123,7 +130,7 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
         height: 50,
         p: 0,
         position: 'relative',
-        transition: 'all 0.2s ease',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         background: 'transparent',
         "&.Mui-selected": {
           background: 'transparent', 
@@ -143,6 +150,7 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
         position: 'relative',
         zIndex: 20,
         flexShrink: 0,
+        transition: 'all 0.3s ease',
       }}>
         {/* Active Indicator Line */}
         <Box sx={{
@@ -152,13 +160,15 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
             background: colors.white,
             boxShadow: '0 0 10px rgba(255,255,255,0.5)',
             opacity: isSelected ? 1 : 0,
-            transition: 'opacity 0.2s ease-in-out',
+            transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }} />
 
         <ListItemIcon sx={{ 
           minWidth: 'auto',
           color: isSelected ? colors.white : colors.inactiveText,
           fontSize: '1.4rem',
+          transition: 'all 0.3s ease',
+          transform: isSelected ? 'scale(1.1)' : 'scale(1)',
         }}>
           {item.icon}
         </ListItemIcon>
@@ -178,7 +188,7 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
         borderTopRightRadius: 0, 
         borderBottomRightRadius: 0,
         
-        transition: 'background-color 0.2s ease-in-out, border-radius 0.2s ease-in-out, transform 0.3s ease, opacity 0.3s ease',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         
         opacity: collapsed ? 0 : 1,
         transform: collapsed ? 'translateX(-20px)' : 'translateX(0)',
@@ -189,11 +199,13 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
 
         <ListItemText 
           primary={item.text}
-            primaryTypographyProps={{
+          primaryTypographyProps={{
             fontSize: '0.95rem',
             fontWeight: isSelected ? 700 : 500,
             fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
             color: isSelected ? colors.activeText : colors.inactiveText,
+            transition: 'all 0.3s ease',
+            opacity: collapsed ? 0 : 1,
           }}
         />
       </Box>
@@ -281,15 +293,31 @@ const UserProfile = ({ collapsed, onToggle }) => {
   const initials = getUserInitials(name);
 
   return (
-    <Box sx={{ mt: 'auto', position: 'relative', zIndex: 20 }}>
-      <Box sx={{ display: 'flex', justifyContent: collapsed ? 'center' : 'flex-end', p: 1 }}>
+    <Box sx={{ 
+      mt: 'auto', 
+      position: 'relative', 
+      zIndex: 20,
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: collapsed ? 'center' : 'flex-end', 
+        p: 1,
+        transition: 'all 0.3s ease',
+      }}>
         <IconButton 
           onClick={onToggle}
           size="small"
           sx={{ 
             color: colors.inactiveText, 
             border: `1px solid ${colors.hover}`,
-            '&:hover': { color: colors.white, background: colors.hover }
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+            '&:hover': { 
+              color: colors.white, 
+              background: colors.hover,
+              transform: collapsed ? 'rotate(180deg) scale(1.1)' : 'scale(1.1)',
+            }
           }}
         >
           {collapsed ? <ChevronRight /> : <ChevronLeft />}
@@ -299,37 +327,58 @@ const UserProfile = ({ collapsed, onToggle }) => {
         onClick={() => navigate('/general-settings')}
         sx={{
           height: 80,
-          display: 'flex', alignItems: 'center', cursor: 'pointer',
+          display: 'flex', 
+          alignItems: 'center', 
+          cursor: 'pointer',
           borderTop: `1px solid rgba(255,255,255,0.1)`,
-          '&:hover': { background: colors.hover }
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': { 
+            background: colors.hover,
+            '& .MuiAvatar-root': {
+              transform: 'scale(1.1)',
+            }
+          }
         }}
       >
         <Box sx={{
           width: ICON_RAIL_WIDTH,
           height: '100%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
           flexShrink: 0,
         }}>
           <Avatar sx={{ 
-            width: 36, height: 36,
-            background: colors.white, color: colors.iconRailBg,
-            fontSize: '0.85rem', fontWeight: 700,
-            border: `2px solid rgba(255,255,255,0.3)`
+            width: 36, 
+            height: 36,
+            background: colors.white, 
+            color: colors.iconRailBg,
+            fontSize: '0.85rem', 
+            fontWeight: 700,
+            border: `2px solid rgba(255,255,255,0.3)`,
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           }}>
             {initials}
           </Avatar>
         </Box>
         <Box sx={{ 
-          pl: 1, flex: 1, minWidth: 0,
-          opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto',
-          transition: 'all 0.3s ease', overflow: 'hidden', whiteSpace: 'nowrap'
+          pl: 1, 
+          flex: 1, 
+          minWidth: 0,
+          opacity: collapsed ? 0 : 1, 
+          width: collapsed ? 0 : 'auto',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
+          overflow: 'hidden', 
+          whiteSpace: 'nowrap',
+          transform: collapsed ? 'translateX(-10px)' : 'translateX(0)',
         }}>
           <Typography variant="body2" sx={{ 
             color: colors.white, 
             fontWeight: 600, 
             fontSize: '0.85rem',
             textOverflow: 'ellipsis',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            transition: 'all 0.3s ease',
           }}>
             {name}
           </Typography>
@@ -338,7 +387,8 @@ const UserProfile = ({ collapsed, onToggle }) => {
             fontSize: '0.75rem',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
-            display: 'block'
+            display: 'block',
+            transition: 'all 0.3s ease',
           }}>
             {role}
           </Typography>
@@ -349,7 +399,11 @@ const UserProfile = ({ collapsed, onToggle }) => {
             sx={{ 
               mr: 2, 
               color: colors.inactiveText,
-              '&:hover': { color: colors.white }
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': { 
+                color: colors.white,
+                transform: 'scale(1.1)',
+              }
             }}
           >
             <SettingsOutlined fontSize="small" />
@@ -362,29 +416,54 @@ const UserProfile = ({ collapsed, onToggle }) => {
 
 export const Sidebar = ({ menuItems, currentPath, onItemClick, collapsed, onToggle }) => (
   <Box sx={{ 
-    height: '100%', width: '100%',
-    display: 'flex', flexDirection: 'column',
-    position: 'relative', overflow: 'hidden',
-    background: colors.navRailBg, 
+    height: '100%', 
+    width: '100%',
+    display: 'flex', 
+    flexDirection: 'column',
+    position: 'relative', 
+    overflow: 'hidden',
+    background: colors.navRailBg,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   }}>
     <Box sx={{
       position: 'absolute',
-      top: 0, left: 0, bottom: 0,
+      top: 0, 
+      left: 0, 
+      bottom: 0,
       width: ICON_RAIL_WIDTH,
       background: colors.iconRailBg,
       zIndex: 0,
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     }} />
 
     <SidebarHeader collapsed={collapsed} />
     
     <Box sx={{ 
       flex: 1,
-      overflowY: 'auto', overflowX: 'hidden',
-      py: 2, zIndex: 1, 
-      '&::-webkit-scrollbar': { width: 4 },
-      '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.2)', borderRadius: 2 },
+      overflowY: 'auto', 
+      overflowX: 'hidden',
+      py: 2, 
+      zIndex: 1,
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      '&::-webkit-scrollbar': { 
+        width: 4,
+        transition: 'all 0.3s ease',
+      },
+      '&::-webkit-scrollbar-thumb': { 
+        background: 'rgba(255,255,255,0.2)', 
+        borderRadius: 2,
+        transition: 'all 0.3s ease',
+      },
+      '&:hover': {
+        '&::-webkit-scrollbar-thumb': {
+          background: 'rgba(255,255,255,0.3)',
+        }
+      }
     }}>
-      <List sx={{ p: 0 }}>
+      <List sx={{ 
+        p: 0,
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      }}>
         {menuItems.map((item) => (
           <SidebarMenuItem 
             key={item.text}
@@ -407,8 +486,9 @@ export const SidebarNavigation = ({ mobileOpen, handleDrawerToggle, menuItems, c
 
   return (
     <Box component="nav" sx={{ 
-      width: { sm: currentWidth }, flexShrink: { sm: 0 },
-      transition: 'width 0.3s ease' 
+      width: { sm: currentWidth }, 
+      flexShrink: { sm: 0 },
+      transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)' 
     }}>
       <Drawer
         variant="temporary"
@@ -418,13 +498,19 @@ export const SidebarNavigation = ({ mobileOpen, handleDrawerToggle, menuItems, c
         sx={{
           display: { xs: 'block', sm: 'none' },
           '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', width: EXPANDED_WIDTH, border: 'none' 
+            boxSizing: 'border-box', 
+            width: EXPANDED_WIDTH, 
+            border: 'none',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           },
         }}
       >
         <Sidebar 
-          menuItems={menuItems} currentPath={currentPath} onItemClick={onItemClick}
-          collapsed={false} onToggle={() => {}}
+          menuItems={menuItems} 
+          currentPath={currentPath} 
+          onItemClick={onItemClick}
+          collapsed={false} 
+          onToggle={() => {}}
         />
       </Drawer>
       <Drawer
@@ -432,15 +518,21 @@ export const SidebarNavigation = ({ mobileOpen, handleDrawerToggle, menuItems, c
         sx={{
           display: { xs: 'none', sm: 'block' },
           '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', width: currentWidth, border: 'none',
-            overflow: 'hidden', transition: 'width 0.3s ease'
+            boxSizing: 'border-box', 
+            width: currentWidth, 
+            border: 'none',
+            overflow: 'hidden', 
+            transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           },
         }}
         open
       >
         <Sidebar 
-          menuItems={menuItems} currentPath={currentPath} onItemClick={onItemClick} 
-          collapsed={collapsed} onToggle={handleToggle}
+          menuItems={menuItems} 
+          currentPath={currentPath} 
+          onItemClick={onItemClick} 
+          collapsed={collapsed} 
+          onToggle={handleToggle}
         />
       </Drawer>
     </Box>
