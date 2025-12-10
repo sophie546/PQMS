@@ -18,9 +18,53 @@ export const useStaff = () => {
         setError(null);
         console.log('🔄 Fetching staff data from backend...');
         
-        const data = await staffService.getAllStaff();
+        // Fetch from API
+        const response = await fetch('http://localhost:8080/api/medicalstaff/all');
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch staff: ${response.status}`);
+        }
+        
+        const data = await response.json();
         console.log('✅ Staff data received:', data);
-        setStaffMembers(data);
+        
+        // Map API data to staff format with new availability field
+        const mappedStaff = data.map(staff => {
+          // Get email from userAccount relation
+          const email = staff.userAccount?.username || '';
+          
+          // Get availability from database (default to 'Available' if null)
+          const availability = staff.availability || 'Available';
+          
+          // Map availability to status for backward compatibility
+          let status = availability;
+          if (availability === 'offline') {
+            status = 'Off Duty'; // Map 'offline' to 'Off Duty' for display
+          }
+          
+          return {
+            id: staff.staffID,
+            name: staff.name,
+            role: staff.role,
+            specialty: staff.specialty || 'Not specified',
+            email: email,
+            contact: staff.contactNo || 'No contact',
+            status: status, // Use mapped status
+            availability: availability, // Keep original availability
+            department: staff.department || 'General Medicine',
+            age: staff.age,
+            gender: staff.gender,
+            accountID: staff.userAccount?.accountID,
+            // Original data for debugging
+            _raw: staff
+          };
+        });
+        
+        setStaffMembers(mappedStaff);
+        
+        // Update localStorage for other components
+        localStorage.setItem('staffList', JSON.stringify(mappedStaff));
+        
       } catch (err) {
         console.error('❌ Error fetching staff data:', err);
         setError('Failed to load staff data. Please try again.');
@@ -54,12 +98,14 @@ export const useStaff = () => {
           const email = staff.email || '';
           const specialty = staff.specialty || '';
           const role = staff.role || '';
+          const department = staff.department || '';
           
           matchesSearch = 
             name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             email.toLowerCase().includes(searchQuery.toLowerCase()) ||
             specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            role.toLowerCase().includes(searchQuery.toLowerCase());
+            role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            department.toLowerCase().includes(searchQuery.toLowerCase());
         }
       }
 
@@ -68,10 +114,27 @@ export const useStaff = () => {
       const matchesRole = roleFilter === 'all' || 
                          staffRole.toLowerCase() === roleFilter.toLowerCase();
       
-      // Status filter
+      // Status filter - handle both status and availability
       const staffStatus = staff.status || 'Available';
-      const matchesStatus = statusFilter === 'all' || 
-                           staffStatus.toLowerCase() === statusFilter.toLowerCase();
+      const staffAvailability = staff.availability || 'available';
+      
+      let matchesStatus = statusFilter === 'all';
+      
+      if (statusFilter !== 'all') {
+        // Map filter values to database values
+        const filterMap = {
+          'Available': ['available'],
+          'Busy': ['busy'],
+          'Off Duty': ['offline', 'off duty']
+        };
+        
+        const mappedFilters = filterMap[statusFilter] || [statusFilter.toLowerCase()];
+        
+        matchesStatus = mappedFilters.some(filter => 
+          staffAvailability.toLowerCase() === filter.toLowerCase() ||
+          staffStatus.toLowerCase() === filter.toLowerCase()
+        );
+      }
 
       return matchesSearch && matchesRole && matchesStatus;
     });
@@ -80,15 +143,19 @@ export const useStaff = () => {
   // Calculate stats from filtered data
   const staffStats = useMemo(() => {
     const totalStaff = filteredStaff.length;
+    
     const doctorCount = filteredStaff.filter(s => 
       (s.role || '').toLowerCase() === "doctor"
     ).length;
+    
     const nurseCount = filteredStaff.filter(s => 
       (s.role || '').toLowerCase() === "nurse"
     ).length;
-    const availableCount = filteredStaff.filter(s => 
-      (s.status || 'Available').toLowerCase() === "available"
-    ).length;
+    
+    const availableCount = filteredStaff.filter(s => {
+      const availability = (s.availability || 'available').toLowerCase();
+      return availability === 'available';
+    }).length;
 
     return [
       {
@@ -130,25 +197,28 @@ export const useStaff = () => {
     ];
   }, [filteredStaff]);
 
+  // Update getStatusColor to handle new availability values
   const getStatusColor = (status = '') => {
-    const actualStatus = status || 'Available';
-    switch (actualStatus.toLowerCase()) {
-      case 'available': return '#2e7d32';
-      case 'busy': return '#ed6c02';
-      case 'off duty': return '#6b7280';
-      case 'on leave': return '#f59e0b';
+    const statusLower = (status || '').toLowerCase();
+    switch (statusLower) {
+      case 'available': return '#10b981'; // Green
+      case 'busy': return '#f59e0b'; // Orange
+      case 'offline':
+      case 'off duty': 
+        return '#6b7280'; // Gray
       default: return '#6b7280';
     }
   };
 
   const getStatusBgColor = (status = '') => {
-    const actualStatus = status || 'Available';
-    switch (actualStatus.toLowerCase()) {
-      case 'available': return '#e8f5e9';
-      case 'busy': return '#fff3e0';
-      case 'off duty': return '#f5f5f5';
-      case 'on leave': return '#fef3c7';
-      default: return '#f5f5f5';
+    const statusLower = (status || '').toLowerCase();
+    switch (statusLower) {
+      case 'available': return '#d1fae5'; // Light green
+      case 'busy': return '#fef3c7'; // Light orange/yellow
+      case 'offline':
+      case 'off duty': 
+        return '#f3f4f6'; // Light gray
+      default: return '#f3f4f6';
     }
   };
 
@@ -159,6 +229,7 @@ export const useStaff = () => {
       case 'nurse': return '#764ba2';
       case 'administrator': return '#7c3aed';
       case 'technician': return '#dc2626';
+      case 'staff': return '#6b7280';
       default: return '#6b7280';
     }
   };
@@ -184,8 +255,41 @@ export const useStaff = () => {
   const refreshStaffData = async () => {
     try {
       setLoading(true);
-      const data = await staffService.getAllStaff();
-      setStaffMembers(data);
+      const response = await fetch('http://localhost:8080/api/medicalstaff/all');
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch staff: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Map data same as in useEffect
+      const mappedStaff = data.map(staff => {
+        const email = staff.userAccount?.username || '';
+        const availability = staff.availability || 'Available';
+        let status = availability;
+        if (availability === 'offline') {
+          status = 'Off Duty';
+        }
+        
+        return {
+          id: staff.staffID,
+          name: staff.name,
+          role: staff.role,
+          specialty: staff.specialty || 'Not specified',
+          email: email,
+          contact: staff.contactNo || 'No contact',
+          status: status,
+          availability: availability,
+          department: staff.department || 'General Medicine',
+          age: staff.age,
+          gender: staff.gender,
+          accountID: staff.userAccount?.accountID
+        };
+      });
+      
+      setStaffMembers(mappedStaff);
+      localStorage.setItem('staffList', JSON.stringify(mappedStaff));
       setError(null);
     } catch (err) {
       setError('Failed to refresh staff data.');
@@ -196,6 +300,20 @@ export const useStaff = () => {
   };
 
   const hasActiveFilters = searchQuery || roleFilter !== 'all' || statusFilter !== 'all';
+
+  // Add listener for storage events to refresh when availability changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      console.log('Storage changed, refreshing staff data...');
+      refreshStaffData();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return {
     staffMembers: filteredStaff,
@@ -214,7 +332,5 @@ export const useStaff = () => {
     handleStatusFilter,
     clearFilters,
     refreshStaffData,
-    // Removed: handleAddStaff, handleStaffMenuClick, deleteStaff, updateStaff
-    // Removed: autocompleteResults, autocompleteLoading, isCheckingExisting, searchExistingStaff, checkStaffExistsByEmail
   };
 };

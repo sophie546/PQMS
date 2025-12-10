@@ -14,11 +14,13 @@ public class MedicalStaffEntity {
     private String role;
     private String contactNo;
     private String specialty;
+    private Integer age;
+    private String gender;
+    private String department;
     
-    // ADD THESE NEW FIELDS
-    private Integer age;        // Using Integer instead of int to allow null
-    private String gender;      // e.g., "Male", "Female", "Other"
-    private String department;  // NEW: Department field
+    // NEW: Add availability field (NULL by default)
+    @Column(length = 20)
+    private String availability; // NULL by default
 
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "accountID", unique = true)
@@ -81,13 +83,21 @@ public class MedicalStaffEntity {
         this.gender = gender;
     }
 
-    // NEW: Department getter and setter
     public String getDepartment() {
         return department;
     }
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    // NEW: Availability getter and setter
+    public String getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(String availability) {
+        this.availability = availability;
     }
 
     public UserAccountEntity getUserAccount() {

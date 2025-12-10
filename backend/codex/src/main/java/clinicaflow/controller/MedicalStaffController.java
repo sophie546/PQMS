@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,11 +55,41 @@ public class MedicalStaffController {
     public MedicalStaffEntity updateStaff(@PathVariable int id, @RequestBody MedicalStaffEntity staff) {
         return service.updateStaff(id, staff);
     }
+    
+    // NEW: Update availability only
+    @PutMapping("/{id}/availability")
+    public ResponseEntity<?> updateAvailability(@PathVariable int id, @RequestBody AvailabilityRequest request) {
+        try {
+            MedicalStaffEntity updatedStaff = service.updateAvailability(id, request.getAvailability());
+            return ResponseEntity.ok(updatedStaff);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    // NEW: Get staff by availability
+    @GetMapping("/availability/{status}")
+    public List<MedicalStaffEntity> getStaffByAvailability(@PathVariable String status) {
+        return service.getStaffByAvailability(status);
+    }
 
     // DELETE
     @DeleteMapping("/delete/{id}")
     public String deleteStaff(@PathVariable int id) {
         service.deleteStaff(id);
         return "Medical staff with ID " + id + " has been deleted.";
+    }
+    
+    // Inner class for availability request
+    public static class AvailabilityRequest {
+        private String availability;
+        
+        public String getAvailability() {
+            return availability;
+        }
+        
+        public void setAvailability(String availability) {
+            this.availability = availability;
+        }
     }
 }
