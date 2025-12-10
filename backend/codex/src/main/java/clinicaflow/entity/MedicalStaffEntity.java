@@ -14,11 +14,16 @@ public class MedicalStaffEntity {
     private String role;
     private String contactNo;
     private String specialty;
+    
+    // ADD THESE NEW FIELDS
+    private Integer age;        // Using Integer instead of int to allow null
+    private String gender;      // e.g., "Male", "Female", "Other"
 
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "accountID", unique = true)
     private UserAccountEntity userAccount;
 
+    // Getters and Setters
     public int getStaffID() {
         return staffID;
     }
@@ -57,6 +62,22 @@ public class MedicalStaffEntity {
 
     public void setSpecialty(String specialty) {
         this.specialty = specialty;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public UserAccountEntity getUserAccount() {
