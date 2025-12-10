@@ -1,15 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
   Modal,
   Grid,
   TextField,
-  MenuItem
+  MenuItem,
+  Button
 } from '@mui/material';
 
-const ConsultationModal = ({ open, onClose, data }) => {
+const ConsultationModal = ({ open, onClose, data, isEditMode = false, onSave }) => {
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        symptoms: data.symptoms || '',
+        diagnosis: data.diagnosis || '',
+        prescription: data.prescription || '',
+        remarks: data.remarks || '',
+        date: data.date || '',
+        doctor: data.doctor || ''
+      });
+    }
+  }, [data, open]);
+
   if (!data) return null;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSave = () => {
+    if (onSave) {
+      onSave(formData);
+    }
+  };
 
   // Split name for the layout
   const names = data.patientName ? data.patientName.split(' ') : ['', ''];
@@ -64,9 +94,16 @@ const ConsultationModal = ({ open, onClose, data }) => {
       aria-labelledby="consultation-modal-title"
     >
       <Box sx={modalStyle}>
-        <Typography id="consultation-modal-title" variant="h6" component="h2" sx={{ fontWeight: 700, mb: 3 }}>
-          Consultation Details
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography id="consultation-modal-title" variant="h6" component="h2" sx={{ fontWeight: 700 }}>
+            {isEditMode ? 'Edit Consultation' : 'Consultation Details'}
+          </Typography>
+          {isEditMode && (
+            <Typography variant="caption" sx={{ color: '#6b7280' }}>
+              Edit Mode
+            </Typography>
+          )}
+        </Box>
 
         <Box component="form" noValidate autoComplete="off">
           <Grid container spacing={2}>
@@ -148,8 +185,10 @@ const ConsultationModal = ({ open, onClose, data }) => {
               <TextField
                 fullWidth
                 label="Symptoms"
-                value={data.symptoms || ''} // CONNECTED
-                InputProps={{ readOnly: true }}
+                name="symptoms"
+                value={isEditMode ? (formData.symptoms || '') : (data.symptoms || '')}
+                onChange={handleInputChange}
+                InputProps={{ readOnly: !isEditMode }}
                 variant="outlined"
                 sx={inputStyles}
                 InputLabelProps={{ shrink: true }}
@@ -161,8 +200,10 @@ const ConsultationModal = ({ open, onClose, data }) => {
               <TextField
                 fullWidth
                 label="Diagnosis"
-                value={data.diagnosis || ''}
-                InputProps={{ readOnly: true }}
+                name="diagnosis"
+                value={isEditMode ? (formData.diagnosis || '') : (data.diagnosis || '')}
+                onChange={handleInputChange}
+                InputProps={{ readOnly: !isEditMode }}
                 variant="outlined"
                 sx={grayInputStyles}
                 InputLabelProps={{ shrink: true }}
@@ -176,8 +217,10 @@ const ConsultationModal = ({ open, onClose, data }) => {
               <TextField
                 fullWidth
                 label="Prescription"
-                value={data.prescription || ''} // CONNECTED
-                InputProps={{ readOnly: true }}
+                name="prescription"
+                value={isEditMode ? (formData.prescription || '') : (data.prescription || '')}
+                onChange={handleInputChange}
+                InputProps={{ readOnly: !isEditMode }}
                 variant="outlined"
                 sx={inputStyles}
                 InputLabelProps={{ shrink: true }}
@@ -189,8 +232,10 @@ const ConsultationModal = ({ open, onClose, data }) => {
               <TextField
                 fullWidth
                 label="Remarks"
-                value={data.remarks || ''} // CONNECTED
-                InputProps={{ readOnly: true }}
+                name="remarks"
+                value={isEditMode ? (formData.remarks || '') : (data.remarks || '')}
+                onChange={handleInputChange}
+                InputProps={{ readOnly: !isEditMode }}
                 variant="outlined"
                 sx={grayInputStyles}
                 InputLabelProps={{ shrink: true }}
@@ -198,6 +243,36 @@ const ConsultationModal = ({ open, onClose, data }) => {
                 rows={2}
               />
             </Grid>
+
+            {/* Action Buttons for Edit Mode */}
+            {isEditMode && (
+              <Grid item xs={12} sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
+                <Button
+                  variant="outlined"
+                  onClick={onClose}
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: 2,
+                    borderColor: '#e5e7eb',
+                    color: '#374151'
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSave}
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: 2,
+                    background: '#4B0082',
+                    '&:hover': { background: '#3d0066' }
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Grid>
+            )}
 
           </Grid>
         </Box>

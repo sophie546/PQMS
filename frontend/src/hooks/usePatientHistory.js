@@ -15,24 +15,34 @@ export const usePatientHistory = () => {
       setLoading(true);
       const data = await consultationService.getAllConsultations();
 
-      const formattedData = data.map(item => ({
-        id: item.consultationID, 
+      const formattedData = data.map(item => {
+        // Handle timezone offset issue with date
+        let displayDate = item.consultationDate;
+        if (displayDate) {
+          // If it's a string date, ensure it displays correctly without timezone offset
+          const date = new Date(displayDate + 'T00:00:00'); // Add time to avoid UTC conversion
+          displayDate = date.toISOString().split('T')[0];
+        }
         
-        patientName: item.patient 
-          ? `${item.patient.firstName} ${item.patient.lastName}` 
-          : "Unknown Patient",
+        return {
+          id: item.consultationID, 
           
-        gender: item.patient ? item.patient.gender : "N/A",
-        age: item.patient ? item.patient.age : "N/A",
-        
-        date: item.consultationDate, 
-        time: "10:00 AM",
-        doctor: "Unknown", // Update this if your backend sends doctor info, e.g., item.doctorName
-        diagnosis: item.diagnosis,
-        symptoms: item.symptoms || "",      
-        prescription: item.medicinePrescribed || "",
-        remarks: item.remarks || ""
-      }));
+          patientName: item.patient 
+            ? `${item.patient.firstName} ${item.patient.lastName}` 
+            : "Unknown Patient",
+            
+          gender: item.patient ? item.patient.gender : "N/A",
+          age: item.patient ? item.patient.age : "N/A",
+          
+          date: displayDate || item.consultationDate,
+          time: "10:00 AM",
+          doctor: "Unknown", // Update this if your backend sends doctor info, e.g., item.doctorName
+          diagnosis: item.diagnosis,
+          symptoms: item.symptoms || "",      
+          prescription: item.medicinePrescribed || "",
+          remarks: item.remarks || ""
+        };
+      });
 
       const sortedData = formattedData.sort((a, b) => b.id - a.id);
       
@@ -70,7 +80,27 @@ export const usePatientHistory = () => {
       }
 
       const matchesDoctor = doctorFilter === 'all' || consultation.doctor === doctorFilter;
-      const matchesDate = dateFilter === '' || consultation.date === dateFilter;
+      
+      let matchesDate = true;
+      if (dateFilter !== '') {
+        if (!consultation.date) {
+          matchesDate = false;
+        } else if (dateFilter === 'thisWeek') {
+          const consultationDate = new Date(consultation.date);
+          const today = new Date();
+          const oneWeekAgo = new Date(today);
+          oneWeekAgo.setDate(today.getDate() - 7);
+          matchesDate = consultationDate >= oneWeekAgo && consultationDate <= today;
+        } else if (dateFilter === 'thisMonth') {
+          const consultationDate = new Date(consultation.date);
+          const today = new Date();
+          const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+          matchesDate = consultationDate >= firstDayOfMonth && consultationDate <= today;
+        } else {
+          // Specific date format (YYYY-MM-DD)
+          matchesDate = consultation.date === dateFilter;
+        }
+      }
 
       return matchesSearch && matchesDoctor && matchesDate;
     });

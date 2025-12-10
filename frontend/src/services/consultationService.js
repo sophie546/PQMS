@@ -23,5 +23,25 @@ export const consultationService = {
             console.error("Error fetching consultations:", error);
             throw error;
         }
+    },
+
+    updateConsultation: async (consultationId, consultationData) => {
+        try {
+            const response = await axios.put(`${API_URL}/update/${consultationId}`, consultationData);
+            return response.data;
+        } catch (error) {
+            console.error("Error updating consultation:", error);
+            throw error;
+        }
+    },
+
+    deleteConsultation: async (consultationId) => {
+        try {
+            const response = await axios.delete(`${API_URL}/delete/${consultationId}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error deleting consultation:", error);
+            throw error;
+        }
     }
 };
