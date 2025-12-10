@@ -21,7 +21,13 @@ export {
   TextField,
   Select,
   MenuItem,
-  Divider
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Menu
 } from "@mui/material";
 
 // MUI Icons (for Patient.jsx)
@@ -67,5 +73,4 @@ export { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 export { default as dayjs } from 'dayjs';
 
 // MUI Components
-export { Menu } from "@mui/material";
 export { Clear } from "@mui/icons-material";
