@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Avatar, 
@@ -201,8 +201,85 @@ const SidebarMenuItem = ({ item, isSelected, onClick, collapsed }) => (
   </ListItem>
 );
 
+// Function to get user initials
+const getUserInitials = (name) => {
+  if (!name || name === 'N/A') return 'MD';
+  const parts = name.split(' ');
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+};
+
+// Function to get role from user data
+const getRole = (userData) => {
+  if (!userData) return 'Medical Staff';
+  if (userData.role && userData.role !== 'N/A') {
+    return userData.role;
+  }
+  return 'Medical Staff';
+};
+
 const UserProfile = ({ collapsed, onToggle }) => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+
+  // Fetch user data from localStorage
+  useEffect(() => {
+    const fetchUserData = () => {
+      try {
+        // Try to get from localStorage
+        const storedUser = localStorage.getItem('currentUser') || 
+                          localStorage.getItem('user') ||
+                          sessionStorage.getItem('currentUser') ||
+                          sessionStorage.getItem('user');
+        
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          console.log('Sidebar user data:', parsedUser);
+          setUserData(parsedUser);
+        } else {
+          // Fallback to default
+          setUserData({
+            name: 'Medical Staff',
+            role: 'Medical Staff'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data for sidebar:', error);
+        setUserData({
+          name: 'Medical Staff',
+          role: 'Medical Staff'
+        });
+      }
+    };
+
+    fetchUserData();
+
+    // Listen for storage changes (when user updates profile)
+    const handleStorageChange = () => {
+      fetchUserData();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Listen for custom event when profile is updated
+    const handleUserProfileUpdated = () => {
+      fetchUserData();
+    };
+    
+    window.addEventListener('userProfileUpdated', handleUserProfileUpdated);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userProfileUpdated', handleUserProfileUpdated);
+    };
+  }, []);
+
+  const name = userData?.name || 'Medical Staff';
+  const role = getRole(userData);
+  const initials = getUserInitials(name);
+
   return (
     <Box sx={{ mt: 'auto', position: 'relative', zIndex: 20 }}>
       <Box sx={{ display: 'flex', justifyContent: collapsed ? 'center' : 'flex-end', p: 1 }}>
@@ -237,8 +314,9 @@ const UserProfile = ({ collapsed, onToggle }) => {
             width: 36, height: 36,
             background: colors.white, color: colors.iconRailBg,
             fontSize: '0.85rem', fontWeight: 700,
+            border: `2px solid rgba(255,255,255,0.3)`
           }}>
-            MC
+            {initials}
           </Avatar>
         </Box>
         <Box sx={{ 
@@ -246,15 +324,34 @@ const UserProfile = ({ collapsed, onToggle }) => {
           opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto',
           transition: 'all 0.3s ease', overflow: 'hidden', whiteSpace: 'nowrap'
         }}>
-          <Typography variant="body2" sx={{ color: colors.white, fontWeight: 600, fontSize: '0.85rem' }}>
-            Dr. Maria Cruz
+          <Typography variant="body2" sx={{ 
+            color: colors.white, 
+            fontWeight: 600, 
+            fontSize: '0.85rem',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden'
+          }}>
+            {name}
           </Typography>
-          <Typography variant="caption" sx={{ color: colors.inactiveText, fontSize: '0.75rem' }}>
-            Physician
+          <Typography variant="caption" sx={{ 
+            color: colors.inactiveText, 
+            fontSize: '0.75rem',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            display: 'block'
+          }}>
+            {role}
           </Typography>
         </Box>
         {!collapsed && (
-          <IconButton size="small" sx={{ mr: 2, color: colors.inactiveText }}>
+          <IconButton 
+            size="small" 
+            sx={{ 
+              mr: 2, 
+              color: colors.inactiveText,
+              '&:hover': { color: colors.white }
+            }}
+          >
             <SettingsOutlined fontSize="small" />
           </IconButton>
         )}
