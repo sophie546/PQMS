@@ -1,17 +1,8 @@
-import { useState, useMemo } from "react";
-import { mockMedicalStaff } from '../data/mockMedicalStaff.js';
-import { mockConsultations } from '../data/mockConsultations.js';
+import { useState, useMemo, useEffect } from "react";
+import dayjs from 'dayjs';
 import { patientService } from "../services/patientService";
 import { consultationService } from "../services/consultationService";
-
-const safeMedicalStaff = mockMedicalStaff || [];
-
-const doctors = safeMedicalStaff
-  .filter(staff => staff.role === 'Doctor' || staff.role === 'doctor') // Handle case sensitivity
-  .map(doctor => ({
-    value: doctor.staffId || doctor.id, // Handle potential ID field mismatch
-    label: doctor.name || doctor.fullName // Handle potential Name field mismatch
-  }));
+import { staffService } from "../services/staffService";
 
 const gender = [
   { value: 'Female', label: 'Female' },
@@ -46,13 +37,15 @@ const quickTemplates = [
 ];
 
 export const useConsultation = () => {
+  const [doctors, setDoctors] = useState([]);
+
   const [patientInfo, setPatientInfo] = useState({
     patientId: '',
     name: '',
     age: '',
     gender: '',
     doctor: '',
-    date: null
+    date: dayjs()
   });
 
   const [consultationDetails, setConsultationDetails] = useState({
@@ -62,8 +55,38 @@ export const useConsultation = () => {
     remarks: ''
   });
 
-  const [todayConsultations, setTodayConsultations] = useState(mockConsultations.length);
+  const [todayConsultations, setTodayConsultations] = useState(0);
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      // --- Fetch Doctors ---
+      try {
+        const staffData = await staffService.getAllStaff();
+        
+        const doctorOptions = staffData
+          .filter(staff => staff.role === 'Doctor' || staff.role === 'doctor')
+          .map(doctor => ({
+            value: doctor.staffId || doctor.id, 
+            label: doctor.name || doctor.fullName 
+          }));
+          
+        setDoctors(doctorOptions);
+      } catch (error) {
+        console.error("Failed to load doctors", error);
+      }
+
+      // --- Fetch Consultations Count ---
+      try {
+        const consultations = await consultationService.getAllConsultations();
+        setTodayConsultations(consultations.length);
+      } catch (error) {
+        console.error("Failed to load consultations", error);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
 
   const validateName = (name) => {
     const nameRegex = /^[A-Za-z\s]*$/;
@@ -144,26 +167,13 @@ export const useConsultation = () => {
        return { success: false, message: "Invalid Patient ID." };
     }
 
-    // Format the selected date from patientInfo.date (Dayjs object)
-    let selectedDate = new Date().toISOString().split('T')[0]; // Default to today
-    
-    if (patientInfo.date) {
-      // If patientInfo.date is a Dayjs object, convert it to string
-      if (patientInfo.date.$L !== undefined) {
-        // It's a Dayjs object
-        selectedDate = patientInfo.date.format('YYYY-MM-DD');
-      } else if (patientInfo.date instanceof Date) {
-        // It's a JavaScript Date object
-        selectedDate = patientInfo.date.toISOString().split('T')[0];
-      } else {
-        // It's already a string
-        selectedDate = patientInfo.date;
-      }
-    }
+    const selectedDate = patientInfo.date 
+      ? dayjs(patientInfo.date).format('YYYY-MM-DD') 
+      : dayjs().format('YYYY-MM-DD');
 
     const consultationPayload = {
       patientId: pId,
-      // staffId: parseInt(patientInfo.doctor), 
+      staffId: parseInt(patientInfo.doctor), 
       symptoms: consultationDetails.symptoms,
       diagnosis: consultationDetails.diagnosis,
       medicinePrescribed: consultationDetails.prescription, 
@@ -183,7 +193,7 @@ export const useConsultation = () => {
         age: '',
         gender: '',
         doctor: '',
-        date: null
+        date: dayjs()
       });
       setConsultationDetails({
         symptoms: '',

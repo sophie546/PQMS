@@ -28,17 +28,17 @@ public class ConsultationEntity {
         this.patient = patient;
     }
 
-    // @ManyToOne 
-    // @JoinColumn(name = "staff_id", nullable = false) 
-    // private MedicalStaffEntity doctor;
+    @ManyToOne 
+    @JoinColumn(name = "staff_id", nullable = false) 
+    private MedicalStaffEntity medicalStaff;
 
-    // public MedicalStaffEntity getDoctor() {
-    //     return doctor;
-    // }
+    public MedicalStaffEntity getMedicalStaff() {
+        return medicalStaff;
+    }
 
-    // public void setDoctor(MedicalStaffEntity doctor) {
-    //     this.doctor = doctor;
-    // }
+    public void setMedicalStaff(MedicalStaffEntity medicalStaff) {
+        this.medicalStaff = medicalStaff;
+    }
 
     //setters and getters
     public int getConsultationID() {

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_BASE = 'http://localhost:8080/api';
 
-const staffService = {
+export const staffService = {
   // Get all medical staff
   getAllStaff: async () => {
     try {

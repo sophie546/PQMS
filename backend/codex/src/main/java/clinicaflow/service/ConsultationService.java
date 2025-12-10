@@ -5,10 +5,10 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import clinicaflow.entity.ConsultationEntity;
-// import clinicaflow.entity.MedicalStaffEntity;
+import clinicaflow.entity.MedicalStaffEntity;
 import clinicaflow.entity.PatientEntity;
 import clinicaflow.repository.ConsultationRepository;
-// import clinicaflow.repository.MedicalStaffRepository;
+import clinicaflow.repository.MedicalStaffRepository;
 import clinicaflow.repository.PatientRepository;
 
 @Service
@@ -19,19 +19,25 @@ public class ConsultationService {
     @Autowired
     private PatientRepository prepo;
 
-    // @Autowired
-    // private MedicalStaffRepository srepo;
+    @Autowired
+    private MedicalStaffRepository srepo;
 
-    public ConsultationEntity saveConsultation(int patientId, ConsultationEntity consultation) {
+    // Update method signature to accept staffId
+    public ConsultationEntity saveConsultation(int patientId, int staffId, ConsultationEntity consultation) {
+        
+        // 1. Fetch Patient
         PatientEntity patient = prepo.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient with ID " + patientId + " not found"));
+            .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        // MedicalStaffEntity doctor = srepo.findById(staffId)
-        // .orElseThrow(() -> new RuntimeException("Doctor/Staff with ID " + staffId + " not found"));
+        // 2. Fetch Doctor/Staff (THIS WAS MISSING)
+        MedicalStaffEntity staff = srepo.findById(staffId)
+            .orElseThrow(() -> new RuntimeException("Staff not found"));
 
-        // consultation.setDoctor(doctor);
+        // 3. Set Relationships
         consultation.setPatient(patient);
+        consultation.setMedicalStaff(staff); // or .setDoctor(staff) depending on your Entity naming
 
+        // 4. Save
         return crepo.save(consultation);
     }
 
