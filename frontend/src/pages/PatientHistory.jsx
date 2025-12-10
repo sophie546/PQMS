@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Card,
@@ -7,7 +7,12 @@ import {
   Button,
   Menu,
   MenuItem,
-  CardContent
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from "../lib";
 
 import {
@@ -65,6 +70,10 @@ const PatientHistory = () => {
   const [actionAnchorEl, setActionAnchorEl] = React.useState(null);
   const [selectedConsultationForAction, setSelectedConsultationForAction] = useState(null);
   const isActionMenuOpen = Boolean(actionAnchorEl);
+
+  // Delete confirmation dialog state
+  const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false);
+  const [consultationToDelete, setConsultationToDelete] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
@@ -129,6 +138,17 @@ const PatientHistory = () => {
     setSelectedConsultationForAction(null);
   };
 
+  // Get unique doctor names from all consultations (for dynamic filter)
+  const uniqueDoctors = useMemo(() => {
+    const doctorSet = new Set();
+    consultations.forEach(c => {
+      if (c.doctor && c.doctor !== 'Unknown') {
+        doctorSet.add(c.doctor);
+      }
+    });
+    return ['all', ...Array.from(doctorSet).sort()];
+  }, [consultations]);
+
   const handleEditConsultation = () => {
     if (selectedConsultationForAction) {
       setSelectedConsultation(selectedConsultationForAction);
@@ -178,18 +198,18 @@ const PatientHistory = () => {
   };
 
   const handleDeleteConsultation = async () => {
-    if (selectedConsultationForAction) {
+    if (consultationToDelete) {
       try {
         // Dynamically import consultationService
         const { consultationService } = await import('../services/consultationService');
-        console.log('Attempting to delete consultation ID:', selectedConsultationForAction.id);
-        await consultationService.deleteConsultation(selectedConsultationForAction.id);
+        console.log('Attempting to delete consultation ID:', consultationToDelete.id);
+        await consultationService.deleteConsultation(consultationToDelete.id);
         
-        // Remove from local state
-        const updatedConsultations = consultations.filter(c => c.id !== selectedConsultationForAction.id);
         // Update the hook's state by calling refresh
         handleRefresh();
         handleActionMenuClose();
+        setDeleteConfirmDialogOpen(false);
+        setConsultationToDelete(null);
         
         // Show feedback modal for successful deletion
         setFeedback({
@@ -199,10 +219,13 @@ const PatientHistory = () => {
           message: 'The consultation record has been successfully removed.'
         });
         
-        console.log('Consultation deleted successfully:', selectedConsultationForAction.id);
+        console.log('Consultation deleted successfully:', consultationToDelete.id);
       } catch (error) {
         console.error('Error deleting consultation:', error);
         console.error('Error response:', error.response?.status, error.response?.data);
+        
+        setDeleteConfirmDialogOpen(false);
+        setConsultationToDelete(null);
         
         // Show error feedback
         setFeedback({
@@ -213,6 +236,17 @@ const PatientHistory = () => {
         });
       }
     }
+  };
+
+  const handleDeleteClick = (consultation) => {
+    setConsultationToDelete(consultation);
+    setDeleteConfirmDialogOpen(true);
+    handleActionMenuClose();
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmDialogOpen(false);
+    setConsultationToDelete(null);
   };
 
   const handleKeyPress = (event) => {
@@ -371,7 +405,7 @@ const PatientHistory = () => {
                     }
                   }}
                 >
-                  {['all', 'Dr. Maria Cruz', 'Dr. Roberto Santos'].map(doctor => (
+                  {uniqueDoctors.map(doctor => (
                     <MenuItem 
                       key={doctor}
                       onClick={() => handleDoctorSelect(doctor)}
@@ -612,7 +646,7 @@ const PatientHistory = () => {
                         Edit Details
                       </MenuItem>
                       <MenuItem
-                        onClick={handleDeleteConsultation}
+                        onClick={() => handleDeleteClick(selectedConsultationForAction)}
                         sx={{
                           fontSize: '0.875rem',
                           color: '#dc2626',
@@ -647,6 +681,57 @@ const PatientHistory = () => {
         isEditMode={isEditMode}
         onSave={handleSaveConsultation}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmDialogOpen}
+        onClose={handleCancelDelete}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow: '0 20px 25px rgba(0,0,0,0.15)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 600, color: '#1f2937', fontSize: '1.125rem' }}>
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: '#6b7280', fontSize: '0.875rem', mt: 1 }}>
+            Are you sure you want to delete the consultation record for <strong>{consultationToDelete?.patientName}</strong>? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 0, gap: 1 }}>
+          <Button 
+            onClick={handleCancelDelete}
+            sx={{
+              color: '#6b7280',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              textTransform: 'none',
+              '&:hover': { background: '#f3f4f6' }
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteConsultation}
+            variant="contained"
+            sx={{
+              background: '#dc2626',
+              color: 'white',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              textTransform: 'none',
+              borderRadius: 1,
+              '&:hover': { background: '#b91c1c' }
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <FeedbackModal
         open={feedback.open}
         onClose={() => setFeedback(prev => ({ ...prev, open: false }))}
