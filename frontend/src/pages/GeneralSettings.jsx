@@ -99,7 +99,13 @@ const GeneralSettings = () => {
             console.log('Medical staff age:', medicalStaff.age);
             console.log('Medical staff gender:', medicalStaff.gender);
             console.log('Medical staff department:', medicalStaff.department);
+            console.log('Medical staff availability:', medicalStaff.availability);
             console.log('Medical staff fields:', Object.keys(medicalStaff));
+            
+            // Set availability from medical staff data if available
+            if (medicalStaff.availability) {
+              setAvailability(medicalStaff.availability);
+            }
           } else {
             console.log('⚠️ No medical staff record found for user');
           }
@@ -163,9 +169,10 @@ const GeneralSettings = () => {
     let specialization = 'N/A';
     let contactNo = 'N/A';
     let staffID = 'N/A';
-    let department = 'General Medicine';  // Default department
+    let department = 'General Medicine';
     let gender = 'N/A';
     let age = 'N/A';
+    let availability = 'available'; // Default to 'available'
     
     // Override with medical staff data if available
     if (medicalStaffData) {
@@ -224,6 +231,13 @@ const GeneralSettings = () => {
         console.log('Department from medical staff:', department);
       }
       
+      // AVAILABILITY
+      const staffAvailability = getValue(medicalStaffData.availability, 'available');
+      if (staffAvailability !== 'N/A') {
+        availability = staffAvailability;
+        console.log('Availability from medical staff:', availability);
+      }
+      
       // Use user account data from relation if available
       if (medicalStaffData.userAccount) {
         console.log('Medical staff has userAccount relation');
@@ -273,6 +287,7 @@ const GeneralSettings = () => {
       username: email,
       title: role,
       phone: contactNo,
+      availability: availability, // Include availability
       hasMedicalStaffData: !!medicalStaffData,
       source: medicalStaffData ? 'Medical Staff Table' : 'User Storage'
     };
@@ -297,6 +312,7 @@ const GeneralSettings = () => {
       username: 'N/A',
       title: 'N/A',
       phone: 'N/A',
+      availability: 'available',
       hasMedicalStaffData: false,
       source: 'No Data'
     };
@@ -310,6 +326,73 @@ const GeneralSettings = () => {
       .join('')
       .toUpperCase()
       .substring(0, 2);
+  };
+
+  // Update availability in database
+  const updateAvailabilityInDatabase = async (newAvailability) => {
+    try {
+      if (!userData?.staffID || userData.staffID === 'N/A') {
+        console.log('No staff ID found, cannot update availability in database');
+        return;
+      }
+
+      console.log('Updating availability to:', newAvailability);
+      
+      const response = await fetch(`http://localhost:8080/api/medicalstaff/${userData.staffID}/availability`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ availability: newAvailability })
+      });
+
+      if (response.ok) {
+        const updatedStaff = await response.json();
+        console.log('✅ Availability updated in database:', updatedStaff);
+        
+        // Update local state
+        const updatedUserData = { ...userData, availability: newAvailability };
+        setUserData(updatedUserData);
+        setAvailability(newAvailability);
+        
+        // Update localStorage
+        localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
+        localStorage.setItem('medicalStaffData', JSON.stringify(updatedStaff));
+        
+        // Update staff list in localStorage if it exists
+        updateStaffAvailabilityInLocalStorage(updatedStaff, newAvailability);
+        
+        // Dispatch event to notify other components
+        dispatchStorageEvent();
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Failed to update availability:', errorText);
+      }
+    } catch (error) {
+      console.error('❌ Error updating availability:', error);
+    }
+  };
+
+  // Helper to update staff list in localStorage
+  const updateStaffAvailabilityInLocalStorage = (updatedStaff, newAvailability) => {
+    try {
+      const staffListStr = localStorage.getItem('staffList');
+      if (staffListStr) {
+        const staffList = JSON.parse(staffListStr);
+        const updatedStaffList = staffList.map(staff => {
+          if (staff.id === updatedStaff.id || 
+              staff.staffID === updatedStaff.staffID ||
+              (staff.userAccount && staff.userAccount.accountID === parseInt(userData.accountID))) {
+            return { ...staff, availability: newAvailability };
+          }
+          return staff;
+        });
+        localStorage.setItem('staffList', JSON.stringify(updatedStaffList));
+        console.log('✅ Updated staff list availability in localStorage');
+      }
+    } catch (error) {
+      console.error('Error updating staff list in localStorage:', error);
+    }
   };
 
   const getTitle = () => {
@@ -373,6 +456,7 @@ const GeneralSettings = () => {
           age: newData.age ? parseInt(newData.age) : null,
           gender: newData.gender || null,
           department: newData.department || 'General Medicine',
+          availability: availability, // Include current availability
           userAccount: { 
             accountID: parseInt(newData.accountID) 
           }
@@ -448,6 +532,7 @@ const GeneralSettings = () => {
               age: newUserData.age,
               gender: newUserData.gender,
               department: newUserData.department,
+              availability: availability, // Include availability
               // Keep other properties intact
             };
           }
@@ -502,6 +587,10 @@ const GeneralSettings = () => {
         try {
           const parsedUser = JSON.parse(storedUser);
           setUserData(parsedUser);
+          // Update availability from stored data
+          if (parsedUser.availability) {
+            setAvailability(parsedUser.availability);
+          }
         } catch (e) {
           console.error('Failed to parse stored user:', e);
         }
@@ -594,17 +683,17 @@ const GeneralSettings = () => {
           }}>
             {getTitle()}
           </Typography>
-          <Typography variant="body2" sx={{ 
-            color: '#6b7280',
-            fontSize: '0.875rem'
-          }}>
-            {getSubtitle()}
-            {userData?.hasMedicalStaffData && (
-              <span style={{ marginLeft: '10px', color: '#10b981', fontWeight: 'bold' }}>
-                ✓ Medical Staff Data Loaded
-              </span>
-            )}
-          </Typography>
+            <Typography variant="body2" sx={{ 
+              color: '#6b7280',
+              fontSize: '0.875rem'
+            }}>
+              {getSubtitle()}
+              {userData?.hasMedicalStaffData && (
+                <span style={{ marginLeft: '10px', color: '#4B0082', fontWeight: 'bold' }}>
+                  ✓ Medical Staff Data Loaded
+                </span>
+              )}
+            </Typography>
         </Box>
 
         {/* Main Content */}
@@ -645,7 +734,7 @@ const GeneralSettings = () => {
                 gap: 2
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  {/* Avatar - NO PURPLE BACKGROUND, NO GENDER LOGO */}
+                  {/* Avatar */}
                   <Box sx={{ 
                     width: 60, 
                     height: 60,
@@ -666,7 +755,6 @@ const GeneralSettings = () => {
                         objectFit: 'cover'
                       }} 
                       onError={(e) => {
-                        // Fallback to initials if image fails to load
                         e.target.style.display = 'none';
                         e.target.parentElement.style.background = '#f3f4f6';
                         e.target.parentElement.style.display = 'flex';
@@ -690,7 +778,7 @@ const GeneralSettings = () => {
                         <span style={{ 
                           marginLeft: '8px', 
                           fontSize: '12px', 
-                          background: '#10b981',
+                          background: '#4B0082', // Purple theme
                           color: 'white',
                           padding: '2px 6px',
                           borderRadius: '4px',
@@ -783,7 +871,10 @@ const GeneralSettings = () => {
                   <SettingsProfileView 
                     userData={userData} 
                     availability={availability} 
-                    setAvailability={setAvailability} 
+                    setAvailability={(newAvailability) => {
+                      setAvailability(newAvailability);
+                      updateAvailabilityInDatabase(newAvailability);
+                    }} 
                   />
                 ) : (
                   <Box sx={{ textAlign: 'center', py: 4 }}>

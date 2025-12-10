@@ -49,6 +49,16 @@ public class MedicalStaffService {
             }
         }
         
+        // Validate availability if provided
+        if (staff.getAvailability() != null && !staff.getAvailability().trim().isEmpty()) {
+            String availability = staff.getAvailability().trim();
+            if (!availability.equalsIgnoreCase("available") && 
+                !availability.equalsIgnoreCase("busy") && 
+                !availability.equalsIgnoreCase("offline")) {
+                throw new RuntimeException("Availability must be 'available', 'busy', or 'offline'");
+            }
+        }
+        
         // Set default department if not provided
         if (staff.getDepartment() == null || staff.getDepartment().trim().isEmpty()) {
             staff.setDepartment("General Medicine");
@@ -106,7 +116,7 @@ public class MedicalStaffService {
                 staff.setSpecialty(updatedStaff.getSpecialty());
             }
             
-            // Update new fields: age and gender
+            // Update age
             if (updatedStaff.getAge() != null) {
                 // Validate age
                 if (updatedStaff.getAge() < 18 || updatedStaff.getAge() > 120) {
@@ -115,6 +125,7 @@ public class MedicalStaffService {
                 staff.setAge(updatedStaff.getAge());
             }
             
+            // Update gender
             if (updatedStaff.getGender() != null) {
                 String gender = updatedStaff.getGender().trim();
                 if (!gender.isEmpty()) {
@@ -128,9 +139,24 @@ public class MedicalStaffService {
                 }
             }
             
-            // NEW: Update department field
+            // Update department
             if (updatedStaff.getDepartment() != null) {
                 staff.setDepartment(updatedStaff.getDepartment().trim());
+            }
+            
+            // NEW: Update availability
+            if (updatedStaff.getAvailability() != null) {
+                String availability = updatedStaff.getAvailability().trim();
+                if (!availability.isEmpty()) {
+                    if (!availability.equalsIgnoreCase("available") && 
+                        !availability.equalsIgnoreCase("busy") && 
+                        !availability.equalsIgnoreCase("offline")) {
+                        throw new RuntimeException("Availability must be 'available', 'busy', or 'offline'");
+                    }
+                    staff.setAvailability(availability.toLowerCase());
+                } else {
+                    staff.setAvailability(null); // Set to NULL if empty string
+                }
             }
             
             // Update user account role if needed
@@ -158,6 +184,26 @@ public class MedicalStaffService {
 
             return repository.save(staff);
         }).orElseThrow(() -> new RuntimeException("Medical staff not found with ID: " + id));
+    }
+    
+    // NEW: Update availability only
+    @Transactional
+    public MedicalStaffEntity updateAvailability(int staffId, String availability) {
+        MedicalStaffEntity staff = repository.findById(staffId)
+            .orElseThrow(() -> new RuntimeException("Medical staff not found with ID: " + staffId));
+        
+        // Validate availability
+        if (availability != null && !availability.trim().isEmpty()) {
+            String avail = availability.trim().toLowerCase();
+            if (!avail.equals("available") && !avail.equals("busy") && !avail.equals("offline")) {
+                throw new RuntimeException("Availability must be 'available', 'busy', or 'offline'");
+            }
+            staff.setAvailability(avail);
+        } else {
+            staff.setAvailability(null);
+        }
+        
+        return repository.save(staff);
     }
     
     // DELETE
@@ -201,5 +247,10 @@ public class MedicalStaffService {
     // NEW: Get staff by department and role
     public List<MedicalStaffEntity> getStaffByDepartmentAndRole(String department, String role) {
         return repository.findByDepartmentAndRole(department, role);
+    }
+    
+    // NEW: Get staff by availability
+    public List<MedicalStaffEntity> getStaffByAvailability(String availability) {
+        return repository.findByAvailabilityIgnoreCase(availability);
     }
 }
