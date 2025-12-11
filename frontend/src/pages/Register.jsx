@@ -4,15 +4,13 @@ import {
   Typography, 
   Box,
   Fade
-  // SvgIcon removed as it's no longer needed
 } from "@mui/material";
 import { useAuth } from "../hooks"; 
 import {
   NameFieldsRow,
   EmailField,
   RoleSelectField,
-  PasswordField,
-  ErrorAlert
+  PasswordField
 } from "../components/RegisterFields";
 import { NavSideButton, GradientButton } from "../components/ButtonComponents";
 
@@ -70,7 +68,7 @@ const basicValidation = (values) => {
 };
 
 export default function RegisterPage() {
-  const { register, loading, error: authError, checkEmailExists } = useAuth();
+  const { register, loading, checkEmailExists } = useAuth(); 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
@@ -80,6 +78,15 @@ export default function RegisterPage() {
   const [isActive, setIsActive] = useState(true);
   const formRef = useRef(null);
   
+  // 1. Modal State
+  const [modalState, setModalState] = useState({
+    open: false,
+    type: 'info',
+    title: '',
+    message: '',
+    confirmText: 'Okay'
+  });
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -90,6 +97,10 @@ export default function RegisterPage() {
   });
 
   const navigate = useNavigate();
+
+  const handleCloseModal = () => {
+    setModalState(prev => ({ ...prev, open: false }));
+  };
 
   const handleChange = (field) => (e) => {
     const value = e.target.value;
@@ -182,8 +193,27 @@ export default function RegisterPage() {
 
     try {
       await register(formData);
+      
+      setModalState({
+        open: true,
+        type: 'success',
+        title: 'Registration Successful!',
+        message: 'Your account has been created successfully.',
+        confirmText: 'Continue',
+        onConfirm: () => {
+          handleCloseModal();
+        }
+      });
+      
     } catch (error) {
       console.error('Registration error:', error);
+      setModalState({
+        open: true,
+        type: 'error',
+        title: 'Registration Failed',
+        message: error.message || 'Unable to create account. Please try again.',
+        confirmText: 'Try Again'
+      });
     }
   };
 
@@ -246,8 +276,6 @@ export default function RegisterPage() {
                 or use your email for registration
               </Typography>
             </Box>
-
-            <ErrorAlert message={authError} />
 
             <form onSubmit={handleSubmit}>
               <NameFieldsRow

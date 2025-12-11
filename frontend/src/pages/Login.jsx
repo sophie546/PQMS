@@ -8,8 +8,7 @@ import {
 import { useAuth } from "../hooks"; 
 import {
   EmailField,
-  PasswordField,
-  ErrorAlert
+  PasswordField
 } from "../components/RegisterFields";
 import { NavSideButton, GradientButton } from "../components/ButtonComponents";
 
@@ -30,12 +29,20 @@ const loginValidation = (values) => {
 };
 
 export default function LoginPage() {
-  const { login, loading, error: authError } = useAuth();
+  const { login, loading } = useAuth(); 
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [formTouched, setFormTouched] = useState({});
   const [isActive, setIsActive] = useState(false);
   const formRef = useRef(null);
+  
+  const [modalState, setModalState] = useState({
+    open: false,
+    type: 'info',
+    title: '',
+    message: '',
+    confirmText: 'Okay'
+  });
   
   const [formData, setFormData] = useState({
     email: '',
@@ -43,6 +50,10 @@ export default function LoginPage() {
   });
 
   const navigate = useNavigate();
+
+  const handleCloseModal = () => {
+    setModalState(prev => ({ ...prev, open: false }));
+  };
 
   const handleChange = (field) => (e) => {
     const value = e.target.value;
@@ -86,6 +97,14 @@ export default function LoginPage() {
       await login(formData.email, formData.password);
     } catch (error) {
       console.error('Login error:', error);
+      
+      setModalState({
+        open: true,
+        type: 'error',
+        title: 'Login Failed',
+        message: error.message || 'Incorrect email or password. Please try again.',
+        confirmText: 'Try Again'
+      });
     }
   };
 
@@ -143,8 +162,6 @@ export default function LoginPage() {
               </Typography>
             </Box>
 
-            <ErrorAlert message={authError} />
-
             <form onSubmit={handleSubmit}>
               <EmailField
                 value={formData.email}
@@ -197,10 +214,10 @@ export default function LoginPage() {
             {/* Left Panel (Hidden initially - revealed when navigating to Register) */}
             <div className="toggle-panel toggle-left">
               <Typography variant="h2" sx={{ fontWeight: 700, fontSize: '2rem', mb: 2 }}>
-                 Join Us!
+                  Join Us!
               </Typography>
               <Typography sx={{ mb: 4 }}>
-                 Register to start managing your health records.
+                  Register to start managing your health records.
               </Typography>
             </div>
 
@@ -266,6 +283,7 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {/* --- STYLES --- */}
         <style jsx>{`
         .bg-shape {
             position: absolute;
@@ -427,6 +445,7 @@ export default function LoginPage() {
         }
       `}</style>
       </div>
+
     </Box>
   );
 }

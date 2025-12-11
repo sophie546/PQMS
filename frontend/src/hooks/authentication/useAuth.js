@@ -85,8 +85,6 @@ export const useAuth = () => {
             
             console.log('✅ Login successful! User:', data.user);
             
-            // Show success message
-            alert(`Welcome ${data.user.email}! Login successful.`);
             
             // Redirect to PatientQueue
             navigate('/PatientQueue');
@@ -145,10 +143,7 @@ export const useAuth = () => {
             localStorage.setItem('token', 'clinicaflow-session');
             
             console.log('✅ Registration successful! User:', data.user);
-            
-            // Show success message
-            alert(`Account created for ${data.user.email}! Registration successful.`);
-            
+
             // Redirect to PatientQueue
             navigate('/PatientQueue');
             

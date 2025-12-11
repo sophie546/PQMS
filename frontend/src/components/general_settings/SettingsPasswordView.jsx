@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import { Lock, LogOut, Globe, Eye, EyeOff } from 'lucide-react';
-import { Alert, Snackbar } from '@mui/material';
+import { FeedbackModal } from "../FeedbackModal";
 
 const SettingsPasswordView = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  
+  const [modalState, setModalState] = useState({
+    open: false,
+    type: 'info', 
+    title: '',
+    message: '',
+    onConfirm: undefined, 
+    confirmText: 'Okay'
+  });
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -16,41 +24,56 @@ const SettingsPasswordView = () => {
   const [newFocused, setNewFocused] = useState(false);
   const [confirmFocused, setConfirmFocused] = useState(false);
 
+  // Helper to close modal
+  const handleCloseModal = () => {
+    setModalState(prev => ({ ...prev, open: false }));
+  };
+
+  // Helper to show errors
+  const showError = (message) => {
+    setModalState({
+      open: true,
+      type: 'error',
+      title: 'Action Failed',
+      message: message,
+      confirmText: 'Try Again'
+    });
+  };
+
   const handleChangePassword = async () => {
     try {
       // Validation
       if (!currentPassword.trim()) {
-        setError('Please enter your current password');
+        showError('Please enter your current password');
         return;
       }
       
       if (!newPassword.trim()) {
-        setError('Please enter a new password');
+        showError('Please enter a new password');
         return;
       }
       
       if (newPassword.length < 6) {
-        setError('New password must be at least 6 characters long');
+        showError('New password must be at least 6 characters long');
         return;
       }
       
       if (newPassword !== confirmPassword) {
-        setError('New passwords do not match');
+        showError('New passwords do not match');
         return;
       }
       
       if (currentPassword === newPassword) {
-        setError('New password must be different from current password');
+        showError('New password must be different from current password');
         return;
       }
 
       setLoading(true);
-      setError('');
       
       // Get user data from localStorage
       const storedUser = localStorage.getItem('user') || 
-                        localStorage.getItem('currentUser') ||
-                        sessionStorage.getItem('user');
+                         localStorage.getItem('currentUser') ||
+                         sessionStorage.getItem('user');
       
       if (!storedUser) {
         throw new Error('User not found. Please login again.');
@@ -83,8 +106,6 @@ const SettingsPasswordView = () => {
       const data = await response.text();
       
       if (response.ok) {
-        console.log('Password changed successfully:', data);
-        
         // Update localStorage with new password
         if (userData.password) {
           userData.password = newPassword;
@@ -96,47 +117,58 @@ const SettingsPasswordView = () => {
         setNewPassword('');
         setConfirmPassword('');
         
-        setSuccess(true);
-        setError('');
-        
-        // Auto-hide success message
-        setTimeout(() => {
-          setSuccess(false);
-        }, 3000);
+        // SHOW SUCCESS MODAL
+        setModalState({
+          open: true,
+          type: 'success',
+          title: 'Success!',
+          message: 'Your password has been changed successfully.',
+          confirmText: 'Great'
+        });
         
       } else {
-        console.error('Failed to change password:', data);
         throw new Error(data || 'Failed to change password. Please try again.');
       }
       
     } catch (error) {
       console.error('Error changing password:', error);
-      setError(error.message || 'An error occurred while changing password');
+      showError(error.message || 'An error occurred while changing password');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogoutAllSessions = () => {
-    if (window.confirm('Are you sure you want to log out from all devices? This will end all active sessions.')) {
-      try {
-        // Clear all user data from storage
-        localStorage.removeItem('user');
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('medicalStaffData');
-        sessionStorage.removeItem('user');
-        
-        // Clear token if exists
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
-        
-        // Redirect to login page
-        window.location.href = '/login';
-      } catch (error) {
-        console.error('Error during logout:', error);
-        setError('Error during logout. Please try again.');
-      }
+  // Logic to actually perform the logout
+  const executeLogout = () => {
+    try {
+      // Clear all user data from storage
+      localStorage.removeItem('user');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('medicalStaffData');
+      sessionStorage.removeItem('user');
+      
+      // Clear token if exists
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+      
+      // Redirect to login page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error during logout:', error);
+      showError('Error during logout. Please try again.');
     }
+  };
+
+  // Trigger the Confirmation Modal
+  const handleLogoutAllSessions = () => {
+    setModalState({
+      open: true,
+      type: 'warning',
+      title: 'Log Out All Devices?',
+      message: 'Are you sure you want to log out from all devices? This will end all active sessions immediately.',
+      confirmText: 'Yes, Log Out',
+      onConfirm: executeLogout // Pass the function to be called on confirmation
+    });
   };
 
   return (
@@ -210,7 +242,7 @@ const SettingsPasswordView = () => {
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                onMouseDown={(e) => e.preventDefault()} // Prevent focus stealing
+                onMouseDown={(e) => e.preventDefault()}
                 style={{
                   position: 'absolute',
                   right: '10px',
@@ -258,7 +290,7 @@ const SettingsPasswordView = () => {
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                onMouseDown={(e) => e.preventDefault()} // Prevent focus stealing
+                onMouseDown={(e) => e.preventDefault()}
                 style={{
                   position: 'absolute',
                   right: '10px',
@@ -306,7 +338,7 @@ const SettingsPasswordView = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                onMouseDown={(e) => e.preventDefault()} // Prevent focus stealing
+                onMouseDown={(e) => e.preventDefault()}
                 style={{
                   position: 'absolute',
                   right: '10px',
@@ -326,22 +358,6 @@ const SettingsPasswordView = () => {
               </button>
             </div>
           </div>
-          
-          {/* Error Message */}
-          {error && (
-            <div style={{
-              marginTop: '16px',
-              padding: '12px',
-              borderRadius: '8px',
-              background: '#fef2f2',
-              border: '1px solid #fecaca',
-              color: '#991b1b',
-              fontSize: '14px',
-              fontFamily: '"Arimo", "Poppins", "Inter", sans-serif'
-            }}>
-              {error}
-            </div>
-          )}
           
           <button 
             onClick={handleChangePassword}
@@ -490,35 +506,15 @@ const SettingsPasswordView = () => {
         </div>
       </div>
 
-      {/* Success Snackbar */}
-      <Snackbar
-        open={success}
-        autoHideDuration={3000}
-        onClose={() => setSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 9999
-        }}
-      >
-        <Alert 
-          onClose={() => setSuccess(false)} 
-          severity="success" 
-          style={{ 
-            background: '#d1fae5',
-            color: '#065f46',
-            border: '1px solid #10b981',
-            borderRadius: '8px',
-            fontFamily: '"Arimo", "Poppins", "Inter", sans-serif',
-            minWidth: '300px'
-          }}
-        >
-          Password changed successfully!
-        </Alert>
-      </Snackbar>
+      <FeedbackModal
+        open={modalState.open}
+        onClose={handleCloseModal}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+        confirmText={modalState.confirmText}
+        onConfirm={modalState.onConfirm}
+      />
     </div>
   );
 };
