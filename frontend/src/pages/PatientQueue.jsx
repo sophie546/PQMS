@@ -27,7 +27,6 @@ import {
   CheckCircle,
   MoreVert,
   LocalHospital,
-  Refresh,
   Edit,
   Delete,
   Add,
@@ -384,13 +383,6 @@ const PatientQueue = () => {
                 backgroundColor: 'white',
               }}
             />
-            <GradientButton 
-              startIcon={<Refresh fontSize="small" />}
-              sx={{ fontSize: 14 }} 
-              onClick={fetchQueueData}
-            >
-              Refresh
-            </GradientButton>
           </Box>
         </Box>
       </HeaderPaper>

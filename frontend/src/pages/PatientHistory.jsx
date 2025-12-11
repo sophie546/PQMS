@@ -8,11 +8,6 @@ import {
   Menu,
   MenuItem,
   CardContent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions
 } from "../lib";
 
 import {
@@ -71,18 +66,27 @@ const PatientHistory = () => {
   const [selectedConsultationForAction, setSelectedConsultationForAction] = useState(null);
   const isActionMenuOpen = Boolean(actionAnchorEl);
 
-  // Delete confirmation dialog state
-  const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false);
-  const [consultationToDelete, setConsultationToDelete] = useState(null);
-
+  // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  
+  // Feedback State (Success/Error Messages)
   const [feedback, setFeedback] = useState({
     open: false,
     type: 'success',
     title: '',
     message: ''
+  });
+
+  // Confirmation State (For Delete Action)
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    type: 'warning', // Uses the warning style for delete
+    title: '',
+    message: '',
+    onConfirm: undefined,
+    data: null // Stores the item to be deleted
   });
 
   const handleDoctorMenuClick = (event) => {
@@ -162,7 +166,6 @@ const PatientHistory = () => {
     try {
       const { consultationService } = await import('../services/consultationService');
       
-      // Prepare the complete payload with all consultation fields
       const payload = {
         symptoms: updatedData.symptoms,
         diagnosis: updatedData.diagnosis,
@@ -175,7 +178,6 @@ const PatientHistory = () => {
       handleRefresh();
       handleCloseModal();
       
-      // Show feedback modal for successful update
       setFeedback({
         open: true,
         type: 'success',
@@ -183,11 +185,9 @@ const PatientHistory = () => {
         message: 'The consultation details have been successfully updated.'
       });
       
-      console.log('Consultation updated successfully');
     } catch (error) {
       console.error('Error updating consultation:', error);
       
-      // Show error feedback
       setFeedback({
         open: true,
         type: 'error',
@@ -197,56 +197,57 @@ const PatientHistory = () => {
     }
   };
 
-  const handleDeleteConsultation = async () => {
-    if (consultationToDelete) {
-      try {
-        // Dynamically import consultationService
-        const { consultationService } = await import('../services/consultationService');
-        console.log('Attempting to delete consultation ID:', consultationToDelete.id);
-        await consultationService.deleteConsultation(consultationToDelete.id);
-        
-        // Update the hook's state by calling refresh
-        handleRefresh();
-        handleActionMenuClose();
-        setDeleteConfirmDialogOpen(false);
-        setConsultationToDelete(null);
-        
-        // Show feedback modal for successful deletion
-        setFeedback({
-          open: true,
-          type: 'success',
-          title: 'Consultation Deleted',
-          message: 'The consultation record has been successfully removed.'
-        });
-        
-        console.log('Consultation deleted successfully:', consultationToDelete.id);
-      } catch (error) {
-        console.error('Error deleting consultation:', error);
-        console.error('Error response:', error.response?.status, error.response?.data);
-        
-        setDeleteConfirmDialogOpen(false);
-        setConsultationToDelete(null);
-        
-        // Show error feedback
-        setFeedback({
-          open: true,
-          type: 'error',
-          title: 'Delete Failed',
-          message: error.response?.data?.message || 'Failed to delete consultation. Please try again.'
-        });
-      }
+  // 1. Logic to execute the actual delete
+  const executeDelete = async () => {
+    const itemToDelete = confirmModal.data;
+    if (!itemToDelete) return;
+
+    try {
+      const { consultationService } = await import('../services/consultationService');
+      await consultationService.deleteConsultation(itemToDelete.id);
+      
+      handleRefresh();
+      
+      // Close confirm modal
+      setConfirmModal(prev => ({ ...prev, open: false }));
+      
+      // Show success feedback
+      setFeedback({
+        open: true,
+        type: 'success',
+        title: 'Consultation Deleted',
+        message: 'The consultation record has been successfully removed.'
+      });
+      
+    } catch (error) {
+      console.error('Error deleting consultation:', error);
+      
+      // Close confirm modal
+      setConfirmModal(prev => ({ ...prev, open: false }));
+
+      setFeedback({
+        open: true,
+        type: 'error',
+        title: 'Delete Failed',
+        message: error.response?.data?.message || 'Failed to delete consultation. Please try again.'
+      });
     }
   };
 
+  // 2. Trigger the Confirmation Modal
   const handleDeleteClick = (consultation) => {
-    setConsultationToDelete(consultation);
-    setDeleteConfirmDialogOpen(true);
-    handleActionMenuClose();
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteConfirmDialogOpen(false);
-    setConsultationToDelete(null);
+    handleActionMenuClose(); // Close the dropdown menu first
+    
+    setConfirmModal({
+      open: true,
+      type: 'warning', // Use 'warning' or 'delete' type for red/orange styling
+      title: 'Confirm Deletion',
+      message: `Are you sure you want to delete the consultation record for ${consultation.patientName}? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: executeDelete, // Pass the function to call on "Yes"
+      data: consultation // Store the item so executeDelete knows what to delete
+    });
   };
 
   const handleKeyPress = (event) => {
@@ -674,6 +675,8 @@ const PatientHistory = () => {
           </Box>
         </Card>
       </Box>
+
+      {/* Edit Consultation Modal */}
       <ConsultationModal 
         open={isModalOpen} 
         onClose={handleCloseModal} 
@@ -682,55 +685,16 @@ const PatientHistory = () => {
         onSave={handleSaveConsultation}
       />
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteConfirmDialogOpen}
-        onClose={handleCancelDelete}
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            boxShadow: '0 20px 25px rgba(0,0,0,0.15)'
-          }
-        }}
-      >
-        <DialogTitle sx={{ fontWeight: 600, color: '#1f2937', fontSize: '1.125rem' }}>
-          Confirm Deletion
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ color: '#6b7280', fontSize: '0.875rem', mt: 1 }}>
-            Are you sure you want to delete the consultation record for <strong>{consultationToDelete?.patientName}</strong>? This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0, gap: 1 }}>
-          <Button 
-            onClick={handleCancelDelete}
-            sx={{
-              color: '#6b7280',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              textTransform: 'none',
-              '&:hover': { background: '#f3f4f6' }
-            }}
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleDeleteConsultation}
-            variant="contained"
-            sx={{
-              background: '#dc2626',
-              color: 'white',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              textTransform: 'none',
-              borderRadius: 1,
-              '&:hover': { background: '#b91c1c' }
-            }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <FeedbackModal
+        open={confirmModal.open}
+        onClose={() => setConfirmModal(prev => ({ ...prev, open: false }))}
+        type={confirmModal.type}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        cancelText={confirmModal.cancelText}
+        onConfirm={confirmModal.onConfirm}
+      />
 
       <FeedbackModal
         open={feedback.open}

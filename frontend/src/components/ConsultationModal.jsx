@@ -3,10 +3,22 @@ import {
   Box,
   Typography,
   Modal,
-  Grid,
-  TextField,
-  Button
 } from '@mui/material';
+import {
+  Person,
+  Tag,
+  Wc,
+  CalendarToday,
+  MedicalServices,
+  Description,
+  Topic,
+  Medication,
+  Note
+} from '@mui/icons-material';
+
+// Import your styled components here
+import { InputField } from '../components/RegisterFields'; 
+import { GradientButton, OutlineButton } from '../components/ButtonComponents'; 
 
 const ConsultationModal = ({ open, onClose, data, isEditMode = false, onSave }) => {
   const [formData, setFormData] = useState({});
@@ -19,7 +31,9 @@ const ConsultationModal = ({ open, onClose, data, isEditMode = false, onSave }) 
         prescription: data.prescription || '',
         remarks: data.remarks || '',
         date: data.date || '',
-        doctor: data.doctor || ''
+        doctor: data.doctor || '',
+        age: data.age || '',
+        gender: data.gender || ''
       });
     }
   }, [data, open]);
@@ -42,226 +56,185 @@ const ConsultationModal = ({ open, onClose, data, isEditMode = false, onSave }) 
   const firstName = names[0];
   const lastName = names.slice(1).join(' ');
 
-  /* ====== EXACT STYLE MATCH TO IMAGE ====== */
-
   const modalStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 580,
-    maxHeight: '80vh',
+    width: 600,
+    maxHeight: '90vh',
     overflowY: 'auto',
     bgcolor: '#ffffff',
-    boxShadow: '0px 4px 18px rgba(0,0,0,0.15)',
-    p: 3,
-    borderRadius: '14px',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+    p: 4,
+    borderRadius: '20px',
     outline: 'none'
   };
 
-  const labelStyle = {
-    fontSize: '0.78rem',
-    fontWeight: 600,
-    marginBottom: '4px',
-    color: '#3b0764'
-  };
-
-  const inputStyles = {
-    '& .MuiOutlinedInput-root': {
-      borderRadius: '8px',
-      '& fieldset': {
-        borderColor: '#5b0bbf',
-        borderWidth: '1.5px'
-      },
-      '&:hover fieldset': {
-        borderColor: '#5b0bbf'
-      }
-    },
-    '& .MuiInputBase-input': {
-      padding: '10px 14px'
-    },
-    backgroundColor: '#fff'
-  };
-
-  const grayInputStyles = {
-    '& .MuiOutlinedInput-root': {
-      borderRadius: '8px',
-      backgroundColor: '#e9d8f3',
-      '& fieldset': {
-        borderColor: '#e9d8f3'
-      }
-    },
-    '& .MuiInputBase-input': {
-      padding: '10px 14px'
-    }
-  };
-
-  const sectionSpacing = { mt: 0, mb: 3 };
+  const iconColor = { color: '#4B0082', mr: 1, fontSize: '1.2rem', };
+  
+  const rowStyle = { display: 'flex', gap: 2.5 };
+  const colStyle = { flex: 1 };
+  const inputSx = { mb: 2 };
 
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
 
-        {/* Title */}
-        <Typography
-          variant="h5"
-          sx={{ color: '#5b0bbf', fontWeight: 700, mb: 3 }}
-        >
-          Consultation Details
-        </Typography>
+        {/* Title Section */}
+        <Box sx={{ mb: 4, textAlign: 'start' }}>
+          <Typography
+            variant="h5"
+            sx={{ 
+              color: '#4B0082', 
+              fontWeight: 700, 
+              mb: 0.5, 
+              fontFamily: '"Poppins", sans-serif'
+            }}
+          >
+            Consultation Details
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ 
+              color: '#6b7280', 
+              fontFamily: '"Poppins", sans-serif',
+              fontSize: '0.875rem'
+            }}
+          >
+            {isEditMode 
+              ? "Edit the consultation details." 
+              : "View the consultation details."}
+          </Typography>
+        </Box>
 
-        {/* ========== FORM ========== */}
-        <Grid container spacing={1} sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+        {/* ========== FORM CONTAINER ========== */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
-          {/* FIRST ROW — FIRST & LAST NAME */}
-          <Grid item xs={6} sx={{ mb: 2 }}>
-            <Typography sx={labelStyle}>First Name</Typography>
-            <TextField
-              fullWidth
-              value={firstName}
-              InputProps={{ readOnly: true }}
-              sx={inputStyles}
-            />
-          </Grid>
+          {/* ROW 1: FIRST & LAST NAME */}
+          <Box sx={rowStyle}>
+            <Box sx={colStyle}>
+              <InputField
+                label="First Name"
+                value={firstName}
+                InputProps={{ readOnly: true }}
+                startAdornment={<Person sx={iconColor} />}
+                sx={inputSx}
+              />
+            </Box>
+            <Box sx={colStyle}>
+              <InputField
+                label="Last Name"
+                value={lastName}
+                InputProps={{ readOnly: true }}
+                startAdornment={<Person sx={iconColor} />}
+                sx={inputSx}
+              />
+            </Box>
+          </Box>
 
-          <Grid item xs={6} sx={{ mb: 2 }}>
-            <Typography sx={labelStyle}>Last Name</Typography>
-            <TextField
-              fullWidth
-              value={lastName}
-              InputProps={{ readOnly: true }}
-              sx={inputStyles}
-            />
-          </Grid>
+          {/* ROW 2: AGE & GENDER */}
+          <Box sx={rowStyle}>
+            <Box sx={colStyle}>
+              <InputField
+                label="Age"
+                value={formData.age}
+                InputProps={{ readOnly: true }}
+                startAdornment={<Tag sx={iconColor} />}
+                sx={inputSx}
+              />
+            </Box>
+            <Box sx={colStyle}>
+              <InputField
+                label="Gender"
+                value={formData.gender}
+                InputProps={{ readOnly: true }}
+                startAdornment={<Wc sx={iconColor} />}
+                sx={inputSx}
+              />
+            </Box>
+          </Box>
 
-          {/* SECOND ROW — AGE & GENDER */}
-          <Grid item xs={6} sx={{ mb: 2 }}>
-            <Typography sx={labelStyle}>Age</Typography>
-            <TextField
-              fullWidth
-              value={data.age}
-              InputProps={{ readOnly: true }}
-              sx={inputStyles}
-            />
-          </Grid>
-    
-          <Grid item xs={6} sx={{ mb: 2 }}>
-            <Typography sx={labelStyle}>Gender</Typography>
-            <TextField
-              fullWidth
-              value={data.gender}
-              InputProps={{ readOnly: true }}
-              sx={inputStyles}
-            />
-          </Grid>
+          {/* ROW 3: DOCTOR & DATE */}
+          <Box sx={rowStyle}>
+            <Box sx={colStyle}>
+              <InputField
+                label="Attending Doctor"
+                value={formData.doctor}
+                InputProps={{ readOnly: true }}
+                startAdornment={<MedicalServices sx={iconColor} />}
+                sx={inputSx}
+              />
+            </Box>
+            <Box sx={colStyle}>
+              <InputField
+                label="Consultation Date"
+                value={formData.date}
+                InputProps={{ readOnly: true }}
+                startAdornment={<CalendarToday sx={iconColor} />}
+                sx={inputSx}
+              />
+            </Box>
+          </Box>
 
-          {/* THIRD ROW — DOCTOR & DATE */}
-          <Grid item xs={6} sx={{ mb: 3 }}>
-            <Typography sx={labelStyle}>Doctor</Typography>
-            <TextField
-              fullWidth
-              value={data.doctor}
-              InputProps={{ readOnly: true }}
-              sx={inputStyles}
-            />
-          </Grid>
+          {/* === LARGE TEXT AREAS (Stacked Vertical) === */}
 
-          <Grid item xs={6} sx={{ mb: 3 }}>
-            <Typography sx={labelStyle}>Date</Typography>
-            <TextField
-              fullWidth
-              value={data.date}
-              InputProps={{ readOnly: true }}
-              sx={inputStyles}
-            />
-          </Grid>
+          <InputField
+            label="Symptoms"
+            name="symptoms"
+            multiline
+            rows={2} 
+            value={isEditMode ? formData.symptoms : data.symptoms}
+            onChange={handleInputChange}
+            InputProps={{ readOnly: !isEditMode }}
+            sx={inputSx}
+          />
 
-          {/* SYMPTOMS — FULL WIDTH */}
-          <Grid item xs={12} sx={{ ...sectionSpacing, gridColumn: '1 / -1' }}>
-            <Typography sx={labelStyle}>Symptoms</Typography>
-            <TextField
-              fullWidth
-              name="symptoms"
-              value={isEditMode ? formData.symptoms : data.symptoms}
-              onChange={handleInputChange}
-              InputProps={{ readOnly: !isEditMode }}
-              sx={inputStyles}
-            />
-          </Grid>
+          <InputField
+            label="Diagnosis"
+            name="diagnosis"
+            multiline
+            rows={2}
+            value={isEditMode ? formData.diagnosis : data.diagnosis}
+            onChange={handleInputChange}
+            InputProps={{ readOnly: !isEditMode }}
+            sx={inputSx}
+          />
 
-          {/* DIAGNOSIS — FULL WIDTH GRAY BOX */}
-          <Grid item xs={12} sx={{ ...sectionSpacing, gridColumn: '1 / -1' }}>
-            <Typography sx={labelStyle}>Diagnosis</Typography>
-            <TextField
-              fullWidth
-              name="diagnosis"
-              multiline
-              rows={2}
-              value={isEditMode ? formData.diagnosis : data.diagnosis}
-              onChange={handleInputChange}
-              InputProps={{ readOnly: !isEditMode }}
-              sx={grayInputStyles}
-            />
-          </Grid>
+          <InputField
+            label="Prescription"
+            name="prescription"
+            multiline
+            rows={2}
+            value={isEditMode ? formData.prescription : data.prescription}
+            onChange={handleInputChange}
+            InputProps={{ readOnly: !isEditMode }}
+            sx={inputSx}
+          />
 
-          {/* PRESCRIPTION — FULL WIDTH */}
-          <Grid item xs={12} sx={{ ...sectionSpacing, gridColumn: '1 / -1' }}>
-            <Typography sx={labelStyle}>Prescription</Typography>
-            <TextField
-              fullWidth
-              name="prescription"
-              value={isEditMode ? formData.prescription : data.prescription}
-              onChange={handleInputChange}
-              InputProps={{ readOnly: !isEditMode }}
-              sx={inputStyles}
-            />
-          </Grid>
-
-          {/* REMARKS — FULL WIDTH GRAY BOX */}
-          <Grid item xs={12} sx={{ ...sectionSpacing, gridColumn: '1 / -1' }}>
-            <Typography sx={labelStyle}>Remarks</Typography>
-            <TextField
-              fullWidth
-              name="remarks"
-              multiline
-              rows={2}
-              value={isEditMode ? formData.remarks : data.remarks}
-              onChange={handleInputChange}
-              InputProps={{ readOnly: !isEditMode }}
-              sx={grayInputStyles}
-            />
-          </Grid>
+          <InputField
+            label="Remarks / Notes"
+            name="remarks"
+            multiline
+            rows={2}
+            value={isEditMode ? formData.remarks : data.remarks}
+            onChange={handleInputChange}
+            InputProps={{ readOnly: !isEditMode }}
+            sx={inputSx}
+          />
 
           {/* BUTTONS */}
           {isEditMode && (
-            <Grid
-              item
-              xs={12}
-              sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2, gridColumn: '1 / -1' }}
-            >
-              <Button 
-                variant="outlined" 
-                onClick={onClose}
-                sx={{ textTransform: 'none', fontSize: '0.875rem' }}
-              >
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 1, height: 40,  }}>
+              <OutlineButton onClick={onClose}>
                 Cancel
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleSave}
-                sx={{
-                  background: '#5b0bbf',
-                  '&:hover': { background: '#4a0999' },
-                  textTransform: 'none',
-                  fontSize: '0.875rem'
-                }}
-              >
+              </OutlineButton>
+              <GradientButton onClick={handleSave}>
                 Save Changes
-              </Button>
-            </Grid>
+              </GradientButton>
+            </Box>
           )}
-
-        </Grid>
+        </Box>
       </Box>
     </Modal>
   );
