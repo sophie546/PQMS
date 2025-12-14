@@ -284,7 +284,7 @@ export default function LoginPage() {
         </div>
 
         {/* --- STYLES --- */}
-        <style jsx>{`
+        <style>{`
         .bg-shape {
             position: absolute;
             border-radius: 50%;

@@ -1,13 +1,9 @@
-import axios from 'axios';
-
-// Change this URL if your Spring Boot runs on a different port
-const API_URL = "http://localhost:8080/consultations"; 
+import API from './api';
 
 export const consultationService = {
-    // This matches your PostMapping("/add") in Java
     addConsultation: async (consultationData) => {
         try {
-            const response = await axios.post(`${API_URL}/add`, consultationData);
+            const response = await API.post('/consultations/add', consultationData);
             return response.data;
         } catch (error) {
             console.error("Error saving consultation:", error);
@@ -17,7 +13,7 @@ export const consultationService = {
 
     getAllConsultations: async () => {
         try {
-            const response = await axios.get(`${API_URL}/all`);
+            const response = await API.get('/consultations/all');
             return response.data;
         } catch (error) {
             console.error("Error fetching consultations:", error);
@@ -27,7 +23,7 @@ export const consultationService = {
 
     updateConsultation: async (consultationId, consultationData) => {
         try {
-            const response = await axios.put(`${API_URL}/update/${consultationId}`, consultationData);
+            const response = await API.put(`/consultations/update/${consultationId}`, consultationData);
             return response.data;
         } catch (error) {
             console.error("Error updating consultation:", error);
@@ -37,7 +33,7 @@ export const consultationService = {
 
     deleteConsultation: async (consultationId) => {
         try {
-            const response = await axios.delete(`${API_URL}/delete/${consultationId}`);
+            const response = await API.delete(`/consultations/delete/${consultationId}`);
             return response.data;
         } catch (error) {
             console.error("Error deleting consultation:", error);

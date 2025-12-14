@@ -93,7 +93,7 @@ const PatientQueue = () => {
     try {
       const data = await staffService.getAllStaff();
       setStaffList(data);
-      console.log('✅ Staff data loaded:', data);
+      // console.log('✅ Staff data loaded:', data);
     } catch (error) {
       console.error('Error fetching staff:', error);
     }

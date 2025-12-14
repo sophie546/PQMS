@@ -248,7 +248,7 @@ const UserProfile = ({ collapsed, onToggle }) => {
         
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          console.log('Sidebar user data:', parsedUser);
+          // console.log('Sidebar user data:', parsedUser);
           setUserData(parsedUser);
         } else {
           // Fallback to default

@@ -182,7 +182,7 @@ export const useConsultation = () => {
     };
 
     try {
-      console.log("Sending to Backend:", consultationPayload);
+      // console.log("Sending to Backend:", consultationPayload);
       
       // 4. Call Backend
       await consultationService.addConsultation(consultationPayload);
@@ -238,7 +238,7 @@ export const useConsultation = () => {
     setErrors(prev => ({ ...prev, patientId: '' }));
 
     try {
-        console.log("Searching for patient ID:", id);
+        // console.log("Searching for patient ID:", id);
         
         const data = await patientService.getPatientById(id);
 

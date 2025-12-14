@@ -45,7 +45,7 @@ const GeneralSettings = () => {
         let parsedUser;
         try {
           parsedUser = JSON.parse(storedUser);
-          console.log('📋 User from storage:', parsedUser);
+          // console.log('📋 User from storage:', parsedUser);
         } catch (e) {
           console.error('Failed to parse stored user:', e);
           setUserData(getEmptyUserData());
@@ -67,7 +67,7 @@ const GeneralSettings = () => {
           }
           
           const allStaff = await allStaffResponse.json();
-          console.log('✅ All medical staff:', allStaff);
+          // console.log('✅ All medical staff:', allStaff);
           
           // Find medical staff for current user
           let medicalStaff = null;
@@ -94,13 +94,13 @@ const GeneralSettings = () => {
           }
           
           if (medicalStaff) {
-            console.log('✅ Found medical staff record:', medicalStaff);
-            // Log specific fields for debugging
-            console.log('Medical staff age:', medicalStaff.age);
-            console.log('Medical staff gender:', medicalStaff.gender);
-            console.log('Medical staff department:', medicalStaff.department);
-            console.log('Medical staff availability:', medicalStaff.availability);
-            console.log('Medical staff fields:', Object.keys(medicalStaff));
+            // console.log('✅ Found medical staff record:', medicalStaff);
+            // // Log specific fields for debugging
+            // console.log('Medical staff age:', medicalStaff.age);
+            // console.log('Medical staff gender:', medicalStaff.gender);
+            // console.log('Medical staff department:', medicalStaff.department);
+            // console.log('Medical staff availability:', medicalStaff.availability);
+            // console.log('Medical staff fields:', Object.keys(medicalStaff));
             
             // Set availability from medical staff data if available
             if (medicalStaff.availability) {
@@ -112,14 +112,14 @@ const GeneralSettings = () => {
           
           // Map the data
           const mappedData = mapApiData(parsedUser, medicalStaff);
-          console.log('📝 Final mapped data:', mappedData);
+          // console.log('📝 Final mapped data:', mappedData);
           
           setUserData(mappedData);
           
           // Cache for future use
-          localStorage.setItem('currentUser', JSON.stringify(mappedData));
+          // localStorage.setItem('currentUser', JSON.stringify(mappedData));
           if (medicalStaff) {
-            localStorage.setItem('medicalStaffData', JSON.stringify(medicalStaff));
+            // localStorage.setItem('medicalStaffData', JSON.stringify(medicalStaff));
           }
           
         } catch (staffError) {
@@ -127,7 +127,7 @@ const GeneralSettings = () => {
           // Use just the stored user data
           const mappedData = mapApiData(parsedUser, null);
           setUserData(mappedData);
-          localStorage.setItem('currentUser', JSON.stringify(mappedData));
+          // localStorage.setItem('currentUser', JSON.stringify(mappedData));
         }
         
       } catch (error) {
@@ -144,9 +144,9 @@ const GeneralSettings = () => {
 
   // Map API response to user data format
   const mapApiData = (storedUser, medicalStaffData) => {
-    console.log('🔧 Mapping data...');
-    console.log('Stored user:', storedUser);
-    console.log('Medical staff:', medicalStaffData);
+    // console.log('🔧 Mapping data...');
+    // console.log('Stored user:', storedUser);
+    // console.log('Medical staff:', medicalStaffData);
     
     const getValue = (value, defaultValue = 'N/A') => {
       if (value === null || 
@@ -182,81 +182,81 @@ const GeneralSettings = () => {
       const staffName = getValue(medicalStaffData.name);
       if (staffName !== 'N/A') {
         name = staffName;
-        console.log('Name from medical staff:', name);
+        // console.log('Name from medical staff:', name);
       }
       
       // Role (capitalize first letter)
       const staffRole = getValue(medicalStaffData.role);
       if (staffRole !== 'N/A') {
         role = staffRole.charAt(0).toUpperCase() + staffRole.slice(1);
-        console.log('Role from medical staff:', role);
+        // console.log('Role from medical staff:', role);
       }
       
       // Specialty
       const staffSpecialty = getValue(medicalStaffData.specialty);
       if (staffSpecialty !== 'N/A') {
         specialization = staffSpecialty;
-        console.log('Specialty from medical staff:', specialization);
+        // console.log('Specialty from medical staff:', specialization);
       }
       
       // Contact
       const staffContact = getValue(medicalStaffData.contactNo);
       if (staffContact !== 'N/A') {
         contactNo = staffContact;
-        console.log('Contact from medical staff:', contactNo);
+        // console.log('Contact from medical staff:', contactNo);
       }
       
       // Staff ID
       staffID = getValue(medicalStaffData.staffID || medicalStaffData.id);
-      console.log('Staff ID:', staffID);
+      // console.log('Staff ID:', staffID);
       
       // AGE
       const staffAge = getValue(medicalStaffData.age);
       if (staffAge !== 'N/A') {
         age = staffAge;
-        console.log('Age from medical staff:', age);
+        // console.log('Age from medical staff:', age);
       }
       
       // GENDER
       const staffGender = getValue(medicalStaffData.gender);
       if (staffGender !== 'N/A') {
         gender = staffGender;
-        console.log('Gender from medical staff:', gender);
+        // console.log('Gender from medical staff:', gender);
       }
       
       // DEPARTMENT
       const staffDepartment = getValue(medicalStaffData.department, 'General Medicine');
       if (staffDepartment !== 'N/A') {
         department = staffDepartment;
-        console.log('Department from medical staff:', department);
+        // console.log('Department from medical staff:', department);
       }
       
       // AVAILABILITY
       const staffAvailability = getValue(medicalStaffData.availability, 'available');
       if (staffAvailability !== 'N/A') {
         availability = staffAvailability;
-        console.log('Availability from medical staff:', availability);
+        // console.log('Availability from medical staff:', availability);
       }
       
       // Use user account data from relation if available
       if (medicalStaffData.userAccount) {
-        console.log('Medical staff has userAccount relation');
+        // console.log('Medical staff has userAccount relation');
         
         if (!accountID || accountID === 'N/A') {
           accountID = getValue(medicalStaffData.userAccount.accountID);
-          console.log('Account ID from relation:', accountID);
+          // console.log('Account ID from relation:', accountID);
         }
         
         if (!email || email === 'N/A') {
           email = getValue(medicalStaffData.userAccount.username);
-          console.log('Email from relation:', email);
+          // console.log('Email from relation:', email);
         }
         
         if (!role || role === 'N/A') {
           const relationRole = getValue(medicalStaffData.userAccount.role);
           if (relationRole !== 'N/A') {
             role = relationRole.charAt(0).toUpperCase() + relationRole.slice(1);
-            console.log('Role from relation:', role);
+            // console.log('Role from relation:', role);
           }
         }
       }
@@ -292,7 +292,7 @@ const GeneralSettings = () => {
       source: medicalStaffData ? 'Medical Staff Table' : 'User Storage'
     };
     
-    console.log('📋 Final mapped data structure:', mappedData);
+    // console.log('📋 Final mapped data structure:', mappedData);
     return mappedData;
   };
 
@@ -356,8 +356,8 @@ const GeneralSettings = () => {
         setAvailability(newAvailability);
         
         // Update localStorage
-        localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
-        localStorage.setItem('medicalStaffData', JSON.stringify(updatedStaff));
+        // localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
+        // localStorage.setItem('medicalStaffData', JSON.stringify(updatedStaff));
         
         // Update staff list in localStorage if it exists
         updateStaffAvailabilityInLocalStorage(updatedStaff, newAvailability);
@@ -387,7 +387,7 @@ const GeneralSettings = () => {
           }
           return staff;
         });
-        localStorage.setItem('staffList', JSON.stringify(updatedStaffList));
+        // localStorage.setItem('staffList', JSON.stringify(updatedStaffList));
         console.log('✅ Updated staff list availability in localStorage');
       }
     } catch (error) {
@@ -423,89 +423,83 @@ const GeneralSettings = () => {
 
   // Handle profile update
   const handleProfileUpdate = async (updatedData) => {
+    setError(null);
+    
+    // 1. Validation: Check if we have a valid ID to update
+    if (!userData?.staffID || userData.staffID === 'N/A') {
+      console.error('⚠️ No valid staff ID found, cannot update database');
+      setError("Cannot update profile: No valid Staff ID associated with this account.");
+      return;
+    }
+
     try {
-      console.log('Profile update received from modal:', updatedData);
-      
-      // Create new data by merging current userData with updatedData
+      // console.log('🔄 Sending profile update to Backend:', updatedData);
+
+      // 2. Prepare the payload for the Backend
+      // Ensure we format the data exactly how the API expects it
+      const backendPayload = {
+        name: updatedData.name,
+        role: updatedData.role ? updatedData.role.toLowerCase() : null, // Backend likely expects lowercase
+        contactNo: updatedData.phone, // Map 'phone' from modal to 'contactNo' for DB
+        specialty: updatedData.specialization, // Map 'specialization' to 'specialty'
+        age: updatedData.age ? parseInt(updatedData.age) : null,
+        gender: updatedData.gender || null,
+        department: updatedData.department || 'General Medicine',
+        availability: availability, // Keep existing availability
+        // Important: Include the UserAccount relation if required by your entity Update DTO
+        userAccount: { 
+          accountID: parseInt(userData.accountID) 
+        }
+      };
+
+      // 3. Perform the API Call
+      const response = await fetch(`http://localhost:8080/api/medicalstaff/update/${userData.staffID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(backendPayload)
+      });
+
+      // 4. Check for API Errors
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server responded with ${response.status}: ${errorText}`);
+      }
+
+      // 5. Success! Get the updated object from the backend
+      const updatedBackendData = await response.json();
+      // console.log('✅ Backend update successful:', updatedBackendData);
+
+      // 6. NOW update Local State (UI) using the data we sent + existing data
       const newData = { 
         ...userData, 
         ...updatedData,
-        // Ensure role is properly capitalized for display
-        role: updatedData.role || userData.role,
-        // Ensure other fields are included
+        // Ensure we keep consistent casing for the UI
+        role: updatedData.role || userData.role, 
         age: updatedData.age || userData.age,
         gender: updatedData.gender || userData.gender,
-        department: updatedData.department || userData.department || 'General Medicine'
+        department: updatedData.department || userData.department
       };
-      
-      console.log('New user data after merge:', newData);
-      
-      // Update local state immediately for instant UI feedback
+
       setUserData(newData);
-      
-      // Update localStorage for persistence
-      localStorage.setItem('currentUser', JSON.stringify(newData));
-      
-      // Update medical staff in database if we have staff ID
-      if (newData.staffID && newData.staffID !== 'N/A') {
-        const updateData = {
-          name: newData.name,
-          role: newData.role.toLowerCase(), // Store lowercase in DB
-          contactNo: newData.phone,
-          specialty: newData.specialization,
-          age: newData.age ? parseInt(newData.age) : null,
-          gender: newData.gender || null,
-          department: newData.department || 'General Medicine',
-          availability: availability, // Include current availability
-          userAccount: { 
-            accountID: parseInt(newData.accountID) 
-          }
-        };
-        
-        console.log('Sending medical staff update to API:', updateData);
-        
-        try {
-          const response = await fetch(`http://localhost:8080/api/medicalstaff/update/${newData.staffID}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updateData)
-          });
-          
-          if (response.ok) {
-            const updatedStaff = await response.json();
-            console.log('✅ Medical staff updated successfully:', updatedStaff);
-            
-            // Also update medicalStaffData in localStorage
-            localStorage.setItem('medicalStaffData', JSON.stringify(updatedStaff));
-            
-            // Update staff.jsx data in localStorage if it exists
-            updateStaffListInLocalStorage(updatedStaff, newData);
-            
-          } else {
-            const errorText = await response.text();
-            console.error('❌ Failed to update medical staff:', response.status, errorText);
-            
-            // Even if API fails, we still update local state for better UX
-            // User can refresh to get actual data
-          }
-        } catch (apiError) {
-          console.error('❌ API call failed:', apiError);
-          // Continue with local updates even if API fails
-        }
-      } else {
-        console.log('⚠️ No valid staff ID found, cannot update database');
-      }
-      
-      // Force a refresh of other components that might be open
+
+      // 7. Update Local Storage helpers
+      // Note: We use updatedBackendData here to ensure we sync with what the DB actually has
+      // updateStaffListInLocalStorage(updatedBackendData, newData);
+
+      // 8. Close the modal
+      setShowEditModal(false);
+
+      // 9. Force refresh other components
       dispatchStorageEvent();
-      
+
     } catch (error) {
       console.error('❌ Error in handleProfileUpdate:', error);
+      setError(`Failed to save changes: ${error.message}`);
+      // Do NOT update local state if backend failed
     }
   };
-
   // Helper function to update staff list in localStorage for staff.jsx
   const updateStaffListInLocalStorage = (updatedStaff, newUserData) => {
     try {
@@ -540,7 +534,7 @@ const GeneralSettings = () => {
         });
         
         // Save updated staff list back to localStorage
-        localStorage.setItem('staffList', JSON.stringify(updatedStaffList));
+        // localStorage.setItem('staffList', JSON.stringify(updatedStaffList));
         console.log('✅ Updated staff list in localStorage');
         
         // Dispatch storage event to notify other components
@@ -575,7 +569,7 @@ const GeneralSettings = () => {
   // Add event listener in useEffect to refresh when other components update data
   useEffect(() => {
     const handleUserProfileUpdated = (event) => {
-      console.log('User profile updated event received:', event.detail);
+      // console.log('User profile updated event received:', event.detail);
       // Optionally refresh data here
     };
 

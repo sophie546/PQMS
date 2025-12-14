@@ -23,10 +23,12 @@ const style = {
 };
 
 // Existing CustomTextField
-const CustomTextField = ({ sx, ...props }) => (
+const CustomTextField = ({ sx, labelSx, ...props }) => (
   <TextField
     fullWidth
     variant="standard"
+    // If you actually wanted to use those styles, pass them here:
+    InputLabelProps={{ sx: labelSx }} 
     sx={{
       '& .MuiInput-underline': {
         '&:before': { borderBottomColor: '#4B0082' },
@@ -44,7 +46,7 @@ const CustomTextField = ({ sx, ...props }) => (
       mb: 2,
       ...sx,
     }}
-    {...props}
+    {...props} 
   />
 );
 
