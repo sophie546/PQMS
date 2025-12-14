@@ -18,11 +18,11 @@ export const getStatusBgColor = (status) => {
 
 export const usePatientCard = (patient) => {
   const handleViewDetails = () => {
-    console.log("Viewing details for patient:", patient.id);
+    // console.log("Viewing details for patient:", patient.id);
   };
 
   const handleMoreActions = () => {
-    console.log("More actions for patient:", patient.id);
+    // console.log("More actions for patient:", patient.id);
   };
 
   return {

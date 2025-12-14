@@ -4,7 +4,6 @@ import { Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/Landing.jsx';
 import PatientPage from './pages/Patient.jsx';
 import { Layout } from './components';
-import RequireAuth from './components/RequireAuth';
 import ConsultationPage from './pages/Consultations.jsx';
 import RegisterPage from './pages/Register.jsx';
 import LoginPage from './pages/Login.jsx';  
@@ -13,13 +12,14 @@ import PatientQueue from './pages/PatientQueue.jsx';
 import Staff from './pages/Staff.jsx';
 import GeneralSettings from './pages/GeneralSettings.jsx';
 import QueueDashboard from './pages/QueueDashboard.jsx';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 function App() {
   return (
     <Routes>
-      {/* Protected layout: all nested routes require auth */}
-      <Route path="/" element={<RequireAuth><Layout /></RequireAuth>}>
+      {/* Protected routes: all pages except landing, queue dashboard, login, register */}
+      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="Patient" element={<PatientPage />} />
         <Route path="Consultations" element={<ConsultationPage />} />
         <Route path="PatientHistory" element={<PatientHistory />} />
@@ -27,10 +27,8 @@ function App() {
         <Route path="Staff" element={<Staff />} /> 
       </Route>
 
-      {/* Protect other pages that should require authentication */}
-      <Route path="general-settings" element={<RequireAuth><GeneralSettings /></RequireAuth>} />
+      <Route path="general-settings" element={<ProtectedRoute><GeneralSettings /></ProtectedRoute>} />
 
-      {/* Public pages */}
       <Route index element={<LandingPage />} />
       <Route path="/Register" element={<RegisterPage />} />
       <Route path="/Login" element={<LoginPage />} />

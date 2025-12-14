@@ -73,7 +73,7 @@ export const useAuth = () => {
 
             const data = await response.json();
             console.log('📥 Login response status:', response.status);
-            console.log('📥 Login response data:', data);
+            // console.log('📥 Login response data:', data);
 
             if (!response.ok || !data.success) {
                 throw new Error(data.message || `Login failed (${response.status})`);
@@ -81,9 +81,9 @@ export const useAuth = () => {
 
             // Save user info to localStorage
             localStorage.setItem('user', JSON.stringify(data.user));
-            localStorage.setItem('token', 'clinicaflow-session');
+            localStorage.setItem('token', data.token);
             
-            console.log('✅ Login successful! User:', data.user);
+            // console.log('✅ Login successful! User:', data.user);
             
             
             // Redirect to PatientQueue

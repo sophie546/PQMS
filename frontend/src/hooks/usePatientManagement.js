@@ -79,7 +79,7 @@ export const usePatientManagement = () => {
   };
 
   const handlePatientMenuClick = (patientId) => {
-    console.log("Menu clicked for patient:", patientId);
+    // console.log("Menu clicked for patient:", patientId);
   };
 
   const clearFilters = () => {

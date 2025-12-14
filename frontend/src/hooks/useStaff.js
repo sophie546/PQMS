@@ -1,6 +1,6 @@
 // hooks/useStaff.js
-import { useState, useEffect, useMemo, useCallback } from "react";
-import staffService from '../services/staffService';
+import { useState, useEffect, useMemo } from "react";
+// import staffService from '../services/staffService'; // Keep if you use it elsewhere
 
 export const useStaff = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -10,70 +10,80 @@ export const useStaff = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch staff data from backend
+  // --- TEMPORARY CLEANUP: RUN ONCE THEN REMOVE ---
   useEffect(() => {
-    const fetchStaffData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        console.log('🔄 Fetching staff data from backend...');
+    // This checks if the sensitive data still exists from previous runs and deletes it
+    if (localStorage.getItem('medicalStaffData') || localStorage.getItem('staffList')) {
+      // console.log('🧹 Security Cleanup: Removing sensitive staff data from LocalStorage...');
+      localStorage.removeItem('medicalStaffData');
+      localStorage.removeItem('staffList');
+    }
+  }, []);
+  // -----------------------------------------------
+
+  // Fetch staff data from backend
+  const fetchStaffData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('🔄 Fetching staff data from backend...');
+      
+      // Fetch from API
+      const response = await fetch('http://localhost:8080/api/medicalstaff/all');
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch staff: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      // console.log('✅ Staff data received:', data);  
+      
+      // Map API data to staff format
+      const mappedStaff = data.map(staff => {
+        // Get email from userAccount relation
+        const email = staff.userAccount?.username || '';
         
-        // Fetch from API
-        const response = await fetch('http://localhost:8080/api/medicalstaff/all');
+        // Get availability from database (default to 'Available' if null)
+        const availability = staff.availability || 'Available';
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch staff: ${response.status}`);
+        // Map availability to status for backward compatibility
+        let status = availability;
+        if (availability === 'offline') {
+          status = 'Off Duty'; 
         }
         
-        const data = await response.json();
-        console.log('✅ Staff data received:', data);
-        
-        // Map API data to staff format with new availability field
-        const mappedStaff = data.map(staff => {
-          // Get email from userAccount relation
-          const email = staff.userAccount?.username || '';
-          
-          // Get availability from database (default to 'Available' if null)
-          const availability = staff.availability || 'Available';
-          
-          // Map availability to status for backward compatibility
-          let status = availability;
-          if (availability === 'offline') {
-            status = 'Off Duty'; // Map 'offline' to 'Off Duty' for display
-          }
-          
-          return {
-            id: staff.staffID,
-            name: staff.name,
-            role: staff.role,
-            specialty: staff.specialty || 'Not specified',
-            email: email,
-            contact: staff.contactNo || 'No contact',
-            status: status, // Use mapped status
-            availability: availability, // Keep original availability
-            department: staff.department || 'General Medicine',
-            age: staff.age,
-            gender: staff.gender,
-            accountID: staff.userAccount?.accountID,
-            // Original data for debugging
-            _raw: staff
-          };
-        });
-        
-        setStaffMembers(mappedStaff);
-        
-        // Update localStorage for other components
-        localStorage.setItem('staffList', JSON.stringify(mappedStaff));
-        
-      } catch (err) {
-        console.error('❌ Error fetching staff data:', err);
-        setError('Failed to load staff data. Please try again.');
-        setStaffMembers([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+        return {
+          id: staff.staffID,
+          name: staff.name,
+          role: staff.role,
+          specialty: staff.specialty || 'Not specified',
+          email: email,
+          contact: staff.contactNo || 'No contact',
+          status: status, 
+          availability: availability,
+          department: staff.department || 'General Medicine',
+          age: staff.age,
+          gender: staff.gender,
+          accountID: staff.userAccount?.accountID,
+          // Removed _raw to save memory
+        };
+      });
+      
+      setStaffMembers(mappedStaff);
+      
+      // ❌ REMOVED: localStorage.setItem(...) - This was the security risk
+      
+    } catch (err) {
+      console.error('❌ Error fetching staff data:', err);
+      setError('Failed to load staff data. Please try again.');
+      setStaffMembers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Initial Fetch
+  useEffect(() => {
     fetchStaffData();
   }, []);
 
@@ -112,16 +122,15 @@ export const useStaff = () => {
       // Role filter
       const staffRole = staff.role || '';
       const matchesRole = roleFilter === 'all' || 
-                         staffRole.toLowerCase() === roleFilter.toLowerCase();
+                           staffRole.toLowerCase() === roleFilter.toLowerCase();
       
-      // Status filter - handle both status and availability
+      // Status filter
       const staffStatus = staff.status || 'Available';
       const staffAvailability = staff.availability || 'available';
       
       let matchesStatus = statusFilter === 'all';
       
       if (statusFilter !== 'all') {
-        // Map filter values to database values
         const filterMap = {
           'Available': ['available'],
           'Busy': ['busy'],
@@ -153,8 +162,8 @@ export const useStaff = () => {
     ).length;
     
     const availableCount = filteredStaff.filter(s => {
-      const availability = (s.availability || 'available').toLowerCase();
-      return availability === 'available';
+      const availability = (s.availability || 'Available').toLowerCase();
+      return availability === 'Available';
     }).length;
 
     return [
@@ -197,15 +206,14 @@ export const useStaff = () => {
     ];
   }, [filteredStaff]);
 
-  // Update getStatusColor to handle new availability values
   const getStatusColor = (status = '') => {
     const statusLower = (status || '').toLowerCase();
     switch (statusLower) {
-      case 'available': return '#10b981'; // Green
-      case 'busy': return '#f59e0b'; // Orange
+      case 'available': return '#10b981';
+      case 'busy': return '#f59e0b';
       case 'offline':
       case 'off duty': 
-        return '#6b7280'; // Gray
+        return '#6b7280';
       default: return '#6b7280';
     }
   };
@@ -213,11 +221,11 @@ export const useStaff = () => {
   const getStatusBgColor = (status = '') => {
     const statusLower = (status || '').toLowerCase();
     switch (statusLower) {
-      case 'available': return '#d1fae5'; // Light green
-      case 'busy': return '#fef3c7'; // Light orange/yellow
+      case 'available': return '#d1fae5';
+      case 'busy': return '#fef3c7';
       case 'offline':
       case 'off duty': 
-        return '#f3f4f6'; // Light gray
+        return '#f3f4f6';
       default: return '#f3f4f6';
     }
   };
@@ -234,86 +242,13 @@ export const useStaff = () => {
     }
   };
 
-  const handleSearch = (searchTerm) => {
-    setSearchQuery(searchTerm);
-  };
-
-  const handleRoleFilter = (role) => {
-    setRoleFilter(role);
-  };
-
-  const handleStatusFilter = (status) => {
-    setStatusFilter(status);
-  };
-
   const clearFilters = () => {
     setSearchQuery('');
     setRoleFilter('all');
     setStatusFilter('all');
   };
 
-  const refreshStaffData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:8080/api/medicalstaff/all');
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch staff: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Map data same as in useEffect
-      const mappedStaff = data.map(staff => {
-        const email = staff.userAccount?.username || '';
-        const availability = staff.availability || 'Available';
-        let status = availability;
-        if (availability === 'offline') {
-          status = 'Off Duty';
-        }
-        
-        return {
-          id: staff.staffID,
-          name: staff.name,
-          role: staff.role,
-          specialty: staff.specialty || 'Not specified',
-          email: email,
-          contact: staff.contactNo || 'No contact',
-          status: status,
-          availability: availability,
-          department: staff.department || 'General Medicine',
-          age: staff.age,
-          gender: staff.gender,
-          accountID: staff.userAccount?.accountID
-        };
-      });
-      
-      setStaffMembers(mappedStaff);
-      localStorage.setItem('staffList', JSON.stringify(mappedStaff));
-      setError(null);
-    } catch (err) {
-      setError('Failed to refresh staff data.');
-      console.error('Error refreshing staff data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const hasActiveFilters = searchQuery || roleFilter !== 'all' || statusFilter !== 'all';
-
-  // Add listener for storage events to refresh when availability changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      console.log('Storage changed, refreshing staff data...');
-      refreshStaffData();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
 
   return {
     staffMembers: filteredStaff,
@@ -327,10 +262,10 @@ export const useStaff = () => {
     getStatusColor,
     getStatusBgColor,
     getRoleColor,
-    handleSearch,
-    handleRoleFilter,
-    handleStatusFilter,
+    handleSearch: setSearchQuery,
+    handleRoleFilter: setRoleFilter,
+    handleStatusFilter: setStatusFilter,
     clearFilters,
-    refreshStaffData,
+    refreshStaffData: fetchStaffData,
   };
 };

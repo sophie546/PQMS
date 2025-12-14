@@ -1,11 +1,4 @@
-import axios from 'axios';
-
-const API = axios.create({
-  baseURL: 'http://localhost:8080',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import API from './api'; 
 
 export const patientService = {
   getAllPatients: async () => {
@@ -50,7 +43,6 @@ export const patientService = {
 
   getPatientById: async (id) => {
     try {
-      // Assuming your backend endpoint is /patients/{id}
       const response = await API.get(`/patients/${id}`); 
       return response.data;
     } catch (error) {

@@ -1,4 +1,3 @@
-// File: backend/codex/src/main/java/clinicaflow/config/WebSecurityConfig.java
 package clinicaflow.config;
 
 import org.springframework.context.annotation.Bean;

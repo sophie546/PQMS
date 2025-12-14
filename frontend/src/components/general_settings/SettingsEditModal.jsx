@@ -29,12 +29,12 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
     try {
       setFetchingAccount(true);
       
-      console.log('🔍 Looking for account ID...');
-      console.log('UserData passed to modal:', userData);
+      // console.log('🔍 Looking for account ID...');
+      // console.log('UserData passed to modal:', userData);
       
       // Method 1: Check userData prop first
       if (userData.accountID && userData.accountID !== 'N/A') {
-        console.log('✅ Found account ID in userData prop:', userData.accountID);
+        // console.log('✅ Found account ID in userData prop:', userData.accountID);
         setAccountID(userData.accountID);
         return;
       }
@@ -48,15 +48,15 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
         if (storedData) {
           try {
             const parsed = JSON.parse(storedData);
-            console.log(`Checking localStorage key "${key}":`, parsed);
+            // console.log(`Checking localStorage key "${key}":`, parsed);
             
             if (parsed.accountID && parsed.accountID !== 'N/A') {
               foundAccountID = parsed.accountID;
-              console.log(`✅ Found account ID in ${key}:`, foundAccountID);
+              // console.log(`✅ Found account ID in ${key}:`, foundAccountID);
               break;
             }
           } catch (e) {
-            console.log(`Could not parse ${key}:`, e);
+            // console.log(`Could not parse ${key}:`, e);
           }
         }
       }
@@ -73,15 +73,15 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
         if (storedData) {
           try {
             const parsed = JSON.parse(storedData);
-            console.log(`Checking sessionStorage key "${key}":`, parsed);
+            // console.log(`Checking sessionStorage key "${key}":`, parsed);
             
             if (parsed.accountID && parsed.accountID !== 'N/A') {
               foundAccountID = parsed.accountID;
-              console.log(`✅ Found account ID in sessionStorage ${key}:`, foundAccountID);
+              // console.log(`✅ Found account ID in sessionStorage ${key}:`, foundAccountID);
               break;
             }
           } catch (e) {
-            console.log(`Could not parse sessionStorage ${key}:`, e);
+            // console.log(`Could not parse sessionStorage ${key}:`, e);
           }
         }
       }
@@ -96,14 +96,14 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       if (medicalStaffData) {
         try {
           const parsed = JSON.parse(medicalStaffData);
-          console.log('Checking medicalStaffData:', parsed);
+          // console.log('Checking medicalStaffData:', parsed);
           
           if (parsed.userAccount && parsed.userAccount.accountID) {
             foundAccountID = parsed.userAccount.accountID;
-            console.log('✅ Found account ID in medicalStaffData:', foundAccountID);
+            // console.log('✅ Found account ID in medicalStaffData:', foundAccountID);
           }
         } catch (e) {
-          console.log('Could not parse medicalStaffData:', e);
+          // console.log('Could not parse medicalStaffData:', e);
         }
       }
       
@@ -116,14 +116,14 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       if (userData.email === 'sophie.aloria@gmail.com' || 
           userData.name === 'Sophie Aloria' || 
           userData.name === 'sophie.aloria') {
-        console.log('⚠️ Using fallback: Sophie Aloria detected, using accountID: 1');
+        // console.log('⚠️ Using fallback: Sophie Aloria detected, using accountID: 1');
         setAccountID('1');
         return;
       }
       
       // Method 6: If we have email but no accountID, show error with instructions
       if (userData.email && userData.email !== 'N/A') {
-        console.log('❌ Could not find account ID for email:', userData.email);
+        // console.log('❌ Could not find account ID for email:', userData.email);
         setError(`Unable to find your account ID. Please refresh the page or contact support.`);
       } else {
         setError('Unable to retrieve account information. Please login again.');
@@ -150,9 +150,9 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       setLoading(true);
       setError(null);
       
-      console.log('Updating profile with:', formData);
-      console.log('Account ID:', accountID);
-      console.log('Current user data:', userData);
+      // console.log('Updating profile with:', formData);
+      // console.log('Account ID:', accountID);
+      // console.log('Current user data:', userData);
       
       // Validate required fields
       if (!formData.name.trim()) {
@@ -224,7 +224,7 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       }
     };
     
-    console.log('Updating existing medical staff:', updateData);
+    // console.log('Updating existing medical staff:', updateData);
     
     const response = await fetch(`http://localhost:8080/api/medicalstaff/update/${userData.staffID}`, {
       method: 'PUT',
@@ -256,7 +256,7 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       }
     };
     
-    console.log('Creating new medical staff record:', newStaffData);
+    // console.log('Creating new medical staff record:', newStaffData);
     
     const response = await fetch('http://localhost:8080/api/medicalstaff/add', {
       method: 'POST',
@@ -272,7 +272,7 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
     }
     
     const newStaff = await response.json();
-    console.log('✅ New medical staff created:', newStaff);
+    // console.log('✅ New medical staff created:', newStaff);
     
     // Update the staffID in localStorage for future updates
     const updatedUserData = {
@@ -281,7 +281,7 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       accountID: accountId,
       department: formData.department  // Add department
     };
-    localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
+    // localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
     
     return newStaff;
   };
@@ -304,8 +304,8 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
         hasMedicalStaffData: true
       };
       
-      localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
-      console.log('✅ Updated currentUser in localStorage');
+      // localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
+      // console.log('✅ Updated currentUser in localStorage');
       
       // Fetch fresh staff list to update
       updateStaffList();
@@ -321,7 +321,7 @@ const SettingsEditModal = ({ userData, close, onSave }) => {
       const response = await fetch('http://localhost:8080/api/medicalstaff/all');
       if (response.ok) {
         const allStaff = await response.json();
-        localStorage.setItem('staffList', JSON.stringify(allStaff));
+        // localStorage.setItem('staffList', JSON.stringify(allStaff));
         console.log('✅ Updated staff list from API');
         
         // Dispatch storage event to notify other components

@@ -16,6 +16,7 @@ import clinicaflow.entity.MedicalStaffEntity;
 import clinicaflow.entity.UserAccountEntity;
 import clinicaflow.repository.UserAccountRepository;
 import clinicaflow.repository.MedicalStaffRepository;
+import clinicaflow.security.JwtUtils;
 
 import jakarta.transaction.Transactional;
 
@@ -31,6 +32,8 @@ public class UserAccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtils jwtUtils;
    
     public Optional<UserAccountEntity> findByUsername(String username) {
         return userAccountRepository.findByUsername(username);
@@ -52,21 +55,19 @@ public class UserAccountService {
             // Save to database
             UserAccountEntity savedUser = userAccountRepository.save(userAccount);
 
-            // ========== FIX: CREATE MEDICAL STAFF RECORD ==========
-            // Check if this is a medical staff role (doctor or nurse)
             String role = registerRequest.getRole().toLowerCase();
             if ("doctor".equals(role) || "nurse".equals(role)) {
                 MedicalStaffEntity medicalStaff = new MedicalStaffEntity();
                 medicalStaff.setName(registerRequest.getFirstName() + " " + registerRequest.getLastName());
                 medicalStaff.setRole(registerRequest.getRole());
-                medicalStaff.setSpecialty(""); // Empty as requested
-                medicalStaff.setContactNo(""); // Empty as requested
+                medicalStaff.setSpecialty(""); 
+                medicalStaff.setContactNo(""); 
                 medicalStaff.setUserAccount(savedUser);
                 
-                // Save to medical_staff table
                 medicalStaffRepository.save(medicalStaff);
             }
-            // ========== END FIX ==========
+
+            String jwtToken = jwtUtils.generateToken(savedUser);
 
             // Create response data
             Map<String, Object> userData = new HashMap<>();
@@ -76,15 +77,14 @@ public class UserAccountService {
             userData.put("firstName", registerRequest.getFirstName());
             userData.put("lastName", registerRequest.getLastName());
 
-            return AuthResponse.success("Registration successful", userData);
-
+            return AuthResponse.success("Registration successful", jwtToken, userData);
         } catch (Exception e) {
             e.printStackTrace();
             return AuthResponse.error("Registration failed: " + e.getMessage());
         }
     }
 
-    // Login user - NO CHANGES NEEDED
+    // Login user
     public AuthResponse loginUser(LoginRequest loginRequest) {
         try {
             Optional<UserAccountEntity> userOptional = userAccountRepository.findByUsername(loginRequest.getEmail());
@@ -100,6 +100,8 @@ public class UserAccountService {
                 return AuthResponse.error("Invalid email or password");
             }
 
+            String jwtToken = jwtUtils.generateToken(user);
+
             // Create response data
             Map<String, Object> userData = new HashMap<>();
             userData.put("id", user.getAccountID());
@@ -114,8 +116,7 @@ public class UserAccountService {
                 userData.put("medicalStaff", staffInfo);
             }
 
-            return AuthResponse.success("Login successful", userData);
-
+            return AuthResponse.success("Login successful", jwtToken, userData);
         } catch (Exception e) {
             e.printStackTrace();
             return AuthResponse.error("Login failed: " + e.getMessage());

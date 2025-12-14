@@ -1,16 +1,11 @@
-// services/staffService.js
-import axios from 'axios';
-
-const API_BASE = 'http://localhost:8080/api';
+import API from './api'; 
 
 export const staffService = {
   // Get all medical staff
   getAllStaff: async () => {
     try {
-      console.log('Fetching staff from:', `${API_BASE}/medicalstaff/all`);
-      const response = await axios.get(`${API_BASE}/medicalstaff/all`);
+      const response = await API.get('/api/medicalstaff/all');
       
-      // Map backend data to frontend format
       return response.data.map(staff => ({
         id: staff.staffID,
         name: staff.name,
@@ -24,7 +19,9 @@ export const staffService = {
       }));
     } catch (error) {
       console.error('❌ Error fetching staff:', error);
-      console.error('Error details:', error.response?.data || error.message);
+      if (error.response) {
+          console.error('Error status:', error.response.status);
+      }
       throw error;
     }
   },
@@ -32,18 +29,16 @@ export const staffService = {
   // Get staff statistics
   getStaffStats: async () => {
     try {
-      // First get all staff
-      const allStaff = await this.getAllStaff();
+      const allStaff = await staffService.getAllStaff();
       
       const totalStaff = allStaff.length;
       const doctors = allStaff.filter(staff => 
-        staff.role.toLowerCase().includes('doctor')
+        staff.role && staff.role.toLowerCase().includes('doctor')
       ).length;
       const nurses = allStaff.filter(staff => 
-        staff.role.toLowerCase().includes('nurse')
+        staff.role && staff.role.toLowerCase().includes('nurse')
       ).length;
       
-      // Create stats array
       return [
         {
           id: 1,
@@ -69,43 +64,18 @@ export const staffService = {
         {
           id: 4,
           title: 'Available Today',
-          value: totalStaff, // Default all as available
+          value: totalStaff, 
           subText: 'Currently on duty',
           icon: 'check'
         }
       ];
     } catch (error) {
       console.error('❌ Error fetching staff stats:', error);
-      // Return default stats if API fails
       return [
-        {
-          id: 1,
-          title: 'Total Staff',
-          value: 0,
-          subText: 'All healthcare staff',
-          icon: 'people'
-        },
-        {
-          id: 2,
-          title: 'Doctors',
-          value: 0,
-          subText: 'Medical doctors',
-          icon: 'medical'
-        },
-        {
-          id: 3,
-          title: 'Nurses',
-          value: 0,
-          subText: 'Nursing staff',
-          icon: 'check'
-        },
-        {
-          id: 4,
-          title: 'Available Today',
-          value: 0,
-          subText: 'Currently on duty',
-          icon: 'check'
-        }
+        { id: 1, title: 'Total Staff', value: 0, subText: 'All healthcare staff', icon: 'people' },
+        { id: 2, title: 'Doctors', value: 0, subText: 'Medical doctors', icon: 'medical' },
+        { id: 3, title: 'Nurses', value: 0, subText: 'Nursing staff', icon: 'check' },
+        { id: 4, title: 'Available Today', value: 0, subText: 'Currently on duty', icon: 'check' }
       ];
     }
   },
@@ -113,7 +83,7 @@ export const staffService = {
   // Get single staff member by ID
   getStaffById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE}/medicalstaff/${id}`);
+      const response = await API.get(`/api/medicalstaff/${id}`);
       const staff = response.data;
       
       return {
@@ -137,7 +107,7 @@ export const staffService = {
     try {
       console.log(`✏️ Updating staff ${id}:`, staffData);
       
-      const response = await axios.put(`${API_BASE}/medicalstaff/update/${id}`, staffData);
+      const response = await API.put(`/api/medicalstaff/update/${id}`, staffData);
       console.log('✅ Staff updated successfully:', response.data);
       return response.data;
     } catch (error) {
@@ -146,29 +116,24 @@ export const staffService = {
     }
   },
 
-  // REMOVED: Delete staff member
-  // REMOVED: Add staff function
-  // REMOVED: Search user accounts functions
-  // REMOVED: Check staff exists functions
-
-  // Search staff (client-side filtering)
+  // Search staff (client-side filtering) - No API call needed here, logic remains same
   searchStaff: (staffList, query) => {
     if (!query) return staffList;
     
     return staffList.filter(staff => 
-      staff.name.toLowerCase().includes(query.toLowerCase()) ||
-      staff.role.toLowerCase().includes(query.toLowerCase()) ||
-      staff.email.toLowerCase().includes(query.toLowerCase()) ||
+      (staff.name && staff.name.toLowerCase().includes(query.toLowerCase())) ||
+      (staff.role && staff.role.toLowerCase().includes(query.toLowerCase())) ||
+      (staff.email && staff.email.toLowerCase().includes(query.toLowerCase())) ||
       (staff.specialty && staff.specialty.toLowerCase().includes(query.toLowerCase()))
     );
   },
 
-  // Filter by role
+  // Filter by role - Logic remains same
   filterByRole: (staffList, role) => {
     if (role === 'all') return staffList;
     
     return staffList.filter(staff => 
-      staff.role.toLowerCase() === role.toLowerCase()
+      staff.role && staff.role.toLowerCase() === role.toLowerCase()
     );
   }
 };

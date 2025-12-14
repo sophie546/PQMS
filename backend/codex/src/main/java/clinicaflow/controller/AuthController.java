@@ -6,12 +6,12 @@ import clinicaflow.dto.response.AuthResponse;
 import clinicaflow.entity.UserAccountEntity;
 import clinicaflow.entity.MedicalStaffEntity;
 import clinicaflow.repository.UserAccountRepository;
+import clinicaflow.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +27,9 @@ public class AuthController {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     // Test endpoint
     @GetMapping("/test")
@@ -70,9 +73,11 @@ public class AuthController {
                     .body(AuthResponse.error("Invalid email or password"));
             }
 
+            String jwtToken = jwtUtils.generateToken(user);
+
             // Create response
             Map<String, Object> userData = createUserResponse(user);
-            return ResponseEntity.ok(AuthResponse.success("Login successful", userData));
+            return ResponseEntity.ok(AuthResponse.success("Login successful", jwtToken, userData));
             
         } catch (Exception e) {
             System.err.println("🔥 Login error: " + e.getMessage());
@@ -129,13 +134,15 @@ public class AuthController {
             // Save to database
             UserAccountEntity savedUser = userAccountRepository.save(newUser);
 
+            String jwtToken = jwtUtils.generateToken(savedUser);
+
             // Create response
             Map<String, Object> userData = createUserResponse(savedUser);
             userData.put("firstName", request.getFirstName());
             userData.put("lastName", request.getLastName());
             
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .body(AuthResponse.success("Registration successful", userData));
+           return ResponseEntity.status(HttpStatus.CREATED)
+                .body(AuthResponse.success("Registration successful", jwtToken, userData));
             
         } catch (Exception e) {
             System.err.println("🔥 Registration error: " + e.getMessage());

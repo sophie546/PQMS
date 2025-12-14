@@ -1,4 +1,3 @@
-// backend/src/main/java/clinicaflow/dto/response/AuthResponse.java
 package clinicaflow.dto.response;
 
 import java.util.Map;
@@ -6,6 +5,7 @@ import java.util.Map;
 public class AuthResponse {
     private boolean success;
     private String message;
+    private String token;
     private Map<String, Object> user;
     
     // Constructors
@@ -17,10 +17,19 @@ public class AuthResponse {
         this.message = message;
     }
     
-    public AuthResponse(boolean success, String message, Map<String, Object> user) {
+    public AuthResponse(boolean success, String message, String token, Map<String, Object> user) {
         this.success = success;
         this.message = message;
+        this.token = token;
         this.user = user;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
     
     // Getters and Setters
@@ -49,12 +58,12 @@ public class AuthResponse {
     }
     
     // Helper methods
-    public static AuthResponse success(String message, Map<String, Object> user) {
-        return new AuthResponse(true, message, user);
+    public static AuthResponse success(String message, String token, Map<String, Object> user) {
+        return new AuthResponse(true, message, token, user);
     }
     
     public static AuthResponse error(String message) {
-        return new AuthResponse(false, message);
+        return new AuthResponse(false, message, null, null);
     }
     
     // toString for debugging
